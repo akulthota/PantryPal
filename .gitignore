@@ -1,0 +1,36 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Production / Build output
+dist
+build
+.vercel
+
+# Misc
+.DS_Store
+*.pem
+*.db
+*.log
+
+# Sensitive Environment Variables - NEVER COMMIT TO GIT
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary search & bundle analysis files
+analyze_bundle.*
+search_bundle.*
+inspect_details.*
+extract_components.*
+print_components.*
+component_*.js
+js_bundle.js
+css_bundle.css
+extracted_*.txt
