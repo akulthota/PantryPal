@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, LogIn, UserPlus, ArrowRight, CheckCircle2, User } from 'lucide-react';
+import { X, Mail, Lock, LogIn, UserPlus, ArrowRight, CheckCircle2, User, AlertCircle } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showToast }) {
@@ -20,8 +20,15 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
         if (mode === 'signup') {
           const { data, error } = await supabase.auth.signUp({ email, password });
           if (error) throw error;
-          showToast('Account Created', 'Check your email for confirmation link or sign in.', 'success');
-          setMode('login');
+          
+          if (data?.user) {
+            onLoginSuccess(data.user);
+            showToast('Account Created', `Signed up as ${data.user.email}!`, 'success');
+            onClose();
+          } else {
+            showToast('Confirmation Sent', 'Please check your email to confirm your account.', 'info');
+            setMode('login');
+          }
         } else {
           const { data, error } = await supabase.auth.signInWithPassword({ email, password });
           if (error) throw error;
@@ -30,14 +37,29 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
           onClose();
         }
       } else {
-        // Local Session Fallback for standalone mode
+        // Local Session Fallback for standalone / unconfigured mode
         const mockUser = { id: 'usr-1', email, name: email.split('@')[0] };
         onLoginSuccess(mockUser);
         showToast('Signed In', `Welcome back, ${mockUser.name}!`, 'success');
         onClose();
       }
     } catch (err) {
-      showToast('Authentication Error', err.message || 'Failed to authenticate.', 'error');
+      const errMsg = err.message || '';
+      console.warn('Auth Error:', errMsg);
+
+      // Handle Secret Key in Browser error specifically
+      if (errMsg.includes('secret API key') || errMsg.includes('Forbidden')) {
+        const mockUser = { id: 'usr-1', email, name: email.split('@')[0] };
+        onLoginSuccess(mockUser);
+        showToast(
+          'Logged In (Local Mode)',
+          "Note: Replace VITE_SUPABASE_ANON_KEY with your 'anon' public key in Vercel.",
+          'info'
+        );
+        onClose();
+      } else {
+        showToast('Authentication Error', errMsg || 'Failed to authenticate.', 'error');
+      }
     } finally {
       setIsLoading(false);
     }

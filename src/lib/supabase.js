@@ -11,10 +11,13 @@ try {
     typeof supabaseUrl === 'string' &&
     typeof supabaseAnonKey === 'string' &&
     supabaseUrl.startsWith('https://') &&
-    !supabaseUrl.includes('your-supabase-project')
+    !supabaseUrl.includes('your-supabase-project') &&
+    !supabaseAnonKey.includes('service_role') // Prevent using secret service_role key in browser
   ) {
     client = createClient(supabaseUrl, supabaseAnonKey);
     configured = true;
+  } else if (supabaseAnonKey.includes('service_role')) {
+    console.warn('PantryPal Warning: VITE_SUPABASE_ANON_KEY is set to a secret service_role key! Please replace it with the public anon key in Vercel.');
   }
 } catch (e) {
   console.warn('Supabase initialization fallback active:', e);
