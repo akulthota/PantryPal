@@ -3,11 +3,25 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey && !supabaseUrl.includes('your-supabase-project'));
+let client = null;
+let configured = false;
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+try {
+  if (
+    typeof supabaseUrl === 'string' &&
+    typeof supabaseAnonKey === 'string' &&
+    supabaseUrl.startsWith('https://') &&
+    !supabaseUrl.includes('your-supabase-project')
+  ) {
+    client = createClient(supabaseUrl, supabaseAnonKey);
+    configured = true;
+  }
+} catch (e) {
+  console.warn('Supabase initialization fallback active:', e);
+}
+
+export const isSupabaseConfigured = configured;
+export const supabase = client;
 
 // Initial sample data for standalone fallback
 const DEFAULT_PREFERENCES = {
@@ -100,7 +114,7 @@ const DEFAULT_PROTEIN_LOGS = [
   },
   {
     id: 'prot-2',
-    item: 'Grilled Chicken Breast Breast Bowl',
+    item: 'Grilled Chicken Breast Bowl',
     total_protein: 42,
     animal_protein: 42,
     plant_protein: 0,
@@ -115,6 +129,7 @@ const DEFAULT_PROTEIN_LOGS = [
 // Helper functions for LocalStorage fallback
 const getLocal = (key, fallback) => {
   try {
+    if (typeof window === 'undefined') return fallback;
     const data = localStorage.getItem(`pantrypal_${key}`);
     return data ? JSON.parse(data) : fallback;
   } catch {
@@ -124,7 +139,9 @@ const getLocal = (key, fallback) => {
 
 const setLocal = (key, value) => {
   try {
-    localStorage.setItem(`pantrypal_${key}`, JSON.stringify(value));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`pantrypal_${key}`, JSON.stringify(value));
+    }
   } catch (e) {
     console.error('LocalStorage write error:', e);
   }
@@ -134,12 +151,16 @@ const setLocal = (key, value) => {
 export const db = {
   recipes: {
     async list() {
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase
-          .from('recipes')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (!error && data) return data;
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('recipes')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (!error && data) return data;
+        } catch (e) {
+          console.warn('Supabase fetch error, using local storage:', e);
+        }
       }
       return getLocal('recipes', DEFAULT_RECIPES);
     },
@@ -149,12 +170,16 @@ export const db = {
         id: recipe.id || `rec-${Date.now()}`,
         created_at: new Date().toISOString()
       };
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase
-          .from('recipes')
-          .insert([newRecipe])
-          .select();
-        if (!error && data?.[0]) return data[0];
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('recipes')
+            .insert([newRecipe])
+            .select();
+          if (!error && data?.[0]) return data[0];
+        } catch (e) {
+          console.warn('Supabase insert error, using local storage:', e);
+        }
       }
       const list = getLocal('recipes', DEFAULT_RECIPES);
       const updated = [newRecipe, ...list];
@@ -162,8 +187,10 @@ export const db = {
       return newRecipe;
     },
     async delete(id) {
-      if (isSupabaseConfigured) {
-        await supabase.from('recipes').delete().eq('id', id);
+      if (isSupabaseConfigured && supabase) {
+        try {
+          await supabase.from('recipes').delete().eq('id', id);
+        } catch (e) {}
       }
       const list = getLocal('recipes', DEFAULT_RECIPES);
       const updated = list.filter(r => r.id !== id);
@@ -174,12 +201,14 @@ export const db = {
 
   proteinLogs: {
     async list() {
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase
-          .from('protein_logs')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (!error && data) return data;
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('protein_logs')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (!error && data) return data;
+        } catch (e) {}
       }
       return getLocal('protein_logs', DEFAULT_PROTEIN_LOGS);
     },
@@ -189,12 +218,14 @@ export const db = {
         id: `prot-${Date.now()}`,
         created_at: new Date().toISOString()
       };
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase
-          .from('protein_logs')
-          .insert([newEntry])
-          .select();
-        if (!error && data?.[0]) return data[0];
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('protein_logs')
+            .insert([newEntry])
+            .select();
+          if (!error && data?.[0]) return data[0];
+        } catch (e) {}
       }
       const list = getLocal('protein_logs', DEFAULT_PROTEIN_LOGS);
       const updated = [newEntry, ...list];
@@ -202,8 +233,10 @@ export const db = {
       return newEntry;
     },
     async delete(id) {
-      if (isSupabaseConfigured) {
-        await supabase.from('protein_logs').delete().eq('id', id);
+      if (isSupabaseConfigured && supabase) {
+        try {
+          await supabase.from('protein_logs').delete().eq('id', id);
+        } catch (e) {}
       }
       const list = getLocal('protein_logs', DEFAULT_PROTEIN_LOGS);
       const updated = list.filter(p => p.id !== id);
@@ -214,22 +247,26 @@ export const db = {
 
   preferences: {
     async get() {
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase
-          .from('user_preferences')
-          .select('*')
-          .single();
-        if (!error && data) return data;
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('user_preferences')
+            .select('*')
+            .single();
+          if (!error && data) return data;
+        } catch (e) {}
       }
       return getLocal('user_preferences', DEFAULT_PREFERENCES);
     },
     async update(prefs) {
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase
-          .from('user_preferences')
-          .upsert([{ user_id: 'guest', ...prefs, updated_at: new Date().toISOString() }])
-          .select();
-        if (!error && data?.[0]) return data[0];
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('user_preferences')
+            .upsert([{ user_id: 'guest', ...prefs, updated_at: new Date().toISOString() }])
+            .select();
+          if (!error && data?.[0]) return data[0];
+        } catch (e) {}
       }
       setLocal('user_preferences', prefs);
       return prefs;
@@ -238,12 +275,14 @@ export const db = {
 
   scanLogs: {
     async list() {
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase
-          .from('scan_logs')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (!error && data) return data;
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('scan_logs')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (!error && data) return data;
+        } catch (e) {}
       }
       return getLocal('scan_logs', []);
     },
@@ -253,8 +292,10 @@ export const db = {
         id: `scan-${Date.now()}`,
         created_at: new Date().toISOString()
       };
-      if (isSupabaseConfigured) {
-        await supabase.from('scan_logs').insert([newScan]);
+      if (isSupabaseConfigured && supabase) {
+        try {
+          await supabase.from('scan_logs').insert([newScan]);
+        } catch (e) {}
       }
       const list = getLocal('scan_logs', []);
       setLocal('scan_logs', [newScan, ...list]);
