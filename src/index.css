@@ -1,4 +1,4 @@
-/* PantryPal Modern CSS & Design System */
+/* PantryPal Fluid CSS & Mobile-Optimized Design System */
 
 :root {
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -14,12 +14,13 @@
   --secondary-light: #ecfdf5;
   
   --accent-amber: #f59e0b;
+  --accent-amber-hover: #d97706;
   --accent-rose: #f43f5e;
   --accent-blue: #3b82f6;
   
-  --bg-main: #f8fafc;
+  --bg-main: #fafaf9;
   --bg-card: #ffffff;
-  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.9);
   
   --border-light: rgba(226, 232, 240, 0.8);
   --border-focus: #818cf8;
@@ -29,20 +30,21 @@
   --text-sub: #94a3b8;
   
   --radius-sm: 8px;
-  --radius-md: 12px;
+  --radius-md: 14px;
   --radius-lg: 20px;
   --radius-full: 9999px;
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -52,13 +54,14 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
-/* Keyframe Animations */
+/* Smooth Spring Fluid Animations */
 @keyframes slideInFromLeft {
   from {
     opacity: 0;
@@ -84,7 +87,7 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
@@ -97,25 +100,34 @@ h1, h2, h3, h4, h5, h6 {
   100% { transform: rotate(360deg); }
 }
 
-@keyframes pulseSlow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.03); opacity: 0.85; }
+}
+
+@keyframes scanBeam {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(320px); }
 }
 
 .animate-slide-in {
-  animation: slideInFromLeft 0.5s ease-out forwards;
+  animation: slideInFromLeft 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-fade-in {
-  animation: fadeInDown 0.4s ease-out forwards;
+  animation: fadeInDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.4s ease-out forwards;
+  animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-spin {
-  animation: spin 1s linear infinite;
+  animation: spin 0.9s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulseGlow 2s ease-in-out infinite;
 }
 
 /* Glassmorphism Card Utilities */
@@ -124,7 +136,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-md);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
 }
 
 .glass-card:hover {
@@ -132,21 +144,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .feature-card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .feature-card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-glow), var(--shadow-lg);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Button Styles */
+/* Button & Touch Target Optimization */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 0.75rem 1.5rem;
+  min-height: 44px; /* Mobile touch friendly target */
+  padding: 0.75rem 1.4rem;
   border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 0.95rem;
@@ -154,39 +167,45 @@ h1, h2, h3, h4, h5, h6 {
   border: none;
   transition: all 0.2s ease;
   text-decoration: none;
+  user-select: none;
 }
 
 .btn-primary {
   background: var(--primary-gradient);
   color: white;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
 .btn-primary:hover:not(:disabled) {
-  opacity: 0.95;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+  opacity: 0.96;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-secondary {
   background: var(--secondary);
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--secondary-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .btn-amber {
   background: var(--accent-amber);
   color: white;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
 }
 
 .btn-amber:hover:not(:disabled) {
-  background: #d97706;
+  background: var(--accent-amber-hover);
+  transform: translateY(-2px);
 }
 
 .btn-outline {
@@ -208,13 +227,14 @@ h1, h2, h3, h4, h5, h6 {
 /* Form Controls */
 .input-control {
   width: 100%;
+  min-height: 44px;
   padding: 0.75rem 1rem;
   border: 1px solid #cbd5e1;
   border-radius: var(--radius-md);
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-control:focus {
@@ -224,8 +244,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -234,9 +254,31 @@ h1, h2, h3, h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+/* Responsive & Mobile Layout Tuning */
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  
+  .mobile-menu-btn {
+    display: block !important;
+  }
+
+  .glass-card {
+    border-radius: 16px;
+    padding: 1.25rem !important;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-btn {
+    display: none !important;
+  }
 }

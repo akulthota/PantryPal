@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Utensils, Activity, Settings, Home, Menu, X, Database, CheckCircle2, AlertCircle, Info, User, LogIn, LogOut } from 'lucide-react';
+import { Camera, Utensils, Activity, Settings, Home, Menu, X, Database, CheckCircle2, AlertCircle, Info, User, LogIn, LogOut, Flame } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import AnalyzePantryPage from './pages/AnalyzePantryPage';
+import CalorieScannerPage from './pages/CalorieScannerPage';
 import RecipesPage from './pages/RecipesPage';
 import ProteinTrackerPage from './pages/ProteinTrackerPage';
 import PreferencesPage from './pages/PreferencesPage';
@@ -70,7 +71,8 @@ export default function App() {
 
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
-    { id: 'analyze', label: 'Analyze Pantry', icon: Camera },
+    { id: 'analyze', label: 'Pantry Scanner', icon: Camera },
+    { id: 'calories', label: 'Calorie Scanner', icon: Flame },
     { id: 'recipes', label: 'Saved Recipes', icon: Utensils },
     { id: 'protein', label: 'Protein Tracker', icon: Activity },
     { id: 'preferences', label: 'Preferences', icon: Settings }
@@ -95,7 +97,7 @@ export default function App() {
           style={{
             maxWidth: '1250px',
             margin: '0 auto',
-            padding: '0.85rem 1.5rem',
+            padding: '0.75rem 1.25rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
@@ -111,13 +113,13 @@ export default function App() {
               alt="PantryPal Logo"
               style={{ width: '38px', height: '38px', borderRadius: '8px', objectFit: 'cover' }}
             />
-            <span style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+            <span style={{ fontSize: '1.35rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
               Pantry<span style={{ color: 'var(--primary)' }}>Pal</span>
             </span>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="desktop-nav" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <nav className="desktop-nav" style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -128,19 +130,19 @@ export default function App() {
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    padding: '0.55rem 1.1rem',
+                    gap: '6px',
+                    padding: '0.5rem 0.9rem',
                     borderRadius: '12px',
                     border: 'none',
                     backgroundColor: isActive ? 'var(--primary-light)' : 'transparent',
                     color: isActive ? 'var(--primary)' : 'var(--text-muted)',
                     fontWeight: isActive ? 700 : 500,
-                    fontSize: '0.925rem',
+                    fontSize: '0.9rem',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
                 >
-                  <Icon size={18} />
+                  <Icon size={17} />
                   <span>{item.label}</span>
                 </button>
               );
@@ -148,7 +150,7 @@ export default function App() {
           </nav>
 
           {/* Database Badge & Optional Auth Stack */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div
               style={{
                 display: 'inline-flex',
@@ -170,13 +172,13 @@ export default function App() {
             {/* User Auth Button */}
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
                   {user.email?.split('@')[0] || 'User'}
                 </span>
                 <button
                   onClick={handleLogout}
                   className="btn btn-outline"
-                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}
+                  style={{ padding: '0.35rem 0.75rem', fontSize: '0.825rem', minHeight: '36px' }}
                   title="Sign out"
                 >
                   <LogOut size={14} /> Log Out
@@ -186,9 +188,9 @@ export default function App() {
               <button
                 onClick={() => setAuthModalOpen(true)}
                 className="btn btn-outline"
-                style={{ padding: '0.45rem 1rem', fontSize: '0.875rem' }}
+                style={{ padding: '0.4rem 0.9rem', fontSize: '0.85rem', minHeight: '36px' }}
               >
-                <User size={16} /> Log In
+                <User size={15} /> Log In
               </button>
             )}
 
@@ -196,7 +198,7 @@ export default function App() {
             <button
               className="mobile-menu-btn"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-main)', padding: '4px' }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-main)', padding: '6px' }}
             >
               {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
@@ -205,7 +207,7 @@ export default function App() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div style={{ backgroundColor: 'white', borderTop: '1px solid var(--border-light)', padding: '1rem' }}>
+          <div style={{ backgroundColor: 'white', borderTop: '1px solid var(--border-light)', padding: '0.75rem 1rem' }}>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -254,6 +256,12 @@ export default function App() {
             userPreferences={userPreferences}
             onSaveRecipeSuccess={() => loadInitialData()}
             showToast={showToast}
+          />
+        )}
+        {activeTab === 'calories' && (
+          <CalorieScannerPage
+            showToast={showToast}
+            onNavigate={(tab) => setActiveTab(tab)}
           />
         )}
         {activeTab === 'recipes' && (
@@ -317,9 +325,10 @@ export default function App() {
           <div>
             <strong>PantryPal</strong> © 2026 — Your Intelligent Kitchen & Recipe Assistant.
           </div>
-          <div style={{ display: 'flex', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
             <span style={{ cursor: 'pointer' }} onClick={() => setActiveTab('home')}>Home</span>
-            <span style={{ cursor: 'pointer' }} onClick={() => setActiveTab('analyze')}>Scanner</span>
+            <span style={{ cursor: 'pointer' }} onClick={() => setActiveTab('analyze')}>Pantry Scanner</span>
+            <span style={{ cursor: 'pointer' }} onClick={() => setActiveTab('calories')}>Calorie Scanner</span>
             <span style={{ cursor: 'pointer' }} onClick={() => setActiveTab('recipes')}>Recipes</span>
             <span style={{ cursor: 'pointer' }} onClick={() => setActiveTab('preferences')}>Preferences</span>
           </div>
