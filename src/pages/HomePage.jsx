@@ -1,25 +1,26 @@
 import React from 'react';
-import { Camera, Utensils, Activity, ArrowRight, Sparkles, ShieldCheck, HeartPulse, Flame } from 'lucide-react';
+import { Camera, Utensils, Activity, ArrowRight, Sparkles, Flame, CheckCircle, Leaf } from 'lucide-react';
 
 export default function HomePage({ onNavigate, stats = {} }) {
   const { recipeCount = 0, todayProtein = 0, proteinGoal = 80 } = stats;
 
   return (
     <div style={{ maxWidth: '1200px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
+      
       {/* Hero Welcome Banner */}
       <div
         className="animate-slide-in glass-card"
         style={{
           padding: '3rem',
           marginBottom: '2.5rem',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+          background: 'linear-gradient(135deg, #ffffff 0%, #fafaf9 100%)',
           position: 'relative',
           overflow: 'hidden'
         }}
       >
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '750px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', padding: '0.4rem 1rem', borderRadius: '20px', fontSize: '0.875rem', fontWeight: 600, marginBottom: '1rem' }}>
-            <Sparkles size={16} /> Powered by Gemini 3.6 Flash AI
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#f0fdf4', color: '#166534', padding: '0.4rem 1rem', borderRadius: '20px', fontSize: '0.875rem', fontWeight: 600, marginBottom: '1rem' }}>
+            <Leaf size={16} /> Smart Kitchen Assistant
           </div>
           <h1
             style={{
@@ -28,7 +29,7 @@ export default function HomePage({ onNavigate, stats = {} }) {
               lineHeight: 1.15,
               marginBottom: '1rem',
               letterSpacing: '-0.03em',
-              background: 'var(--primary-gradient)',
+              background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
             }}
@@ -36,7 +37,7 @@ export default function HomePage({ onNavigate, stats = {} }) {
             Welcome to PantryPal
           </h1>
           <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: 1.6 }}>
-            Your intelligent kitchen assistant. Snap a photo of your fridge or pantry, and PantryPal identifies your ingredients, generates personalized recipes, and helps eliminate food waste.
+            Your personal kitchen companion. Snap a photo of your fridge or pantry to automatically organize ingredients, discover custom recipes, and track your daily nutrition.
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <button
@@ -44,7 +45,7 @@ export default function HomePage({ onNavigate, stats = {} }) {
               className="btn btn-primary"
               style={{ fontSize: '1.05rem', padding: '0.85rem 1.75rem' }}
             >
-              <Camera size={20} /> Scan Fridge Now
+              <Camera size={20} /> Scan Pantry Now
             </button>
             <button
               onClick={() => onNavigate('recipes')}
@@ -59,11 +60,11 @@ export default function HomePage({ onNavigate, stats = {} }) {
 
       {/* Feature Cards Grid */}
       <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem', color: 'var(--text-main)' }}>
-        Explore Features
+        Kitchen Tools & Features
       </h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
         
-        {/* Card 1: AI Scanner */}
+        {/* Card 1: Pantry Scanner */}
         <div
           className="glass-card feature-card-hover"
           style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
@@ -73,10 +74,10 @@ export default function HomePage({ onNavigate, stats = {} }) {
               <Camera size={28} />
             </div>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-              AI Fridge & Pantry Scanner
+              Fridge & Pantry Scanner
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.975rem', marginBottom: '1.5rem' }}>
-              Snap a photo of your open fridge, freezer, or pantry. Gemini 3.6 Flash identifies all your visible ingredients instantly.
+              Snap a photo of your fridge, freezer, or shelves to automatically identify all your available ingredients in seconds.
             </p>
           </div>
           <button onClick={() => onNavigate('analyze')} className="btn btn-outline" style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -95,14 +96,14 @@ export default function HomePage({ onNavigate, stats = {} }) {
               <Utensils size={28} />
             </div>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-              Personalized AI Recipes
+              Personalized Recipe Generator
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.975rem', marginBottom: '1.5rem' }}>
-              Get delicious step-by-step recipes tailored to your dietary restrictions, favorite cuisines, and skill level.
+              Get step-by-step recipes tailored to your dietary restrictions, favorite cuisines, and skill level.
             </p>
           </div>
           <button onClick={() => onNavigate('recipes')} className="btn btn-outline" style={{ width: '100%', justifyContent: 'space-between' }}>
-            <span>View Saved Recipes ({recipeCount})</span>
+            <span>Browse Recipes ({recipeCount})</span>
             <ArrowRight size={18} />
           </button>
         </div>
@@ -120,7 +121,7 @@ export default function HomePage({ onNavigate, stats = {} }) {
               Protein & Nutrition Tracker
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.975rem', marginBottom: '1.5rem' }}>
-              Track daily protein goals, analyze macro sources (animal, plant, dairy), and receive AI-suggested protein boosts.
+              Track daily protein targets, analyze macro sources (animal, plant, dairy), and receive smart dietary suggestions.
             </p>
           </div>
           <button onClick={() => onNavigate('protein')} className="btn btn-outline" style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -131,7 +132,7 @@ export default function HomePage({ onNavigate, stats = {} }) {
 
       </div>
 
-      {/* Daily Kitchen Highlights Bar */}
+      {/* Daily Summary Bar */}
       <div className="glass-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
         <div style={{ padding: '1rem', borderRight: '1px solid var(--border-light)' }}>
           <div style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '2.2rem' }}>{recipeCount}</div>
@@ -139,17 +140,17 @@ export default function HomePage({ onNavigate, stats = {} }) {
         </div>
         <div style={{ padding: '1rem', borderRight: '1px solid var(--border-light)' }}>
           <div style={{ color: 'var(--secondary)', fontWeight: 800, fontSize: '2.2rem' }}>{todayProtein}g</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500 }}>Today's Protein Log</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500 }}>Today's Protein</div>
         </div>
         <div style={{ padding: '1rem', borderRight: '1px solid var(--border-light)' }}>
           <div style={{ color: '#d97706', fontWeight: 800, fontSize: '2.2rem' }}>{proteinGoal}g</div>
           <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500 }}>Daily Goal</div>
         </div>
         <div style={{ padding: '1rem' }}>
-          <div style={{ color: 'var(--accent-rose)', fontWeight: 800, fontSize: '2.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-            <Flame size={28} /> AI
+          <div style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '2.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+            <CheckCircle size={28} /> Active
           </div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500 }}>Multimodal Engine</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500 }}>Kitchen Assistant</div>
         </div>
       </div>
     </div>

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Utensils, Activity, Settings, Home, Menu, X, Sparkles, Database, CheckCircle2, AlertCircle, Info } from 'lucide-react';
+import { Camera, Utensils, Activity, Settings, Home, Menu, X, Database, CheckCircle2, AlertCircle, Info, User, LogIn, LogOut } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import AnalyzePantryPage from './pages/AnalyzePantryPage';
 import RecipesPage from './pages/RecipesPage';
 import ProteinTrackerPage from './pages/ProteinTrackerPage';
 import PreferencesPage from './pages/PreferencesPage';
-import { db, isSupabaseConfigured } from './lib/supabase';
+import AuthModal from './components/AuthModal';
+import { db, isSupabaseConfigured, supabase } from './lib/supabase';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('home'); // 'home' | 'analyze' | 'recipes' | 'protein' | 'preferences'
+  const [activeTab, setActiveTab] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
   
   const [userPreferences, setUserPreferences] = useState(null);
   const [recipeCount, setRecipeCount] = useState(0);
@@ -19,7 +22,20 @@ export default function App() {
 
   useEffect(() => {
     loadInitialData();
+    checkAuthSession();
   }, []);
+
+  const checkAuthSession = async () => {
+    if (isSupabaseConfigured && supabase) {
+      const { data } = await supabase.auth.getSession();
+      if (data?.session?.user) {
+        setUser(data.session.user);
+      }
+      supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user || null);
+      });
+    }
+  };
 
   const loadInitialData = async () => {
     try {
@@ -37,6 +53,14 @@ export default function App() {
     } catch (e) {
       console.error('Failed to load initial app state:', e);
     }
+  };
+
+  const handleLogout = async () => {
+    if (isSupabaseConfigured && supabase) {
+      await supabase.auth.signOut();
+    }
+    setUser(null);
+    showToast('Signed Out', 'You are now browsing in Guest Mode.', 'info');
   };
 
   const showToast = (title, message, type = 'success') => {
@@ -61,7 +85,7 @@ export default function App() {
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'blur(12px)',
           borderBottom: '1px solid rgba(226, 232, 240, 0.8)',
           boxShadow: 'var(--shadow-sm)'
@@ -123,8 +147,8 @@ export default function App() {
             })}
           </nav>
 
-          {/* Database / Environment Status Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Database Badge & Optional Auth Stack */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
             <div
               style={{
                 display: 'inline-flex',
@@ -137,11 +161,36 @@ export default function App() {
                 backgroundColor: isSupabaseConfigured ? 'var(--secondary-light)' : '#f1f5f9',
                 color: isSupabaseConfigured ? 'var(--secondary)' : 'var(--text-muted)'
               }}
-              title={isSupabaseConfigured ? 'Connected to Supabase PostgreSQL' : 'Local Persistence Active (Connect Supabase via .env)'}
+              title={isSupabaseConfigured ? 'Connected to Supabase DB' : 'Local Storage Mode'}
             >
               <Database size={14} />
               <span>{isSupabaseConfigured ? 'Supabase DB' : 'Local Storage'}</span>
             </div>
+
+            {/* User Auth Button */}
+            {user ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                  {user.email?.split('@')[0] || 'User'}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-outline"
+                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}
+                  title="Sign out"
+                >
+                  <LogOut size={14} /> Log Out
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setAuthModalOpen(true)}
+                className="btn btn-outline"
+                style={{ padding: '0.45rem 1rem', fontSize: '0.875rem' }}
+              >
+                <User size={16} /> Log In
+              </button>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -225,6 +274,15 @@ export default function App() {
         )}
       </main>
 
+      {/* Optional Auth Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        user={user}
+        onLoginSuccess={(usr) => setUser(usr)}
+        showToast={showToast}
+      />
+
       {/* Toast Notification Banner */}
       {toast && (
         <div
@@ -257,7 +315,7 @@ export default function App() {
       <footer style={{ backgroundColor: 'white', borderTop: '1px solid var(--border-light)', padding: '2rem 1.5rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <strong>PantryPal</strong> © 2026 — AI Kitchen & Recipe Assistant powered by Gemini 3.6 Flash.
+            <strong>PantryPal</strong> © 2026 — Your Intelligent Kitchen & Recipe Assistant.
           </div>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
             <span style={{ cursor: 'pointer' }} onClick={() => setActiveTab('home')}>Home</span>

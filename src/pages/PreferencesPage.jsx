@@ -72,11 +72,11 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
       
       {/* Page Header */}
       <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2.25rem', fontWeight: 800, background: 'var(--primary-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '0.5rem' }}>
+        <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
           User Preferences & Profile
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>
-          Customize your dietary restrictions, favorite cuisines, and skill level. Gemini 3.6 Flash will tailor all generated recipes to these settings.
+          Customize your dietary restrictions, favorite cuisines, and skill level. PantryPal will tailor all generated recipes to these settings.
         </p>
       </div>
 

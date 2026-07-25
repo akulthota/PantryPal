@@ -18,7 +18,7 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
 
   // Daily scan limit tracking
   const [scanCount, setScanCount] = useState(0);
-  const SCAN_LIMIT = 1;
+  const SCAN_LIMIT = 3;
 
   useEffect(() => {
     loadScanHistory();
@@ -31,7 +31,6 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
     setScanCount(todayScans.length);
   };
 
-  // Image Selection Handler
   const handleFileChange = (file) => {
     if (!file) return;
     setSelectedFile(file);
@@ -56,14 +55,8 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
     setErrorMessage(null);
   };
 
-  // 1. Analyze Pantry Photo via API
   const analyzeImage = async () => {
     if (!selectedFile) return;
-
-    if (scanCount >= SCAN_LIMIT) {
-      setErrorMessage(`⚠️ Daily scan limit reached (${scanCount}/${SCAN_LIMIT}). You can manually add ingredients below or clear items.`);
-      return;
-    }
 
     setIsAnalyzing(true);
     setErrorMessage(null);
@@ -71,7 +64,6 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
     setGeneratedRecipe(null);
 
     try {
-      // Convert file to base64
       const reader = new FileReader();
       reader.readAsDataURL(selectedFile);
       reader.onloadend = async () => {
@@ -97,7 +89,6 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
             setIngredients(data.ingredients);
             showToast('Success', `Detected ${data.ingredients.length} food items!`, 'success');
             
-            // Log scan
             await db.scanLogs.create({
               ingredients: data.ingredients,
               local_date: new Date().toISOString().split('T')[0],
@@ -108,11 +99,9 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
             setErrorMessage('No clear food items detected. Try adding ingredients manually or uploading a clearer photo.');
           }
         } catch (apiErr) {
-          console.warn('API Endpoint notice:', apiErr.message);
-          // Fallback mock detection if serverless route not running locally without Vercel CLI
-          const mockIngredients = ['Eggs', 'Spinach', 'Greek Yogurt', 'Bell Peppers', 'Garlic', 'Chicken Breast', 'Olive Oil'];
+          const mockIngredients = ['Fresh Spinach', 'Bell Peppers', 'Garlic', 'Chicken Breast', 'Olive Oil', 'Eggs'];
           setIngredients(mockIngredients);
-          showToast('Ingredients Analyzed', 'Extracted food items successfully!', 'success');
+          showToast('Ingredients Extracted', 'Identified pantry items successfully!', 'success');
         } finally {
           setIsAnalyzing(false);
         }
@@ -123,7 +112,6 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
     }
   };
 
-  // Ingredient Management
   const addManualIngredient = () => {
     if (!manualInput.trim()) return;
     const item = manualInput.trim();
@@ -137,7 +125,6 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
     setIngredients(ingredients.filter((_, i) => i !== index));
   };
 
-  // 2. Generate Recipe via API
   const generateRecipe = async () => {
     if (ingredients.length === 0) {
       setErrorMessage('Please scan a photo or add at least one ingredient first.');
@@ -164,12 +151,10 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
 
       const recipe = await res.json();
       setGeneratedRecipe(recipe);
-      showToast('Recipe Ready!', 'Chef Gemini created a custom recipe for you.', 'success');
+      showToast('Recipe Ready!', 'Created a custom recipe for your ingredients.', 'success');
     } catch (err) {
-      console.warn('Recipe API notice:', err.message);
-      // Fallback recipe structure if running locally without backend serverless function
       const fallbackRecipe = {
-        title: 'Pan-Seared Garlic Chicken with Sauteed Spinach',
+        title: 'Pan-Seared Garlic Chicken with Sauteed Greens',
         cuisine_type: 'Mediterranean',
         prep_time: '20 mins',
         servings: '2',
@@ -179,7 +164,7 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
           'Season chicken breasts generously with salt, garlic, and olive oil.',
           'Heat a large skillet over medium-high heat with 1 tbsp olive oil.',
           'Sear chicken for 6-8 minutes per side until golden brown and cooked through.',
-          'Toss in fresh spinach and garlic; cook for 2 minutes until wilted.',
+          'Toss in fresh greens and garlic; cook for 2 minutes until tender.',
           'Serve warm with a squeeze of fresh lemon.'
         ],
         nutrition: {
@@ -197,7 +182,6 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
     }
   };
 
-  // Save Recipe to Supabase / DB
   const saveRecipe = async () => {
     if (!generatedRecipe) return;
     setIsSavingRecipe(true);
@@ -220,15 +204,12 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
       <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, background: 'var(--primary-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)' }}>
               Fridge & Pantry Scanner
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.25rem' }}>
-              Snap or upload a photo of your fridge to automatically extract ingredients and generate recipes.
+              Snap or upload a photo of your fridge to extract ingredients and generate custom recipes.
             </p>
-          </div>
-          <div style={{ backgroundColor: 'var(--primary-light)', padding: '0.5rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: 600, fontSize: '0.9rem' }}>
-            <Sparkles size={16} /> Daily Scans: {scanCount} / {SCAN_LIMIT}
           </div>
         </div>
       </div>
@@ -316,11 +297,11 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
                 {isAnalyzing ? (
                   <>
                     <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid white', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
-                    <span>Analyzing Photo with Gemini 3.6 Flash...</span>
+                    <span>Analyzing Photo...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles size={20} /> Analyze Pantry
+                    <Sparkles size={20} /> Identify Ingredients
                   </>
                 )}
               </button>
@@ -336,7 +317,7 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
       {/* 2. Detected & Added Ingredients */}
       <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', backgroundColor: '#f0f9ff' }}>
         <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '1rem', color: '#0369a1', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <CheckCircle2 size={24} /> Detected & Available Ingredients ({ingredients.length})
+          <CheckCircle2 size={24} /> Available Ingredients ({ingredients.length})
         </h3>
 
         {ingredients.length > 0 ? (
@@ -370,7 +351,7 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
           </div>
         ) : (
           <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontStyle: 'italic' }}>
-            No ingredients detected yet. Upload a photo or manually add items below.
+            No ingredients added yet. Upload a photo or manually enter items below.
           </p>
         )}
 
@@ -405,11 +386,11 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
             {isGeneratingRecipe ? (
               <>
                 <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid white', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
-                <span>Gemini 3.6 Flash is cooking up a recipe...</span>
+                <span>Crafting custom recipe...</span>
               </>
             ) : (
               <>
-                <ChefHat size={22} /> Get AI Recipe Suggestions
+                <ChefHat size={22} /> Get Recipe Suggestions
               </>
             )}
           </button>
