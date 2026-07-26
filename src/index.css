@@ -1,52 +1,53 @@
-/* PantryPal — Premium Editorial Human Design System & Fluid Animations */
+/* PantryPal — Warm Light Culinary Design System (Welcoming & Accessible for Everyone) */
 
 :root {
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   
-  /* Natural Warm Obsidian Palette */
-  --bg-canvas: #0D0E15;
-  --bg-card: #141522;
-  --bg-card-hover: #1C1E2E;
-  --bg-card-elevated: #181A2A;
+  /* Warm Porcelain Light Canvas */
+  --bg-canvas: #FAF9F6;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F4F3EF;
+  --bg-card-elevated: #F3F4F6;
   
-  /* Primary Warm Terracotta Coral */
-  --coral-primary: #FF6B57;
-  --coral-primary-hover: #F05742;
-  --coral-soft: rgba(255, 107, 87, 0.12);
+  /* Warm Culinary Tomato / Terracotta Coral */
+  --coral-primary: #E0533C;
+  --coral-primary-hover: #C8422C;
+  --coral-soft: #FFF1EE;
   
   /* Warm Honey Amber */
-  --honey-amber: #F4B942;
-  --honey-soft: rgba(244, 185, 66, 0.12);
+  --honey-amber: #D97706;
+  --honey-amber-hover: #B45309;
+  --honey-soft: #FFFBEB;
   
-  /* Sage Green for Health & Success */
-  --sage-green: #4EAA83;
-  --sage-soft: rgba(78, 170, 131, 0.12);
+  /* Organic Leaf Green for Health & Success */
+  --sage-green: #059669;
+  --sage-green-hover: #047857;
+  --sage-soft: #ECFDF5;
   
-  /* Typography Colors */
-  --text-heading: #FFFFFF;
-  --text-subheading: #E2E6F0;
-  --text-body: #9EA6BC;
-  --text-muted: #666E82;
+  /* Typography Colors (High Contrast AAA for Accessibility) */
+  --text-heading: #111827;
+  --text-subheading: #1F2937;
+  --text-body: #4B5563;
+  --text-muted: #6B7280;
   
-  /* Hand-Crafted 1px Micro Borders */
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-active: rgba(255, 107, 87, 0.35);
-  --border-hover: rgba(255, 255, 255, 0.15);
+  /* Soft Light Micro Borders */
+  --border-subtle: #E5E7EB;
+  --border-active: rgba(224, 83, 60, 0.4);
+  --border-hover: #D1D5DB;
   
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
   --radius-full: 9999px;
   
-  /* Soft Shadows */
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.25);
-  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --shadow-button: 0 4px 14px rgba(255, 107, 87, 0.25);
+  /* Clean Light Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-button: 0 3px 12px rgba(224, 83, 60, 0.22);
   
-  /* Fluid Cubic Bezier Motion Curves */
+  /* Fluid Motion Curves */
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
@@ -69,18 +70,17 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   color: var(--text-heading);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.025em;
 }
 
-/* Fluid Smooth Animations */
+/* Animations */
 @keyframes slideDownSmooth {
-  0% { opacity: 0; transform: translateY(-12px) scaleY(0.96); transform-origin: top; }
-  100% { opacity: 1; transform: translateY(0) scaleY(1); transform-origin: top; }
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleInSpring {
-  0% { opacity: 0; transform: scale(0.95); }
-  60% { transform: scale(1.01); }
+  0% { opacity: 0; transform: scale(0.97); }
   100% { opacity: 1; transform: scale(1); }
 }
 
@@ -89,53 +89,53 @@ h1, h2, h3, h4, h5, h6 {
   100% { transform: rotate(360deg); }
 }
 
-.animate-fade-in { animation: slideDownSmooth 0.35s var(--ease-spring) forwards; }
-.animate-scale-in { animation: scaleInSpring 0.32s var(--ease-spring) forwards; }
+.animate-fade-in { animation: slideDownSmooth 0.3s var(--ease-spring) forwards; }
+.animate-scale-in { animation: scaleInSpring 0.28s var(--ease-spring) forwards; }
 .animate-spin { animation: spin 0.8s linear infinite; }
 
-/* Hand-Crafted Cards */
+/* Clean Light Cards */
 .glass-card {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-card);
-  transition: all 0.3s var(--ease-spring);
+  transition: all 0.25s var(--ease-spring);
 }
 
 .glass-card:hover {
   border-color: var(--border-hover);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.09);
 }
 
 .feature-card-hover {
-  transition: all 0.3s var(--ease-spring);
+  transition: all 0.25s var(--ease-spring);
 }
 
 .feature-card-hover:hover {
-  transform: translateY(-3px) scale(1.005);
-  background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  transform: translateY(-3px);
+  background: #FFFFFF;
+  border-color: #D1D5DB;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
 }
 
-/* Clean Accent Utility */
 .text-coral {
   color: var(--coral-primary);
 }
 
-/* Clean Button Styles with Fluid Hover Motion */
+/* Accessible Light Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 42px;
-  padding: 0.6rem 1.25rem;
+  min-height: 44px;
+  padding: 0.65rem 1.35rem;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.925rem;
   cursor: pointer;
   border: none;
-  transition: all 0.25s var(--ease-spring);
+  transition: all 0.2s var(--ease-spring);
   text-decoration: none;
   user-select: none;
 }
@@ -148,23 +148,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-primary:hover:not(:disabled) {
   background: var(--coral-primary-hover);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 20px rgba(255, 107, 87, 0.38);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(224, 83, 60, 0.32);
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0);
 }
 
 .btn-amber {
   background: var(--honey-amber);
-  color: #0D0E15;
-  font-weight: 700;
+  color: #FFFFFF;
 }
 
 .btn-amber:hover:not(:disabled) {
-  background: #f7c763;
-  transform: translateY(-2px) scale(1.02);
+  background: var(--honey-amber-hover);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -173,20 +172,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #3f9973;
-  transform: translateY(-2px) scale(1.02);
+  background: var(--sage-green-hover);
+  transform: translateY(-1px);
 }
 
 .btn-outline {
-  background: rgba(255, 255, 255, 0.04);
+  background: #FFFFFF;
   border: 1px solid var(--border-subtle);
-  color: var(--text-subheading);
+  color: var(--text-heading);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #FFFFFF;
+  background: #F9FAFB;
+  border-color: #9CA3AF;
+  color: #111827;
   transform: translateY(-1px);
 }
 
@@ -195,19 +194,19 @@ h1, h2, h3, h4, h5, h6 {
   cursor: not-allowed;
 }
 
-/* Form Controls */
+/* Light Input Controls */
 .input-control {
   width: 100%;
-  min-height: 42px;
-  padding: 0.6rem 0.95rem;
-  background: rgba(255, 255, 255, 0.04);
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  background: #FFFFFF;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
+  font-size: 0.925rem;
   font-family: inherit;
   color: var(--text-heading);
   outline: none;
-  transition: all 0.25s var(--ease-spring);
+  transition: all 0.2s var(--ease-spring);
 }
 
 .input-control::placeholder {
@@ -216,8 +215,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .input-control:focus {
   border-color: var(--coral-primary);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 0 3px rgba(255, 107, 87, 0.15);
+  box-shadow: 0 0 0 3px rgba(224, 83, 60, 0.15);
 }
 
 /* Custom Scrollbar */
@@ -227,11 +225,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0D0E15;
+  background: #FAF9F6;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: #D1D5DB;
   border-radius: 4px;
 }
 

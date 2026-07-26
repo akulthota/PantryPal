@@ -93,18 +93,18 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-canvas)' }}>
       
-      {/* Sticky Header Navbar */}
+      {/* Sticky Light Header Navbar */}
       <header
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          backgroundColor: 'rgba(13, 14, 21, 0.92)',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: 'var(--shadow-card)',
-          transition: 'all 0.3s var(--ease-spring)'
+          borderBottom: '1px solid var(--border-subtle)',
+          boxShadow: 'var(--shadow-sm)',
+          transition: 'all 0.25s var(--ease-spring)'
         }}
       >
         <div
@@ -129,7 +129,7 @@ export default function App() {
               style={{ width: '40px', height: '40px', borderRadius: '10px', objectFit: 'cover' }}
             />
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <span style={{ fontSize: '1.45rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.05 }}>
+              <span style={{ fontSize: '1.45rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: 'var(--text-heading)', letterSpacing: '-0.03em', lineHeight: 1.05 }}>
                 Pantry<span className="text-coral">Pal</span>
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em', marginTop: '3px' }}>
@@ -155,11 +155,11 @@ export default function App() {
                     borderRadius: 'var(--radius-md)',
                     border: isActive ? '1px solid var(--border-active)' : '1px solid transparent',
                     backgroundColor: isActive ? 'var(--coral-soft)' : 'transparent',
-                    color: isActive ? '#FFFFFF' : 'var(--text-body)',
+                    color: isActive ? 'var(--coral-primary)' : 'var(--text-body)',
                     fontWeight: isActive ? 700 : 500,
                     fontSize: '0.9rem',
                     cursor: 'pointer',
-                    transition: 'all 0.25s var(--ease-spring)',
+                    transition: 'all 0.2s var(--ease-spring)',
                     whiteSpace: 'nowrap'
                   }}
                 >
@@ -178,13 +178,13 @@ export default function App() {
                 gap: '7px',
                 padding: '0.55rem 1.15rem',
                 borderRadius: '20px',
-                backgroundColor: healthDashboardOpen ? 'var(--coral-soft)' : 'rgba(255, 255, 255, 0.05)',
-                border: `1px solid ${healthDashboardOpen ? 'var(--coral-primary)' : 'rgba(255, 255, 255, 0.12)'}`,
-                color: healthDashboardOpen ? 'var(--coral-primary)' : 'var(--text-subheading)',
+                backgroundColor: healthDashboardOpen ? 'var(--coral-soft)' : '#F3F4F6',
+                border: `1px solid ${healthDashboardOpen ? 'var(--coral-primary)' : '#E5E7EB'}`,
+                color: healthDashboardOpen ? 'var(--coral-primary)' : 'var(--text-heading)',
                 fontSize: '0.875rem',
                 fontWeight: 600,
                 cursor: 'pointer',
-                transition: 'all 0.25s var(--ease-spring)'
+                transition: 'all 0.2s var(--ease-spring)'
               }}
             >
               <HeartPulse size={17} style={{ color: healthDashboardOpen ? 'var(--coral-primary)' : 'var(--sage-green)' }} />
@@ -235,10 +235,10 @@ export default function App() {
           <div
             className="animate-fade-in"
             style={{
-              backgroundColor: '#141522',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              backgroundColor: '#F3F4F6',
+              borderBottom: '1px solid var(--border-subtle)',
               padding: '1.25rem 1.5rem',
-              boxShadow: '0 12px 32px rgba(0,0,0,0.5)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
               position: 'relative',
               zIndex: 90
             }}
@@ -256,19 +256,19 @@ export default function App() {
             >
               
               {/* Metric 1: Today's Calories */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255, 107, 87, 0.2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(224, 83, 60, 0.2)' }}>
                   <Flame size={22} />
                 </div>
                 <div>
                   <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Calories Logged Today</div>
-                  <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF' }}>{todayCalories} <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>kcal</span></div>
+                  <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-heading)' }}>{todayCalories} <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>kcal</span></div>
                 </div>
               </div>
 
               {/* Metric 2: Today's Protein */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--honey-soft)', color: 'var(--honey-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(244, 185, 66, 0.2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--honey-soft)', color: 'var(--honey-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(217, 119, 6, 0.2)' }}>
                   <Target size={22} />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -276,7 +276,7 @@ export default function App() {
                     <span>Protein Target</span>
                     <span style={{ color: 'var(--coral-primary)', fontWeight: 700 }}>{proteinPercent}%</span>
                   </div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF' }}>{todayProtein}g / {proteinGoal}g</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)' }}>{todayProtein}g / {proteinGoal}g</div>
                 </div>
               </div>
 
@@ -304,7 +304,7 @@ export default function App() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div style={{ backgroundColor: '#141522', borderTop: '1px solid var(--border-subtle)', padding: '0.85rem 1.25rem' }}>
+          <div style={{ backgroundColor: '#FFFFFF', borderTop: '1px solid var(--border-subtle)', padding: '0.85rem 1.25rem' }}>
             <button
               onClick={() => {
                 setHealthDashboardOpen(!healthDashboardOpen);
@@ -318,7 +318,7 @@ export default function App() {
                 padding: '0.85rem 1rem',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--coral-soft)',
-                border: '1px solid rgba(255, 107, 87, 0.25)',
+                border: '1px solid rgba(224, 83, 60, 0.25)',
                 color: 'var(--coral-primary)',
                 fontWeight: 700,
                 fontSize: '1rem',
@@ -351,7 +351,7 @@ export default function App() {
                     borderRadius: 'var(--radius-md)',
                     border: isActive ? '1px solid var(--border-active)' : 'none',
                     backgroundColor: isActive ? 'var(--coral-soft)' : 'transparent',
-                    color: isActive ? '#FFFFFF' : 'var(--text-body)',
+                    color: isActive ? 'var(--coral-primary)' : 'var(--text-body)',
                     fontWeight: 600,
                     fontSize: '1rem',
                     marginBottom: '0.35rem',
@@ -426,9 +426,9 @@ export default function App() {
             bottom: '24px',
             right: '24px',
             zIndex: 1000,
-            backgroundColor: '#181A2A',
+            backgroundColor: '#FFFFFF',
             border: `1px solid ${toast.type === 'error' ? 'var(--coral-primary)' : 'var(--sage-green)'}`,
-            color: '#FFFFFF',
+            color: 'var(--text-heading)',
             padding: '0.95rem 1.4rem',
             borderRadius: 'var(--radius-md)',
             boxShadow: 'var(--shadow-card)',
@@ -444,7 +444,7 @@ export default function App() {
             <CheckCircle2 size={22} style={{ color: 'var(--sage-green)' }} />
           )}
           <div>
-            <div style={{ fontWeight: 700, fontSize: '0.925rem', color: '#FFFFFF' }}>{toast.title}</div>
+            <div style={{ fontWeight: 700, fontSize: '0.925rem', color: 'var(--text-heading)' }}>{toast.title}</div>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-body)' }}>{toast.message}</div>
           </div>
         </div>
@@ -453,7 +453,7 @@ export default function App() {
       {/* Footer */}
       <footer
         style={{
-          backgroundColor: '#0A0B11',
+          backgroundColor: '#FFFFFF',
           borderTop: '1px solid var(--border-subtle)',
           padding: '2rem 1.5rem',
           textAlign: 'center',
@@ -465,7 +465,7 @@ export default function App() {
       >
         <div style={{ maxWidth: '1350px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <strong style={{ color: '#FFFFFF' }}>PantryPal</strong> (pantry-pal.dev) © 2026 — Intelligent Kitchen Assistant.
+            <strong style={{ color: 'var(--text-heading)' }}>PantryPal</strong> (pantry-pal.dev) © 2026 — Intelligent Kitchen Assistant.
             <div
               style={{
                 display: 'inline-flex',
@@ -475,7 +475,7 @@ export default function App() {
                 borderRadius: '16px',
                 fontSize: '0.75rem',
                 fontWeight: 600,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                backgroundColor: '#F3F4F6',
                 color: 'var(--text-subheading)',
                 border: '1px solid var(--border-subtle)'
               }}

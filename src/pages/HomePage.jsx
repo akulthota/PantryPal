@@ -13,14 +13,14 @@ export default function HomePage({ onNavigate, stats = {} }) {
         style={{
           padding: '3.5rem 3rem',
           marginBottom: '2.5rem',
-          background: 'linear-gradient(145deg, #181A2A 0%, #12131F 100%)',
+          background: 'linear-gradient(145deg, #FFF6F3 0%, #FFFFFF 100%)',
           position: 'relative',
           overflow: 'hidden',
-          border: '1px solid rgba(255, 255, 255, 0.08)'
+          border: '1px solid var(--border-subtle)'
         }}
       >
         <div style={{ position: 'relative', zIndex: 2, maxWidth: '750px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid rgba(255, 107, 87, 0.25)', padding: '0.35rem 1rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1.25rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid rgba(224, 83, 60, 0.25)', padding: '0.35rem 1rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1.25rem' }}>
             <HeartPulse size={16} /> Smart Kitchen & Nutrition Assistant
           </div>
 
@@ -31,7 +31,7 @@ export default function HomePage({ onNavigate, stats = {} }) {
               lineHeight: 1.15,
               marginBottom: '1.25rem',
               letterSpacing: '-0.03em',
-              color: '#FFFFFF'
+              color: 'var(--text-heading)'
             }}
           >
             Cook smarter with <span className="text-coral">PantryPal</span>
@@ -61,7 +61,7 @@ export default function HomePage({ onNavigate, stats = {} }) {
       </div>
 
       {/* Feature Cards Grid */}
-      <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '1.25rem', color: '#FFFFFF' }}>
+      <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '1.25rem', color: 'var(--text-heading)' }}>
         Kitchen & Health Features
       </h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
@@ -72,10 +72,10 @@ export default function HomePage({ onNavigate, stats = {} }) {
           style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         >
           <div>
-            <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid rgba(255, 107, 87, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid rgba(224, 83, 60, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
               <Camera size={26} />
             </div>
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.65rem', color: '#FFFFFF' }}>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.65rem', color: 'var(--text-heading)' }}>
               Fridge & Pantry Vision Scanner
             </h3>
             <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
@@ -94,10 +94,10 @@ export default function HomePage({ onNavigate, stats = {} }) {
           style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         >
           <div>
-            <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--honey-soft)', color: 'var(--honey-amber)', border: '1px solid rgba(244, 185, 66, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--honey-soft)', color: 'var(--honey-amber)', border: '1px solid rgba(217, 119, 6, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
               <Flame size={26} />
             </div>
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.65rem', color: '#FFFFFF' }}>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.65rem', color: 'var(--text-heading)' }}>
               Meal Calorie & Macro Estimator
             </h3>
             <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
@@ -116,10 +116,10 @@ export default function HomePage({ onNavigate, stats = {} }) {
           style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         >
           <div>
-            <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--sage-soft)', color: 'var(--sage-green)', border: '1px solid rgba(78, 170, 131, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--sage-soft)', color: 'var(--sage-green)', border: '1px solid rgba(5, 150, 105, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
               <Utensils size={26} />
             </div>
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.65rem', color: '#FFFFFF' }}>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.65rem', color: 'var(--text-heading)' }}>
               Personalized Saved Recipes
             </h3>
             <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
@@ -137,22 +137,22 @@ export default function HomePage({ onNavigate, stats = {} }) {
       {/* Daily Summary Bar */}
       <div className="glass-card" style={{ padding: '1.75rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
         <div style={{ padding: '0.75rem', borderRight: '1px solid var(--border-subtle)' }}>
-          <div style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '2.1rem' }}>{recipeCount}</div>
+          <div style={{ color: 'var(--text-heading)', fontWeight: 800, fontSize: '2.1rem' }}>{recipeCount}</div>
           <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight: 500 }}>Saved Recipes</div>
         </div>
         <div style={{ padding: '0.75rem', borderRight: '1px solid var(--border-subtle)' }}>
           <div style={{ color: 'var(--coral-primary)', fontWeight: 800, fontSize: '2.1rem' }}>{todayProtein}g</div>
-          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight: 500 }}>Today's Protein</div>
+          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight 500 }}>Today's Protein</div>
         </div>
         <div style={{ padding: '0.75rem', borderRight: '1px solid var(--border-subtle)' }}>
           <div style={{ color: 'var(--honey-amber)', fontWeight: 800, fontSize: '2.1rem' }}>{proteinGoal}g</div>
-          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight: 500 }}>Daily Goal Target</div>
+          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight 500 }}>Daily Goal Target</div>
         </div>
         <div style={{ padding: '0.75rem' }}>
           <div style={{ color: 'var(--sage-green)', fontWeight: 800, fontSize: '2.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
             <CheckCircle2 size={26} /> Active
           </div>
-          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight: 500 }}>Kitchen Engine</div>
+          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight 500 }}>Kitchen Engine</div>
         </div>
       </div>
 
