@@ -83,12 +83,11 @@ export default function App() {
   const proteinGoal = userPreferences?.daily_protein_goal || 80;
   const proteinPercent = Math.min(100, Math.round((todayProtein / proteinGoal) * 100));
 
+  // Streamlined Top Navigation Items (Calorie & Protein Trackers are accessed via Health Dashboard dropdown)
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'analyze', label: 'Pantry Scanner', icon: Camera },
-    { id: 'calories', label: 'Calorie Scanner', icon: Flame },
     { id: 'recipes', label: 'Saved Recipes', icon: Utensils },
-    { id: 'protein', label: 'Protein Tracker', icon: Activity },
     { id: 'preferences', label: 'Preferences', icon: Settings }
   ];
 
@@ -118,18 +117,18 @@ export default function App() {
             justifyContent: 'space-between'
           }}
         >
-          {/* Logo & Brand */}
+          {/* Logo & Official Domain Brand */}
           <div
             onClick={() => setActiveTab('home')}
             style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flexShrink: 0, marginRight: '1rem' }}
           >
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f6266f0b1234320ee6e827/43c4aa785_logo.png"
-              alt="PantryPal Logo"
+              alt="pantry-pal.dev Logo"
               style={{ width: '40px', height: '40px', borderRadius: '10px', objectFit: 'cover', filter: 'drop-shadow(0 0 8px rgba(242, 119, 119, 0.4))' }}
             />
             <span style={{ fontSize: '1.45rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
-              Pantry<span className="gradient-text-magma">Pal</span>
+              pantry-pal<span className="gradient-text-magma">.dev</span>
             </span>
           </div>
 
@@ -424,7 +423,7 @@ export default function App() {
       >
         <div style={{ maxWidth: '1350px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <strong style={{ color: '#FFFFFF' }}>PantryPal</strong> © 2026 — Intelligent Kitchen Assistant.
+            <strong style={{ color: '#FFFFFF' }}>pantry-pal.dev</strong> © 2026 — Intelligent Kitchen Assistant.
             <div
               style={{
                 display: 'inline-flex',
@@ -447,8 +446,7 @@ export default function App() {
           <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
             <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('home')}>Home</span>
             <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('analyze')}>Pantry Scanner</span>
-            <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('calories')}>Calorie Scanner</span>
-            <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('recipes')}>Recipes</span>
+            <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('recipes')}>Saved Recipes</span>
             <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('preferences')}>Preferences</span>
           </div>
         </div>
