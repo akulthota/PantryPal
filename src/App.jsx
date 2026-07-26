@@ -83,7 +83,6 @@ export default function App() {
   const proteinGoal = userPreferences?.daily_protein_goal || 80;
   const proteinPercent = Math.min(100, Math.round((todayProtein / proteinGoal) * 100));
 
-  // Streamlined Top Navigation Items (Calorie & Protein Trackers are accessed via Health Dashboard dropdown)
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'analyze', label: 'Pantry Scanner', icon: Camera },
@@ -112,15 +111,16 @@ export default function App() {
             maxWidth: '1350px',
             margin: '0 auto',
             padding: '0.85rem 1.5rem',
-            display: 'flex',
+            display: 'grid',
+            gridTemplateColumns: 'auto 1fr auto',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            gap: '1.5rem'
           }}
         >
-          {/* Logo & Official Domain Brand */}
+          {/* 1. Left: Logo & Official Domain Brand */}
           <div
             onClick={() => setActiveTab('home')}
-            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flexShrink: 0, marginRight: '1rem' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flexShrink: 0 }}
           >
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f6266f0b1234320ee6e827/43c4aa785_logo.png"
@@ -132,8 +132,8 @@ export default function App() {
             </span>
           </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="desktop-nav" style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'nowrap' }}>
+          {/* 2. Center: Perfectly Centered Navigation Bar + Health Dashboard Pill */}
+          <div className="desktop-nav" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.65rem' }}>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -163,35 +163,34 @@ export default function App() {
                 </button>
               );
             })}
-          </nav>
 
-          {/* Right Action Stack: Health Dashboard Toggle, Auth Button & Mobile Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0, marginLeft: '1rem' }}>
-            
-            {/* Top Health Dashboard Bar Toggle */}
+            {/* Health Dashboard Centered Pill Toggle Button */}
             <button
               onClick={() => setHealthDashboardOpen(!healthDashboardOpen)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px',
-                padding: '0.45rem 0.9rem',
+                gap: '7px',
+                padding: '0.6rem 1.25rem',
                 borderRadius: '20px',
-                backgroundColor: healthDashboardOpen ? 'rgba(242, 119, 119, 0.2)' : 'rgba(127, 245, 231, 0.15)',
-                border: `1px solid ${healthDashboardOpen ? 'var(--magma-red)' : 'rgba(127, 245, 231, 0.3)'}`,
+                backgroundColor: healthDashboardOpen ? 'rgba(242, 119, 119, 0.25)' : 'rgba(127, 245, 231, 0.15)',
+                border: `1px solid ${healthDashboardOpen ? 'var(--magma-red)' : 'rgba(127, 245, 231, 0.35)'}`,
                 color: healthDashboardOpen ? 'var(--magma-red)' : 'var(--cyan-glow)',
-                fontSize: '0.85rem',
+                fontSize: '0.9rem',
                 fontWeight: 700,
                 cursor: 'pointer',
-                transition: 'all 0.25s ease'
+                transition: 'all 0.25s ease',
+                boxShadow: healthDashboardOpen ? '0 0 14px rgba(242, 119, 119, 0.3)' : '0 0 10px rgba(127, 245, 231, 0.2)'
               }}
-              title="Toggle Live Health Dashboard"
             >
-              <HeartPulse size={16} />
-              <span className="desktop-nav">Health Dashboard</span>
+              <HeartPulse size={18} />
+              <span>Health Dashboard</span>
               {healthDashboardOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
+          </div>
 
+          {/* 3. Right: User Auth Stack & Mobile Menu Toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0, justifyContent: 'flex-end' }}>
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-subheading)' }}>
@@ -227,59 +226,71 @@ export default function App() {
           </div>
         </div>
 
-        {/* TOP HEALTH & NUTRITION DASHBOARD ANIMATED DROPDOWN BAR */}
+        {/* TOP HEALTH & NUTRITION DASHBOARD ANIMATED DROPDOWN BAR (PERFECTLY CENTERED CONTAINER) */}
         {healthDashboardOpen && (
           <div
             className="animate-fade-in"
             style={{
-              backgroundColor: 'rgba(18, 19, 70, 0.95)',
-              borderBottom: '1px solid rgba(127, 245, 231, 0.3)',
-              padding: '1.25rem 1.5rem',
-              boxShadow: '0 8px 24px rgba(4, 5, 25, 0.6)'
+              backgroundColor: 'rgba(18, 19, 70, 0.96)',
+              borderBottom: '1px solid rgba(127, 245, 231, 0.35)',
+              padding: '1.5rem 1.5rem',
+              boxShadow: '0 12px 32px rgba(4, 5, 25, 0.7)',
+              position: 'relative',
+              zIndex: 90
             }}
           >
-            <div style={{ maxWidth: '1250px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', alignItems: 'center' }}>
+            <div
+              style={{
+                maxWidth: '1150px',
+                margin: '0 auto',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gap: '1.5rem',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
               
               {/* Metric 1: Today's Calories */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'rgba(12, 13, 56, 0.7)', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-glass)' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'rgba(242, 119, 119, 0.15)', color: 'var(--magma-red)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Flame size={22} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: 'rgba(12, 13, 56, 0.75)', padding: '1rem 1.25rem', borderRadius: '16px', border: '1px solid var(--border-glass)' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '14px', backgroundColor: 'rgba(242, 119, 119, 0.15)', color: 'var(--magma-red)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(242, 119, 119, 0.3)' }}>
+                  <Flame size={24} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-body)', textTransform: 'uppercase' }}>Calories Logged Today</div>
-                  <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF' }}>{todayCalories} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>kcal</span></div>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Calories Logged Today</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#FFFFFF' }}>{todayCalories} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>kcal</span></div>
                 </div>
               </div>
 
               {/* Metric 2: Today's Protein */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'rgba(12, 13, 56, 0.7)', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-glass)' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'rgba(245, 165, 91, 0.15)', color: 'var(--lava-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Target size={22} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: 'rgba(12, 13, 56, 0.75)', padding: '1rem 1.25rem', borderRadius: '16px', border: '1px solid var(--border-glass)' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '14px', backgroundColor: 'rgba(245, 165, 91, 0.15)', color: 'var(--lava-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(245, 165, 91, 0.3)' }}>
+                  <Target size={24} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-body)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     <span>Protein Target</span>
-                    <span style={{ color: 'var(--magma-red)', fontWeight: 700 }}>{proteinPercent}%</span>
+                    <span style={{ color: 'var(--magma-red)', fontWeight: 800 }}>{proteinPercent}%</span>
                   </div>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF' }}>{todayProtein}g / {proteinGoal}g</div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FFFFFF' }}>{todayProtein}g / {proteinGoal}g</div>
                 </div>
               </div>
 
-              {/* Metric 3: Fiber & Quick Action Shortcuts */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              {/* Metric 3: Quick Action Shortcuts */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => { setActiveTab('calories'); setHealthDashboardOpen(false); }}
                   className="btn btn-amber"
-                  style={{ padding: '0.55rem 1.1rem', fontSize: '0.875rem' }}
+                  style={{ padding: '0.65rem 1.25rem', fontSize: '0.9rem', flex: 1, minWidth: '160px', justifyContent: 'center' }}
                 >
-                  <Flame size={16} /> Scan Meal Calories
+                  <Flame size={18} /> Scan Meal Calories
                 </button>
                 <button
                   onClick={() => { setActiveTab('protein'); setHealthDashboardOpen(false); }}
                   className="btn btn-secondary"
-                  style={{ padding: '0.55rem 1.1rem', fontSize: '0.875rem' }}
+                  style={{ padding: '0.65rem 1.25rem', fontSize: '0.9rem', flex: 1, minWidth: '160px', justifyContent: 'center' }}
                 >
-                  <Activity size={16} /> Open Protein Tracker
+                  <Activity size={18} /> Protein Tracker
                 </button>
               </div>
 
@@ -290,6 +301,33 @@ export default function App() {
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div style={{ backgroundColor: 'var(--bg-card-solid)', borderTop: '1px solid var(--border-glass)', padding: '0.85rem 1.25rem' }}>
+            <button
+              onClick={() => {
+                setHealthDashboardOpen(!healthDashboardOpen);
+                setMobileMenuOpen(false);
+              }}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.85rem 1rem',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'rgba(127, 245, 231, 0.15)',
+                border: '1px solid rgba(127, 245, 231, 0.3)',
+                color: 'var(--cyan-glow)',
+                fontWeight: 700,
+                fontSize: '1rem',
+                marginBottom: '0.75rem'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <HeartPulse size={20} />
+                <span>Toggle Health Dashboard</span>
+              </div>
+              {healthDashboardOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
