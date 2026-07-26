@@ -93,17 +93,17 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-canvas)' }}>
       
-      {/* Sticky Light Header Navbar */}
+      {/* Sticky Jubilant Light Header Navbar */}
       <header
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: 'rgba(255, 255, 255, 0.96)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: '1px solid var(--border-subtle)',
-          boxShadow: 'var(--shadow-sm)',
+          borderBottom: '1px solid #E2E8F0',
+          boxShadow: '0 4px 20px rgba(255, 82, 82, 0.05)',
           transition: 'all 0.25s var(--ease-spring)'
         }}
       >
@@ -153,7 +153,7 @@ export default function App() {
                     gap: '7px',
                     padding: '0.55rem 1.1rem',
                     borderRadius: 'var(--radius-md)',
-                    border: isActive ? '1px solid var(--border-active)' : '1px solid transparent',
+                    border: isActive ? '1px solid var(--coral-border)' : '1px solid transparent',
                     backgroundColor: isActive ? 'var(--coral-soft)' : 'transparent',
                     color: isActive ? 'var(--coral-primary)' : 'var(--text-body)',
                     fontWeight: isActive ? 700 : 500,
@@ -178,11 +178,11 @@ export default function App() {
                 gap: '7px',
                 padding: '0.55rem 1.15rem',
                 borderRadius: '20px',
-                backgroundColor: healthDashboardOpen ? 'var(--coral-soft)' : '#F3F4F6',
-                border: `1px solid ${healthDashboardOpen ? 'var(--coral-primary)' : '#E5E7EB'}`,
-                color: healthDashboardOpen ? 'var(--coral-primary)' : 'var(--text-heading)',
+                backgroundColor: healthDashboardOpen ? 'var(--coral-soft)' : '#FFFBEB',
+                border: `1px solid ${healthDashboardOpen ? 'var(--coral-primary)' : 'var(--honey-border)'}`,
+                color: healthDashboardOpen ? 'var(--coral-primary)' : 'var(--honey-amber)',
                 fontSize: '0.875rem',
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: 'pointer',
                 transition: 'all 0.2s var(--ease-spring)'
               }}
@@ -235,10 +235,10 @@ export default function App() {
           <div
             className="animate-fade-in"
             style={{
-              backgroundColor: '#F3F4F6',
-              borderBottom: '1px solid var(--border-subtle)',
+              background: 'linear-gradient(135deg, #FFF0EC 0%, #FFFBEB 100%)',
+              borderBottom: '1px solid #FFCDCD',
               padding: '1.25rem 1.5rem',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
+              boxShadow: '0 8px 24px rgba(255,82,82,0.08)',
               position: 'relative',
               zIndex: 90
             }}
@@ -255,26 +255,26 @@ export default function App() {
               }}
             >
               
-              {/* Metric 1: Today's Calories */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(224, 83, 60, 0.2)' }}>
+              {/* Metric 1: Today's Calories (Strawberry Tint) */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--coral-border)', boxShadow: 'var(--shadow-sm)' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--coral-border)' }}>
                   <Flame size={22} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Calories Logged Today</div>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Calories Logged Today</div>
                   <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-heading)' }}>{todayCalories} <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>kcal</span></div>
                 </div>
               </div>
 
-              {/* Metric 2: Today's Protein */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--honey-soft)', color: 'var(--honey-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(217, 119, 6, 0.2)' }}>
+              {/* Metric 2: Today's Protein (Mango Gold Tint) */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--honey-border)', boxShadow: 'var(--shadow-sm)' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--honey-soft)', color: 'var(--honey-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--honey-border)' }}>
                   <Target size={22} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     <span>Protein Target</span>
-                    <span style={{ color: 'var(--coral-primary)', fontWeight: 700 }}>{proteinPercent}%</span>
+                    <span style={{ color: 'var(--coral-primary)', fontWeight: 800 }}>{proteinPercent}%</span>
                   </div>
                   <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)' }}>{todayProtein}g / {proteinGoal}g</div>
                 </div>
@@ -304,7 +304,7 @@ export default function App() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div style={{ backgroundColor: '#FFFFFF', borderTop: '1px solid var(--border-subtle)', padding: '0.85rem 1.25rem' }}>
+          <div style={{ backgroundColor: '#FFFFFF', borderTop: '1px solid #E2E8F0', padding: '0.85rem 1.25rem' }}>
             <button
               onClick={() => {
                 setHealthDashboardOpen(!healthDashboardOpen);
@@ -318,7 +318,7 @@ export default function App() {
                 padding: '0.85rem 1rem',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--coral-soft)',
-                border: '1px solid rgba(224, 83, 60, 0.25)',
+                border: '1px solid var(--coral-border)',
                 color: 'var(--coral-primary)',
                 fontWeight: 700,
                 fontSize: '1rem',
@@ -349,7 +349,7 @@ export default function App() {
                     gap: '12px',
                     padding: '0.85rem 1rem',
                     borderRadius: 'var(--radius-md)',
-                    border: isActive ? '1px solid var(--border-active)' : 'none',
+                    border: isActive ? '1px solid var(--coral-border)' : 'none',
                     backgroundColor: isActive ? 'var(--coral-soft)' : 'transparent',
                     color: isActive ? 'var(--coral-primary)' : 'var(--text-body)',
                     fontWeight: 600,
@@ -431,7 +431,7 @@ export default function App() {
             color: 'var(--text-heading)',
             padding: '0.95rem 1.4rem',
             borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-card)',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
@@ -454,7 +454,7 @@ export default function App() {
       <footer
         style={{
           backgroundColor: '#FFFFFF',
-          borderTop: '1px solid var(--border-subtle)',
+          borderTop: '1px solid #E2E8F0',
           padding: '2rem 1.5rem',
           textAlign: 'center',
           color: 'var(--text-body)',
@@ -475,9 +475,9 @@ export default function App() {
                 borderRadius: '16px',
                 fontSize: '0.75rem',
                 fontWeight: 600,
-                backgroundColor: '#F3F4F6',
-                color: 'var(--text-subheading)',
-                border: '1px solid var(--border-subtle)'
+                backgroundColor: '#F8FAFC',
+                color: 'var(--text-muted)',
+                border: '1px solid #E2E8F0'
               }}
             >
               <Database size={12} />

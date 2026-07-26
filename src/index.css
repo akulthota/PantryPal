@@ -1,52 +1,53 @@
-/* PantryPal — Warm Light Culinary Design System (Welcoming & Accessible for Everyone) */
+/* PantryPal — Jubilant Light & Fruity Design System */
 
 :root {
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   
-  /* Warm Porcelain Light Canvas */
-  --bg-canvas: #FAF9F6;
+  /* Creamy Ivory Light Canvas */
+  --bg-canvas: #FFFDF9;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #F4F3EF;
-  --bg-card-elevated: #F3F4F6;
   
-  /* Warm Culinary Tomato / Terracotta Coral */
-  --coral-primary: #E0533C;
-  --coral-primary-hover: #C8422C;
-  --coral-soft: #FFF1EE;
+  /* Vibrant Fruit Palette */
+  --coral-primary: #FF5252; /* Strawberry / Watermelon Red */
+  --coral-hover: #E03E3E;
+  --coral-soft: #FFF0F0;
+  --coral-border: #FFCDCD;
   
-  /* Warm Honey Amber */
-  --honey-amber: #D97706;
-  --honey-amber-hover: #B45309;
+  --honey-amber: #F59E0B; /* Bright Mango / Pineapple Gold */
+  --honey-hover: #D97706;
   --honey-soft: #FFFBEB;
+  --honey-border: #FDE68A;
   
-  /* Organic Leaf Green for Health & Success */
-  --sage-green: #059669;
-  --sage-green-hover: #047857;
-  --sage-soft: #ECFDF5;
+  --sage-green: #10B981; /* Fresh Kiwi / Green Apple */
+  --sage-hover: #059669;
+  --sage-soft: #F0FDF4;
+  --sage-border: #A7F3D0;
   
-  /* Typography Colors (High Contrast AAA for Accessibility) */
+  --berry-purple: #8B5CF6; /* Blueberry / Plum */
+  --berry-soft: #F5F3FF;
+  --berry-border: #DDD6FE;
+  
+  /* Typography Colors (High Contrast AAA Readability) */
   --text-heading: #111827;
   --text-subheading: #1F2937;
-  --text-body: #4B5563;
-  --text-muted: #6B7280;
+  --text-body: #475569;
+  --text-muted: #64748B;
   
-  /* Soft Light Micro Borders */
-  --border-subtle: #E5E7EB;
-  --border-active: rgba(224, 83, 60, 0.4);
-  --border-hover: #D1D5DB;
+  /* Soft Micro Borders */
+  --border-subtle: #F1F5F9;
+  --border-active: rgba(255, 82, 82, 0.4);
   
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
   --radius-full: 9999px;
   
-  /* Clean Light Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --shadow-button: 0 3px 12px rgba(224, 83, 60, 0.22);
+  /* Vibrant & Tactile Shadows */
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 6px 24px rgba(0, 0, 0, 0.05);
+  --shadow-button: 0 4px 14px rgba(255, 82, 82, 0.25);
   
-  /* Fluid Motion Curves */
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -89,40 +90,72 @@ h1, h2, h3, h4, h5, h6 {
   100% { transform: rotate(360deg); }
 }
 
-.animate-fade-in { animation: slideDownSmooth 0.3s var(--ease-spring) forwards; }
-.animate-scale-in { animation: scaleInSpring 0.28s var(--ease-spring) forwards; }
+.animate-fade-in { animation: slideDownSmooth 0.35s var(--ease-spring) forwards; }
+.animate-scale-in { animation: scaleInSpring 0.3s var(--ease-spring) forwards; }
 .animate-spin { animation: spin 0.8s linear infinite; }
 
-/* Clean Light Cards */
+/* Base Card & Alternating Fruit Card Styling */
 .glass-card {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid #E2E8F0;
   box-shadow: var(--shadow-card);
   transition: all 0.25s var(--ease-spring);
 }
 
 .glass-card:hover {
-  border-color: var(--border-hover);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.09);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-.feature-card-hover {
-  transition: all 0.25s var(--ease-spring);
+/* Fruit Card 1: Watermelon / Strawberry Tint */
+.card-fruit-red {
+  background: linear-gradient(135deg, #FFF0F0 0%, #FFFFFF 100%);
+  border: 1px solid var(--coral-border) !important;
 }
 
-.feature-card-hover:hover {
+.card-fruit-red:hover {
   transform: translateY(-3px);
-  background: #FFFFFF;
-  border-color: #D1D5DB;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 32px rgba(255, 82, 82, 0.15);
+}
+
+/* Fruit Card 2: Mango / Pineapple Gold Tint */
+.card-fruit-yellow {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 100%);
+  border: 1px solid var(--honey-border) !important;
+}
+
+.card-fruit-yellow:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(245, 158, 11, 0.15);
+}
+
+/* Fruit Card 3: Fresh Kiwi / Apple Green Tint */
+.card-fruit-green {
+  background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
+  border: 1px solid var(--sage-border) !important;
+}
+
+.card-fruit-green:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.15);
+}
+
+/* Fruit Card 4: Berry Purple Tint */
+.card-fruit-purple {
+  background: linear-gradient(135deg, #F5F3FF 0%, #FFFFFF 100%);
+  border: 1px solid var(--berry-border) !important;
+}
+
+.card-fruit-purple:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.15);
 }
 
 .text-coral {
   color: var(--coral-primary);
 }
 
-/* Accessible Light Buttons */
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -147,45 +180,43 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--coral-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(224, 83, 60, 0.32);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
+  background: var(--coral-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255, 82, 82, 0.35);
 }
 
 .btn-amber {
   background: var(--honey-amber);
   color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
 }
 
 .btn-amber:hover:not(:disabled) {
-  background: var(--honey-amber-hover);
-  transform: translateY(-1px);
+  background: var(--honey-hover);
+  transform: translateY(-2px);
 }
 
 .btn-secondary {
   background: var(--sage-green);
   color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--sage-green-hover);
-  transform: translateY(-1px);
+  background: var(--sage-hover);
+  transform: translateY(-2px);
 }
 
 .btn-outline {
   background: #FFFFFF;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid #CBD5E1;
   color: var(--text-heading);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: #F9FAFB;
-  border-color: #9CA3AF;
-  color: #111827;
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
   transform: translateY(-1px);
 }
 
@@ -194,13 +225,13 @@ h1, h2, h3, h4, h5, h6 {
   cursor: not-allowed;
 }
 
-/* Light Input Controls */
+/* Inputs */
 .input-control {
   width: 100%;
   min-height: 44px;
   padding: 0.65rem 1rem;
   background: #FFFFFF;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid #CBD5E1;
   border-radius: var(--radius-md);
   font-size: 0.925rem;
   font-family: inherit;
@@ -215,21 +246,21 @@ h1, h2, h3, h4, h5, h6 {
 
 .input-control:focus {
   border-color: var(--coral-primary);
-  box-shadow: 0 0 0 3px rgba(224, 83, 60, 0.15);
+  box-shadow: 0 0 0 3px rgba(255, 82, 82, 0.15);
 }
 
-/* Custom Scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #FAF9F6;
+  background: #FFFDF9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D1D5DB;
+  background: #CBD5E1;
   border-radius: 4px;
 }
 
