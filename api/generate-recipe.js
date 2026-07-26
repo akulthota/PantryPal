@@ -1,118 +1,71 @@
-// Vercel Serverless Function: AI Recipe Generation via Gemini 3.6 Flash
+import { GoogleGenAI } from '@google/genai';
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { ingredients = [], preferences = {} } = req.body || {};
+    const { ingredients = [], preferences = {} } = req.body;
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    if (!Array.isArray(ingredients) || ingredients.length === 0) {
+      return res.status(400).json({ error: 'No ingredients provided' });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({
-        error: 'GEMINI_API_KEY environment variable is not configured on the server.'
-      });
+      return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is not set.' });
     }
 
-    const {
-      dietary_restrictions = [],
-      favorite_cuisines = [],
-      allergies = [],
-      cooking_skill = 'Intermediate'
-    } = preferences;
+    const ai = new GoogleGenAI({ apiKey });
 
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
-    const modelsToTry = [primaryModel, 'gemini-2.5-flash', 'gemini-1.5-flash'];
+    const prompt = `You are a world-class executive chef. Create a delicious, custom recipe tailored specifically to these available ingredients and dietary preferences.
 
-    const prompt = `You are a world-class culinary chef AI. Create a creative, delicious, and easy-to-follow recipe.
-Available Ingredients: ${ingredients.length > 0 ? ingredients.join(', ') : 'Pantry staples, eggs, garlic, olive oil, vegetables'}
-User Dietary Restrictions: ${dietary_restrictions.join(', ') || 'None'}
-User Allergies to Avoid: ${allergies.join(', ') || 'None'}
-Favorite Cuisines: ${favorite_cuisines.join(', ') || 'Any'}
-Cooking Skill Level: ${cooking_skill}
+Available Ingredients: ${ingredients.join(', ')}
+Dietary Restrictions: ${preferences.dietary_restrictions?.join(', ') || 'None'}
+Favorite Cuisines: ${preferences.favorite_cuisines?.join(', ') || 'Any'}
+Allergies / Avoid: ${preferences.allergies?.join(', ') || 'None'}
+Skill Level: ${preferences.cooking_skill || 'Intermediate'}
 
-Return ONLY a valid JSON object matching this structure:
+Return ONLY a raw valid JSON object without any markdown code fences or backticks. Follow this exact JSON schema:
 {
-  "title": "Delicious Recipe Name",
-  "cuisine_type": "Cuisine Name",
-  "prep_time": "20 mins",
-  "servings": "2-4",
+  "title": "Recipe Title",
+  "cuisine_type": "Cuisine Category",
+  "prep_time": "Prep & Cooking Time e.g. 25 mins",
+  "servings": "2",
   "difficulty": "Easy",
-  "ingredients": [
-    "1 cup specified ingredient with measurement",
-    "2 tbsp another ingredient"
-  ],
-  "instructions": [
-    "Step 1: Prep ingredients...",
-    "Step 2: Heat oil in pan...",
-    "Step 3: Serve warm."
-  ],
+  "ingredients": ["ingredient 1", "ingredient 2"],
+  "instructions": ["Step 1...", "Step 2..."],
   "nutrition": {
-    "calories": 420,
-    "protein": 28,
-    "carbs": 35,
-    "fat": 14,
+    "calories": 450,
+    "protein": 35,
+    "carbs": 40,
+    "fat": 15,
     "fiber": 6
-  }
-}
-Do not include markdown wrappers. Return plain JSON.`;
+  },
+  "youtube_search_query": "Exact Recipe Name Cooking Tutorial"
+}`;
 
-    let responseData = null;
-    let lastError = null;
-
-    for (const model of modelsToTry) {
-      try {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: {
-                temperature: 0.7,
-                response_mime_type: 'application/json'
-              }
-            })
-          }
-        );
-
-        if (response.ok) {
-          responseData = await response.json();
-          break;
-        } else {
-          const errText = await response.text();
-          lastError = `Model ${model} returned ${response.status}: ${errText}`;
-        }
-      } catch (err) {
-        lastError = err.message;
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+      config: {
+        temperature: 0.7,
+        responseMimeType: 'application/json'
       }
-    }
+    });
 
-    if (!responseData) {
-      return res.status(500).json({ error: `Gemini API request failed: ${lastError}` });
-    }
+    const responseText = response.text?.trim() || '';
+    const cleanJsonText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
 
-    const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    const recipe = JSON.parse(cleanJsonText);
+    return res.status(200).json(recipe);
 
-    const recipeObj = JSON.parse(cleanJson);
-    return res.status(200).json(recipeObj);
-  } catch (err) {
-    return res.status(500).json({ error: err.message || 'Internal server error' });
+  } catch (error) {
+    console.error('Error generating recipe:', error);
+    return res.status(500).json({
+      error: 'Failed to generate recipe using AI model.',
+      details: error.message
+    });
   }
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Trash2, BookOpen, Clock, Users, Utensils, X, AlertTriangle } from 'lucide-react';
+import { Search, Trash2, BookOpen, Clock, Users, Utensils, X, AlertTriangle, Youtube, CheckSquare } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
 
 export default function RecipesPage({ showToast }) {
@@ -9,6 +10,7 @@ export default function RecipesPage({ showToast }) {
   const [selectedCuisine, setSelectedCuisine] = useState('All');
   const [activeModalRecipe, setActiveModalRecipe] = useState(null);
   const [deletingRecipeId, setDeletingRecipeId] = useState(null);
+  const [cookedModalLogged, setCookedModalLogged] = useState(false);
 
   useEffect(() => {
     loadRecipes();
@@ -38,6 +40,34 @@ export default function RecipesPage({ showToast }) {
     }
   };
 
+  const handleLogModalCookedDish = async () => {
+    if (!activeModalRecipe || cookedModalLogged) return;
+
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const protein = activeModalRecipe.nutrition?.protein || 30;
+      const calories = activeModalRecipe.nutrition?.calories || 400;
+      const fiber = activeModalRecipe.nutrition?.fiber || 0;
+
+      await db.proteinLogs.create({
+        item: activeModalRecipe.title,
+        total_protein: protein,
+        animal_protein: Math.round(protein * 0.7),
+        plant_protein: Math.round(protein * 0.3),
+        dairy_protein: 0,
+        total_calories: calories,
+        total_fiber: fiber,
+        logged_date: todayStr
+      });
+
+      try { confetti({ particleCount: 90, spread: 60, origin: { y: 0.6 } }); } catch {}
+      setCookedModalLogged(true);
+      showToast('Logged! 🍳', `Added +${protein}g protein to today's tracker!`, 'success');
+    } catch (err) {
+      showToast('Error', 'Failed to log cooked meal.', 'error');
+    }
+  };
+
   const cuisines = ['All', ...new Set(recipes.map(r => r.cuisine_type).filter(Boolean))];
 
   const filteredRecipes = recipes.filter(r => {
@@ -56,7 +86,7 @@ export default function RecipesPage({ showToast }) {
       {/* Page Header & Search Bar */}
       <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '1.25rem' }}>
-          My Saved <span className="gradient-text-magma">Recipes</span>
+          My Saved <span className="gradient-text-magma">Recipes</span> ({recipes.length})
         </h1>
         
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -153,7 +183,10 @@ export default function RecipesPage({ showToast }) {
               </div>
 
               <button
-                onClick={() => setActiveModalRecipe(recipe)}
+                onClick={() => {
+                  setActiveModalRecipe(recipe);
+                  setCookedModalLogged(false);
+                }}
                 className="btn btn-outline"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
@@ -256,13 +289,48 @@ export default function RecipesPage({ showToast }) {
 
             {/* Nutrition */}
             {activeModalRecipe.nutrition && (
-              <div style={{ backgroundColor: 'rgba(12, 13, 56, 0.8)', border: '1px solid var(--border-glass)', padding: '1rem 1.25rem', borderRadius: '10px', display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+              <div style={{ backgroundColor: 'rgba(12, 13, 56, 0.8)', border: '1px solid var(--border-glass)', padding: '1rem 1.25rem', borderRadius: '10px', display: 'flex', justifyContent: 'space-around', textAlign: 'center', marginBottom: '1.75rem' }}>
                 <div><strong style={{ color: '#FFFFFF' }}>{activeModalRecipe.nutrition.calories || 0}</strong><br /><span style={{ fontSize: '0.8rem', color: 'var(--text-body)' }}>Calories</span></div>
                 <div><strong style={{ color: 'var(--magma-red)' }}>{activeModalRecipe.nutrition.protein || 0}g</strong><br /><span style={{ fontSize: '0.8rem', color: 'var(--text-body)' }}>Protein</span></div>
                 <div><strong style={{ color: 'var(--lava-amber)' }}>{activeModalRecipe.nutrition.carbs || 0}g</strong><br /><span style={{ fontSize: '0.8rem', color: 'var(--text-body)' }}>Carbs</span></div>
                 <div><strong style={{ color: 'var(--sulphur-gold)' }}>{activeModalRecipe.nutrition.fat || 0}g</strong><br /><span style={{ fontSize: '0.8rem', color: 'var(--text-body)' }}>Fat</span></div>
               </div>
             )}
+
+            {/* Cooked Dish & YouTube Actions */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-glass)' }}>
+              <button
+                onClick={handleLogModalCookedDish}
+                disabled={cookedModalLogged}
+                className="btn btn-primary"
+                style={{
+                  backgroundColor: cookedModalLogged ? 'rgba(127, 245, 231, 0.2)' : 'var(--magma-gradient)',
+                  border: cookedModalLogged ? '1px solid var(--cyan-glow)' : 'none',
+                  color: '#FFFFFF'
+                }}
+              >
+                {cookedModalLogged ? (
+                  <>
+                    <CheckSquare size={18} style={{ color: 'var(--cyan-glow)' }} /> Meal Logged!
+                  </>
+                ) : (
+                  <>
+                    <span>🍳 Did you cook this? Log Nutrition</span>
+                  </>
+                )}
+              </button>
+
+              <a
+                href={`https://www.youtube.com/results?search_query=${encodeURIComponent(activeModalRecipe.title + ' recipe tutorial')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline"
+                style={{ borderColor: '#FF0000', color: '#FFFFFF', backgroundColor: 'rgba(255, 0, 0, 0.12)', textDecoration: 'none' }}
+              >
+                <Youtube size={18} style={{ color: '#FF0000' }} /> YouTube Tutorial
+              </a>
+            </div>
+
           </div>
         </div>
       )}

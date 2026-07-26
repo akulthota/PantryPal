@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Utensils, Activity, Settings, Home, Menu, X, Database, CheckCircle2, AlertCircle, Info, User, LogIn, LogOut, Flame } from 'lucide-react';
+import { Camera, Utensils, Activity, Settings, Home, Menu, X, Database, CheckCircle2, AlertCircle, Info, User, LogIn, LogOut, Flame, HeartPulse, ChevronDown, ChevronUp, ArrowRight, Target } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import AnalyzePantryPage from './pages/AnalyzePantryPage';
 import CalorieScannerPage from './pages/CalorieScannerPage';
@@ -17,8 +17,13 @@ export default function App() {
   
   const [userPreferences, setUserPreferences] = useState(null);
   const [recipeCount, setRecipeCount] = useState(0);
+  
+  // Today's live nutrition stats
   const [todayProtein, setTodayProtein] = useState(0);
+  const [todayCalories, setTodayCalories] = useState(0);
+  const [todayFiber, setTodayFiber] = useState(0);
 
+  const [healthDashboardOpen, setHealthDashboardOpen] = useState(false);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
@@ -49,8 +54,14 @@ export default function App() {
       const logs = await db.proteinLogs.list();
       const todayStr = new Date().toISOString().split('T')[0];
       const todayLogs = logs.filter(l => l.logged_date === todayStr || (l.created_at && l.created_at.startsWith(todayStr)));
-      const sum = todayLogs.reduce((acc, l) => acc + (Number(l.total_protein) || 0), 0);
-      setTodayProtein(sum);
+      
+      const sumProtein = todayLogs.reduce((acc, l) => acc + (Number(l.total_protein) || 0), 0);
+      const sumCalories = todayLogs.reduce((acc, l) => acc + (Number(l.total_calories) || 0), 0);
+      const sumFiber = todayLogs.reduce((acc, l) => acc + (Number(l.total_fiber) || 0), 0);
+      
+      setTodayProtein(sumProtein);
+      setTodayCalories(sumCalories);
+      setTodayFiber(sumFiber);
     } catch (e) {
       console.error('Failed to load initial app state:', e);
     }
@@ -68,6 +79,9 @@ export default function App() {
     setToast({ title, message, type });
     setTimeout(() => setToast(null), 4000);
   };
+
+  const proteinGoal = userPreferences?.daily_protein_goal || 80;
+  const proteinPercent = Math.min(100, Math.round((todayProtein / proteinGoal) * 100));
 
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
@@ -152,8 +166,33 @@ export default function App() {
             })}
           </nav>
 
-          {/* Right Action Stack: Optional User Auth Button & Mobile Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0, marginLeft: '1rem' }}>
+          {/* Right Action Stack: Health Dashboard Toggle, Auth Button & Mobile Toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0, marginLeft: '1rem' }}>
+            
+            {/* Top Health Dashboard Bar Toggle */}
+            <button
+              onClick={() => setHealthDashboardOpen(!healthDashboardOpen)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '0.45rem 0.9rem',
+                borderRadius: '20px',
+                backgroundColor: healthDashboardOpen ? 'rgba(242, 119, 119, 0.2)' : 'rgba(127, 245, 231, 0.15)',
+                border: `1px solid ${healthDashboardOpen ? 'var(--magma-red)' : 'rgba(127, 245, 231, 0.3)'}`,
+                color: healthDashboardOpen ? 'var(--magma-red)' : 'var(--cyan-glow)',
+                fontSize: '0.85rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.25s ease'
+              }}
+              title="Toggle Live Health Dashboard"
+            >
+              <HeartPulse size={16} />
+              <span className="desktop-nav">Health Dashboard</span>
+              {healthDashboardOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-subheading)' }}>
@@ -188,6 +227,66 @@ export default function App() {
             </button>
           </div>
         </div>
+
+        {/* TOP HEALTH & NUTRITION DASHBOARD ANIMATED DROPDOWN BAR */}
+        {healthDashboardOpen && (
+          <div
+            className="animate-fade-in"
+            style={{
+              backgroundColor: 'rgba(18, 19, 70, 0.95)',
+              borderBottom: '1px solid rgba(127, 245, 231, 0.3)',
+              padding: '1.25rem 1.5rem',
+              boxShadow: '0 8px 24px rgba(4, 5, 25, 0.6)'
+            }}
+          >
+            <div style={{ maxWidth: '1250px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', alignItems: 'center' }}>
+              
+              {/* Metric 1: Today's Calories */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'rgba(12, 13, 56, 0.7)', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-glass)' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'rgba(242, 119, 119, 0.15)', color: 'var(--magma-red)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Flame size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-body)', textTransform: 'uppercase' }}>Calories Logged Today</div>
+                  <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF' }}>{todayCalories} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>kcal</span></div>
+                </div>
+              </div>
+
+              {/* Metric 2: Today's Protein */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'rgba(12, 13, 56, 0.7)', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--border-glass)' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'rgba(245, 165, 91, 0.15)', color: 'var(--lava-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Target size={22} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-body)' }}>
+                    <span>Protein Target</span>
+                    <span style={{ color: 'var(--magma-red)', fontWeight: 700 }}>{proteinPercent}%</span>
+                  </div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF' }}>{todayProtein}g / {proteinGoal}g</div>
+                </div>
+              </div>
+
+              {/* Metric 3: Fiber & Quick Action Shortcuts */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => { setActiveTab('calories'); setHealthDashboardOpen(false); }}
+                  className="btn btn-amber"
+                  style={{ padding: '0.55rem 1.1rem', fontSize: '0.875rem' }}
+                >
+                  <Flame size={16} /> Scan Meal Calories
+                </button>
+                <button
+                  onClick={() => { setActiveTab('protein'); setHealthDashboardOpen(false); }}
+                  className="btn btn-secondary"
+                  style={{ padding: '0.55rem 1.1rem', fontSize: '0.875rem' }}
+                >
+                  <Activity size={16} /> Open Protein Tracker
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (

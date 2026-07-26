@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock } from 'lucide-react';
+import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
 
@@ -12,6 +12,8 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isSavingRecipe, setIsSavingRecipe] = useState(false);
+  const [isLoggingCooked, setIsLoggingCooked] = useState(false);
+  const [hasCookedLogged, setHasCookedLogged] = useState(false);
   
   const [generatedRecipe, setGeneratedRecipe] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -37,6 +39,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setIngredients([]);
     setGeneratedRecipe(null);
     setErrorMessage(null);
+    setHasCookedLogged(false);
   };
 
   const handleDrop = (e) => {
@@ -52,12 +55,12 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setIngredients([]);
     setGeneratedRecipe(null);
     setErrorMessage(null);
+    setHasCookedLogged(false);
   };
 
   const analyzeImage = async () => {
     if (!selectedFile) return;
 
-    // Check scan limit if not logged in
     if (!user && scanCount >= GUEST_SCAN_LIMIT) {
       setErrorMessage(`Daily guest limit reached (3/3). Log in or Sign up for free to unlock UNLIMITED scans!`);
       return;
@@ -67,6 +70,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setErrorMessage(null);
     setIngredients([]);
     setGeneratedRecipe(null);
+    setHasCookedLogged(false);
 
     try {
       const reader = new FileReader();
@@ -138,6 +142,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
 
     setIsGeneratingRecipe(true);
     setErrorMessage(null);
+    setHasCookedLogged(false);
 
     try {
       const res = await fetch('/api/generate-recipe', {
@@ -178,7 +183,8 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
           carbs: 12,
           fat: 16,
           fiber: 4
-        }
+        },
+        youtube_search_query: 'Pan Seared Garlic Chicken Recipe'
       };
       setGeneratedRecipe(fallbackRecipe);
       showToast('Recipe Generated!', 'Custom recipe created successfully.', 'success');
@@ -200,6 +206,48 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     } finally {
       setIsSavingRecipe(false);
     }
+  };
+
+  const handleLogCookedDish = async () => {
+    if (!generatedRecipe || hasCookedLogged) return;
+    setIsLoggingCooked(true);
+
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const protein = generatedRecipe.nutrition?.protein || 30;
+      const calories = generatedRecipe.nutrition?.calories || 400;
+      const fiber = generatedRecipe.nutrition?.fiber || 0;
+
+      await db.proteinLogs.create({
+        item: generatedRecipe.title,
+        total_protein: protein,
+        animal_protein: Math.round(protein * 0.7),
+        plant_protein: Math.round(protein * 0.3),
+        dairy_protein: 0,
+        total_calories: calories,
+        total_fiber: fiber,
+        logged_date: todayStr
+      });
+
+      try { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); } catch {}
+      setHasCookedLogged(true);
+      showToast(
+        'Meal Logged! 🍳',
+        `Added +${protein}g protein & ${calories} kcal to your daily tracker!`,
+        'success'
+      );
+      if (onSaveRecipeSuccess) onSaveRecipeSuccess();
+    } catch (err) {
+      showToast('Error', 'Failed to log cooked meal.', 'error');
+    } finally {
+      setIsLoggingCooked(false);
+    }
+  };
+
+  const getYoutubeUrl = () => {
+    if (!generatedRecipe) return '#';
+    const query = generatedRecipe.youtube_search_query || `${generatedRecipe.title} recipe tutorial`;
+    return `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
   };
 
   return (
@@ -504,7 +552,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
 
           {/* Nutrition Info Bar */}
           {generatedRecipe.nutrition && (
-            <div style={{ backgroundColor: 'rgba(12, 13, 56, 0.7)', border: '1px solid var(--border-glass)', padding: '1.25rem 1.5rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem', textAlign: 'center' }}>
+            <div style={{ backgroundColor: 'rgba(12, 13, 56, 0.7)', border: '1px solid var(--border-glass)', padding: '1.25rem 1.5rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem', textAlign: 'center', marginBottom: '2rem' }}>
               <div>
                 <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#FFFFFF' }}>{generatedRecipe.nutrition.calories || 0}</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-body)' }}>Calories</div>
@@ -523,6 +571,52 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
               </div>
             </div>
           )}
+
+          {/* 🍳 NEW FEATURE 1 & 2: "DID YOU COOK THIS DISH?" & YOUTUBE TUTORIAL */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-glass)' }}>
+            
+            {/* "Did you cook this dish?" Button */}
+            <button
+              onClick={handleLogCookedDish}
+              disabled={isLoggingCooked || hasCookedLogged}
+              className="btn btn-primary"
+              style={{
+                backgroundColor: hasCookedLogged ? 'rgba(127, 245, 231, 0.2)' : 'var(--magma-gradient)',
+                border: hasCookedLogged ? '1px solid var(--cyan-glow)' : 'none',
+                color: '#FFFFFF',
+                fontSize: '1rem',
+                padding: '0.85rem 1.65rem'
+              }}
+            >
+              {hasCookedLogged ? (
+                <>
+                  <CheckSquare size={20} style={{ color: 'var(--cyan-glow)' }} /> Meal Logged to Nutrition Tracker!
+                </>
+              ) : (
+                <>
+                  <span>🍳 Did you cook this dish? Log Nutrition!</span>
+                </>
+              )}
+            </button>
+
+            {/* YouTube Video Link Button */}
+            <a
+              href={getYoutubeUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-outline"
+              style={{
+                borderColor: '#FF0000',
+                color: '#FFFFFF',
+                backgroundColor: 'rgba(255, 0, 0, 0.12)',
+                textDecoration: 'none',
+                fontSize: '0.95rem'
+              }}
+            >
+              <Youtube size={20} style={{ color: '#FF0000' }} /> Watch Tutorial on YouTube
+            </a>
+
+          </div>
 
         </div>
       )}
