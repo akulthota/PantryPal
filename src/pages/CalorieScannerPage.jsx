@@ -65,7 +65,6 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
           setNutritionResult(data);
           showToast('Meal Analyzed!', `Estimated ${data.total_calories || 0} kcal`, 'success');
         } catch (apiErr) {
-          // Fallback analysis if offline / standalone preview
           const fallbackData = {
             dish_name: 'Grilled Salmon Bowl with Quinoa & Avocado',
             total_calories: 540,
@@ -94,7 +93,6 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
     }
   };
 
-  // Log meal to Daily Protein & Nutrition Tracker
   const logMealToTracker = async () => {
     if (!nutritionResult) return;
     setIsLogging(true);
@@ -126,15 +124,15 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
       
       {/* Header Banner */}
       <div className="glass-card animate-fade-in" style={{ padding: '1.75rem', marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: '#fff7ed', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Flame size={26} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ width: '50px', height: '50px', borderRadius: '16px', backgroundColor: 'rgba(242, 119, 119, 0.15)', color: 'var(--magma-red)', border: '1px solid rgba(242, 119, 119, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Flame size={28} />
           </div>
           <div>
-            <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.2rem)', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
-              Meal & Calorie Scanner
+            <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.2rem)', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+              Meal & Calorie <span className="gradient-text-magma">Scanner</span>
             </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: '0.2rem 0 0 0' }}>
+            <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', margin: '0.2rem 0 0 0' }}>
               Snap a photo of your plate or meal to instantly estimate calories, macros, and nutrients.
             </p>
           </div>
@@ -142,8 +140,8 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
       </div>
 
       {errorMessage && (
-        <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <AlertCircle size={20} />
+        <div style={{ backgroundColor: 'rgba(242, 119, 119, 0.15)', border: '1px solid var(--magma-red)', color: '#FFFFFF', padding: '1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <AlertCircle size={20} style={{ color: 'var(--magma-red)' }} />
           <span>{errorMessage}</span>
         </div>
       )}
@@ -155,12 +153,12 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
             style={{
-              border: '2px dashed #fdba74',
-              borderRadius: '16px',
+              border: '2px dashed rgba(245, 165, 91, 0.4)',
+              borderRadius: 'var(--radius-lg)',
               padding: '3rem 1.5rem',
-              backgroundColor: '#fff7ed',
+              backgroundColor: 'rgba(12, 13, 56, 0.6)',
               cursor: 'pointer',
-              transition: 'all 0.2s'
+              transition: 'all 0.25s ease'
             }}
             onClick={() => document.getElementById('meal-photo-input').click()}
           >
@@ -171,13 +169,13 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
               style={{ display: 'none' }}
               onChange={(e) => e.target.files?.[0] && handleFileChange(e.target.files[0])}
             />
-            <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'white', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', boxShadow: 'var(--shadow-md)' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'rgba(245, 165, 91, 0.15)', color: 'var(--lava-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', border: '1px solid rgba(245, 165, 91, 0.3)' }}>
               <Camera size={30} />
             </div>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', color: '#9a3412' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', color: '#FFFFFF' }}>
               Upload or Take a Photo of Your Meal
             </h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
+            <p style={{ color: 'var(--text-body)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
               Works with home-cooked meals, restaurant plates, snacks, and drinks
             </p>
             <button type="button" className="btn btn-amber" style={{ padding: '0.75rem 1.75rem' }}>
@@ -190,10 +188,10 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
               <img
                 src={previewUrl}
                 alt="Meal preview"
-                style={{ maxHeight: '350px', borderRadius: '16px', objectFit: 'contain', boxShadow: 'var(--shadow-lg)' }}
+                style={{ maxHeight: '350px', borderRadius: 'var(--radius-md)', objectFit: 'contain', boxShadow: 'var(--shadow-card)', border: '1px solid var(--border-glass)' }}
               />
 
-              {/* Scanning Beam Overlay Animation */}
+              {/* Volcanic Laser Scan Line Animation */}
               {isScanning && (
                 <div
                   style={{
@@ -202,27 +200,21 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    borderRadius: '16px',
+                    borderRadius: 'var(--radius-md)',
                     overflow: 'hidden',
                     pointerEvents: 'none',
-                    background: 'rgba(234, 88, 12, 0.15)'
+                    background: 'rgba(242, 119, 119, 0.15)'
                   }}
                 >
                   <div
                     style={{
                       width: '100%',
                       height: '4px',
-                      backgroundColor: '#ea580c',
-                      boxShadow: '0 0 15px #ea580c, 0 0 25px #ea580c',
+                      backgroundColor: 'var(--magma-red)',
+                      boxShadow: '0 0 15px var(--magma-red), 0 0 25px var(--lava-amber)',
                       animation: 'scanBeam 1.8s ease-in-out infinite alternate'
                     }}
                   />
-                  <style>{`
-                    @keyframes scanBeam {
-                      0% { transform: translateY(0); }
-                      100% { transform: translateY(340px); }
-                    }
-                  `}</style>
                 </div>
               )}
 
@@ -232,9 +224,9 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
                   position: 'absolute',
                   top: '10px',
                   right: '10px',
-                  backgroundColor: 'rgba(15, 23, 42, 0.75)',
-                  color: 'white',
-                  border: 'none',
+                  backgroundColor: 'rgba(12, 13, 56, 0.85)',
+                  color: '#FFFFFF',
+                  border: '1px solid var(--border-glass)',
                   borderRadius: '50%',
                   width: '36px',
                   height: '36px',
@@ -257,7 +249,7 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
               >
                 {isScanning ? (
                   <>
-                    <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid white', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
+                    <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid #0C0D38', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
                     <span>Scanning Meal Calories...</span>
                   </>
                 ) : (
@@ -276,15 +268,15 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
 
       {/* Results Dashboard Card */}
       {nutritionResult && (
-        <div className="glass-card animate-scale-in" style={{ padding: '2rem', border: '2px solid #fed7aa' }}>
+        <div className="glass-card animate-scale-in" style={{ padding: '2rem', border: '1px solid rgba(245, 165, 91, 0.35)' }}>
           
           {/* Title & Quick Actions */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#fff7ed', color: '#c2410c', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(245, 165, 91, 0.15)', color: 'var(--lava-amber)', border: '1px solid rgba(245, 165, 91, 0.3)', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>
                 <Sparkles size={14} /> Identified Dish
               </div>
-              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-main)' }}>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFFFFF' }}>
                 {nutritionResult.dish_name}
               </h2>
             </div>
@@ -303,41 +295,41 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
             
             {/* Total Calories Big Pill */}
-            <div style={{ backgroundColor: '#fff7ed', padding: '1.25rem', borderRadius: '16px', border: '1px solid #ffedd5', textAlign: 'center' }}>
-              <div style={{ color: '#ea580c', fontSize: '2.4rem', fontWeight: 800, lineHeight: 1 }}>
+            <div style={{ backgroundColor: 'rgba(242, 119, 119, 0.15)', padding: '1.25rem', borderRadius: '16px', border: '1px solid rgba(242, 119, 119, 0.3)', textAlign: 'center' }}>
+              <div style={{ color: 'var(--magma-red)', fontSize: '2.4rem', fontWeight: 800, lineHeight: 1 }}>
                 {nutritionResult.total_calories}
               </div>
-              <div style={{ color: '#9a3412', fontSize: '0.85rem', fontWeight: 700, marginTop: '0.4rem' }}>
+              <div style={{ color: 'var(--text-subheading)', fontSize: '0.85rem', fontWeight: 700, marginTop: '0.4rem' }}>
                 Total Calories (kcal)
               </div>
             </div>
 
             {/* Protein Pill */}
-            <div style={{ backgroundColor: 'var(--secondary-light)', padding: '1.25rem', borderRadius: '16px', border: '1px solid #a7f3d0', textAlign: 'center' }}>
-              <div style={{ color: 'var(--secondary)', fontSize: '2rem', fontWeight: 800, lineHeight: 1 }}>
+            <div style={{ backgroundColor: 'rgba(242, 119, 119, 0.1)', padding: '1.25rem', borderRadius: '16px', border: '1px solid rgba(242, 119, 119, 0.25)', textAlign: 'center' }}>
+              <div style={{ color: 'var(--magma-red)', fontSize: '2rem', fontWeight: 800, lineHeight: 1 }}>
                 {nutritionResult.protein_g}g
               </div>
-              <div style={{ color: '#065f46', fontSize: '0.85rem', fontWeight: 700, marginTop: '0.4rem' }}>
+              <div style={{ color: 'var(--text-subheading)', fontSize: '0.85rem', fontWeight: 700, marginTop: '0.4rem' }}>
                 Protein
               </div>
             </div>
 
             {/* Carbs Pill */}
-            <div style={{ backgroundColor: '#fef3c7', padding: '1.25rem', borderRadius: '16px', border: '1px solid #fde68a', textAlign: 'center' }}>
-              <div style={{ color: '#d97706', fontSize: '2rem', fontWeight: 800, lineHeight: 1 }}>
+            <div style={{ backgroundColor: 'rgba(245, 165, 91, 0.1)', padding: '1.25rem', borderRadius: '16px', border: '1px solid rgba(245, 165, 91, 0.25)', textAlign: 'center' }}>
+              <div style={{ color: 'var(--lava-amber)', fontSize: '2rem', fontWeight: 800, lineHeight: 1 }}>
                 {nutritionResult.carbs_g}g
               </div>
-              <div style={{ color: '#92400e', fontSize: '0.85rem', fontWeight: 700, marginTop: '0.4rem' }}>
+              <div style={{ color: 'var(--text-subheading)', fontSize: '0.85rem', fontWeight: 700, marginTop: '0.4rem' }}>
                 Carbs
               </div>
             </div>
 
             {/* Fat Pill */}
-            <div style={{ backgroundColor: '#ffe4e6', padding: '1.25rem', borderRadius: '16px', border: '1px solid #fecdd3', textAlign: 'center' }}>
-              <div style={{ color: '#e11d48', fontSize: '2rem', fontWeight: 800, lineHeight: 1 }}>
+            <div style={{ backgroundColor: 'rgba(242, 230, 119, 0.1)', padding: '1.25rem', borderRadius: '16px', border: '1px solid rgba(242, 230, 119, 0.25)', textAlign: 'center' }}>
+              <div style={{ color: 'var(--sulphur-gold)', fontSize: '2rem', fontWeight: 800, lineHeight: 1 }}>
                 {nutritionResult.fat_g}g
               </div>
-              <div style={{ color: '#9f1239', fontSize: '0.85rem', fontWeight: 700, marginTop: '0.4rem' }}>
+              <div style={{ color: 'var(--text-subheading)', fontSize: '0.85rem', fontWeight: 700, marginTop: '0.4rem' }}>
                 Fat
               </div>
             </div>
@@ -345,11 +337,11 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
 
           {/* Health Summary & Component Breakdown */}
           {nutritionResult.summary && (
-            <div style={{ backgroundColor: '#f8fafc', padding: '1.25rem', borderRadius: '14px', marginBottom: '1.75rem', borderLeft: '4px solid #ea580c' }}>
-              <div style={{ fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <HeartPulse size={18} style={{ color: '#ea580c' }} /> Health Summary (Score: {nutritionResult.health_score || 9}/10)
+            <div style={{ backgroundColor: 'rgba(12, 13, 56, 0.6)', padding: '1.25rem', borderRadius: '14px', marginBottom: '1.75rem', borderLeft: '4px solid var(--lava-amber)', border: '1px solid var(--border-glass)' }}>
+              <div style={{ fontWeight: 700, color: '#FFFFFF', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <HeartPulse size={18} style={{ color: 'var(--lava-amber)' }} /> Health Summary (Score: {nutritionResult.health_score || 9}/10)
               </div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: 0 }}>
+              <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', margin: 0 }}>
                 {nutritionResult.summary}
               </p>
             </div>
@@ -358,17 +350,17 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
           {/* Components List */}
           {nutritionResult.components && nutritionResult.components.length > 0 && (
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <PieChart size={18} style={{ color: 'var(--primary)' }} /> Meal Components Breakdown
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--cyan-glow)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <PieChart size={18} /> Meal Components Breakdown
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {nutritionResult.components.map((comp, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1.1rem', backgroundColor: '#f8fafc', borderRadius: '10px' }}>
-                    <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-main)' }}>
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1.1rem', backgroundColor: 'rgba(12, 13, 56, 0.6)', borderRadius: '10px', border: '1px solid var(--border-glass)' }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#FFFFFF' }}>
                       {comp.item}
                     </div>
-                    <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                      <span style={{ fontWeight: 700, color: '#ea580c' }}>{comp.calories} kcal</span>
+                    <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', color: 'var(--text-body)' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--magma-red)' }}>{comp.calories} kcal</span>
                       {comp.protein_g > 0 && <span>{comp.protein_g}g protein</span>}
                     </div>
                   </div>

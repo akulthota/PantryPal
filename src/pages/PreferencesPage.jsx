@@ -72,10 +72,10 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
       
       {/* Page Header */}
       <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
-          User Preferences & Profile
+        <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.5rem' }}>
+          User Preferences & <span className="gradient-text-magma">Profile</span>
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>
+        <p style={{ color: 'var(--text-body)', fontSize: '1rem' }}>
           Customize your dietary restrictions, favorite cuisines, and skill level. PantryPal will tailor all generated recipes to these settings.
         </p>
       </div>
@@ -84,8 +84,8 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
         
         {/* 1. Dietary Restrictions */}
         <div className="glass-card" style={{ padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Heart size={20} style={{ color: 'var(--accent-rose)' }} /> Dietary Restrictions & Diets
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Heart size={20} style={{ color: 'var(--magma-red)' }} /> Dietary Restrictions & Diets
           </h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
             {DIETARY_OPTIONS.map((opt) => {
@@ -98,19 +98,20 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                   style={{
                     padding: '0.6rem 1.2rem',
                     borderRadius: '20px',
-                    border: selected ? '2px solid var(--primary)' : '1px solid #cbd5e1',
-                    backgroundColor: selected ? 'var(--primary-light)' : 'white',
-                    color: selected ? 'var(--primary)' : 'var(--text-main)',
+                    border: selected ? '1px solid var(--magma-red)' : '1px solid var(--border-glass)',
+                    backgroundColor: selected ? 'rgba(242, 119, 119, 0.2)' : 'rgba(12, 13, 56, 0.6)',
+                    color: selected ? '#FFFFFF' : 'var(--text-body)',
                     fontWeight: 600,
                     fontSize: '0.9rem',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s ease',
+                    boxShadow: selected ? '0 0 10px rgba(242, 119, 119, 0.3)' : 'none'
                   }}
                 >
-                  {selected && <Check size={14} />} {opt}
+                  {selected && <Check size={14} style={{ color: 'var(--magma-red)' }} />} {opt}
                 </button>
               );
             })}
@@ -119,8 +120,8 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
 
         {/* 2. Favorite Cuisines */}
         <div className="glass-card" style={{ padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Award size={20} style={{ color: 'var(--primary)' }} /> Favorite Cuisines
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Award size={20} style={{ color: 'var(--lava-amber)' }} /> Favorite Cuisines
           </h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
             {CUISINE_OPTIONS.map((opt) => {
@@ -133,19 +134,20 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                   style={{
                     padding: '0.6rem 1.2rem',
                     borderRadius: '20px',
-                    border: selected ? '2px solid var(--secondary)' : '1px solid #cbd5e1',
-                    backgroundColor: selected ? 'var(--secondary-light)' : 'white',
-                    color: selected ? 'var(--secondary)' : 'var(--text-main)',
+                    border: selected ? '1px solid var(--lava-amber)' : '1px solid var(--border-glass)',
+                    backgroundColor: selected ? 'rgba(245, 165, 91, 0.2)' : 'rgba(12, 13, 56, 0.6)',
+                    color: selected ? '#FFFFFF' : 'var(--text-body)',
                     fontWeight: 600,
                     fontSize: '0.9rem',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s ease',
+                    boxShadow: selected ? '0 0 10px rgba(245, 165, 91, 0.3)' : 'none'
                   }}
                 >
-                  {selected && <Check size={14} />} {opt}
+                  {selected && <Check size={14} style={{ color: 'var(--lava-amber)' }} />} {opt}
                 </button>
               );
             })}
@@ -154,8 +156,8 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
 
         {/* 3. Allergies & Intolerances */}
         <div className="glass-card" style={{ padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Shield size={20} style={{ color: '#d97706' }} /> Allergies & Ingredients to Avoid
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Shield size={20} style={{ color: 'var(--sulphur-gold)' }} /> Allergies & Ingredients to Avoid
           </h3>
           
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -163,8 +165,9 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
               <span
                 key={idx}
                 style={{
-                  backgroundColor: '#fef3c7',
-                  color: '#92400e',
+                  backgroundColor: 'rgba(242, 230, 119, 0.15)',
+                  border: '1px solid rgba(242, 230, 119, 0.3)',
+                  color: 'var(--sulphur-gold)',
                   padding: '0.4rem 0.85rem',
                   borderRadius: '16px',
                   fontWeight: 600,
@@ -175,7 +178,7 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                 }}
               >
                 {all}
-                <button type="button" onClick={() => removeAllergy(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#b45309' }}>
+                <button type="button" onClick={() => removeAllergy(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sulphur-gold)' }}>
                   <X size={14} />
                 </button>
               </span>
@@ -200,12 +203,12 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
         {/* 4. Skill Level & Protein Goal */}
         <div className="glass-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Award size={18} /> Cooking Skill Level
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Award size={18} style={{ color: 'var(--cyan-glow)' }} /> Cooking Skill Level
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               {SKILL_LEVELS.map((lvl) => (
-                <label key={lvl} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', cursor: 'pointer' }}>
+                <label key={lvl} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', cursor: 'pointer', color: 'var(--text-body)' }}>
                   <input
                     type="radio"
                     name="skillLevel"
@@ -220,8 +223,8 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
           </div>
 
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Target size={18} /> Daily Protein Goal (grams)
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Target size={18} style={{ color: 'var(--magma-red)' }} /> Daily Protein Goal (grams)
             </h3>
             <input
               type="number"
@@ -232,7 +235,7 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
               min="10"
               max="300"
             />
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+            <p style={{ color: 'var(--text-body)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
               Used to calculate progress in the Protein Tracker.
             </p>
           </div>

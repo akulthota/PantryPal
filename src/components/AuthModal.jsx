@@ -37,7 +37,6 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
           onClose();
         }
       } else {
-        // Local Session Fallback for standalone / unconfigured mode
         const mockUser = { id: 'usr-1', email, name: email.split('@')[0] };
         onLoginSuccess(mockUser);
         showToast('Signed In', `Welcome back, ${mockUser.name}!`, 'success');
@@ -45,9 +44,6 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
       }
     } catch (err) {
       const errMsg = err.message || '';
-      console.warn('Auth Error:', errMsg);
-
-      // Handle Secret Key in Browser error specifically
       if (errMsg.includes('secret API key') || errMsg.includes('Forbidden')) {
         const mockUser = { id: 'usr-1', email, name: email.split('@')[0] };
         onLoginSuccess(mockUser);
@@ -73,8 +69,8 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.6)',
-        backdropFilter: 'blur(5px)',
+        backgroundColor: 'rgba(12, 13, 56, 0.85)',
+        backdropFilter: 'blur(12px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -90,32 +86,34 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
           width: '100%',
           padding: '2.5rem',
           position: 'relative',
-          borderRadius: '20px'
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--cyan-glow)',
+          boxShadow: 'var(--shadow-card), var(--shadow-cyan)'
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+          style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-body)' }}
         >
           <X size={22} />
         </button>
 
         {/* Modal Title */}
         <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(242, 119, 119, 0.15)', color: 'var(--magma-red)', border: '1px solid rgba(242, 119, 119, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
             <User size={24} />
           </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.25rem' }}>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.25rem' }}>
             {mode === 'login' ? 'Welcome to PantryPal' : 'Create an Account'}
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--text-body)', fontSize: '0.9rem' }}>
             Save your recipes, preferences, and protein logs across devices.
           </p>
         </div>
 
         {/* Mode Switcher Pills */}
-        <div style={{ display: 'flex', backgroundColor: '#f1f5f9', padding: '4px', borderRadius: '12px', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', backgroundColor: 'rgba(12, 13, 56, 0.8)', padding: '4px', borderRadius: '12px', marginBottom: '1.5rem', border: '1px solid var(--border-glass)' }}>
           <button
             type="button"
             onClick={() => setMode('login')}
@@ -127,8 +125,8 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
               fontWeight: 600,
               fontSize: '0.9rem',
               cursor: 'pointer',
-              backgroundColor: mode === 'login' ? 'white' : 'transparent',
-              color: mode === 'login' ? 'var(--primary)' : 'var(--text-muted)',
+              backgroundColor: mode === 'login' ? 'var(--magma-red)' : 'transparent',
+              color: mode === 'login' ? 'white' : 'var(--text-body)',
               transition: 'all 0.2s'
             }}
           >
@@ -145,8 +143,8 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
               fontWeight: 600,
               fontSize: '0.9rem',
               cursor: 'pointer',
-              backgroundColor: mode === 'signup' ? 'white' : 'transparent',
-              color: mode === 'signup' ? 'var(--primary)' : 'var(--text-muted)',
+              backgroundColor: mode === 'signup' ? 'var(--magma-red)' : 'transparent',
+              color: mode === 'signup' ? 'white' : 'var(--text-body)',
               transition: 'all 0.2s'
             }}
           >
@@ -157,9 +155,9 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
         {/* Auth Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.3rem', display: 'block' }}>Email Address</label>
+            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-body)', marginBottom: '0.3rem', display: 'block' }}>Email Address</label>
             <div style={{ position: 'relative' }}>
-              <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--periwinkle-glow)' }} />
               <input
                 type="email"
                 className="input-control"
@@ -173,9 +171,9 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
           </div>
 
           <div>
-            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.3rem', display: 'block' }}>Password</label>
+            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-body)', marginBottom: '0.3rem', display: 'block' }}>Password</label>
             <div style={{ position: 'relative' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--periwinkle-glow)' }} />
               <input
                 type="password"
                 className="input-control"
@@ -193,10 +191,10 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
           </button>
         </form>
 
-        {/* Guest Mode Divider & Quick Button */}
+        {/* Guest Mode Divider */}
         <div style={{ position: 'relative', textAlign: 'center', margin: '1.5rem 0 1rem' }}>
-          <div style={{ height: '1px', backgroundColor: 'var(--border-light)', width: '100%', position: 'absolute', top: '50%' }} />
-          <span style={{ backgroundColor: 'white', padding: '0 0.75rem', position: 'relative', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+          <div style={{ height: '1px', backgroundColor: 'var(--border-glass)', width: '100%', position: 'absolute', top: '50%' }} />
+          <span style={{ backgroundColor: '#121346', padding: '0 0.75rem', position: 'relative', fontSize: '0.8rem', color: 'var(--text-body)', fontWeight: 500 }}>
             or continue without logging in
           </span>
         </div>

@@ -16,7 +16,6 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
   const [generatedRecipe, setGeneratedRecipe] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  // Daily scan limit tracking
   const [scanCount, setScanCount] = useState(0);
   const SCAN_LIMIT = 3;
 
@@ -204,10 +203,10 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
       <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)' }}>
-              Fridge & Pantry Scanner
+            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#FFFFFF' }}>
+              Fridge & Pantry <span className="gradient-text-magma">Scanner</span>
             </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.25rem' }}>
+            <p style={{ color: 'var(--text-body)', fontSize: '1rem', marginTop: '0.25rem' }}>
               Snap or upload a photo of your fridge to extract ingredients and generate custom recipes.
             </p>
           </div>
@@ -215,8 +214,8 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
       </div>
 
       {errorMessage && (
-        <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '1rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <AlertCircle size={20} />
+        <div style={{ backgroundColor: 'rgba(242, 119, 119, 0.15)', border: '1px solid var(--magma-red)', color: '#FFFFFF', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <AlertCircle size={20} style={{ color: 'var(--magma-red)' }} />
           <span>{errorMessage}</span>
         </div>
       )}
@@ -228,12 +227,12 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
             style={{
-              border: '2px dashed #cbd5e1',
-              borderRadius: '16px',
+              border: '2px dashed rgba(127, 245, 231, 0.35)',
+              borderRadius: 'var(--radius-lg)',
               padding: '3.5rem 2rem',
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'rgba(12, 13, 56, 0.6)',
               cursor: 'pointer',
-              transition: 'border-color 0.2s, background-color 0.2s'
+              transition: 'all 0.25s ease'
             }}
             onClick={() => document.getElementById('pantry-image-input').click()}
           >
@@ -244,13 +243,13 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
               style={{ display: 'none' }}
               onChange={(e) => e.target.files?.[0] && handleFileChange(e.target.files[0])}
             />
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(127, 245, 231, 0.15)', color: 'var(--cyan-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', border: '1px solid rgba(127, 245, 231, 0.3)' }}>
               <Camera size={32} />
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: '#FFFFFF' }}>
               Drag & Drop your fridge photo here
             </h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.25rem' }}>
+            <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.25rem' }}>
               Supports JPG, PNG, WEBP (Take a photo with your smartphone or camera)
             </p>
             <button type="button" className="btn btn-primary">
@@ -263,7 +262,7 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
               <img
                 src={previewUrl}
                 alt="Pantry preview"
-                style={{ maxHeight: '350px', borderRadius: '12px', objectFit: 'contain', boxShadow: 'var(--shadow-md)' }}
+                style={{ maxHeight: '350px', borderRadius: 'var(--radius-md)', objectFit: 'contain', boxShadow: 'var(--shadow-card)', border: '1px solid var(--border-glass)' }}
               />
               <button
                 onClick={clearImage}
@@ -271,9 +270,9 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
                   position: 'absolute',
                   top: '10px',
                   right: '10px',
-                  backgroundColor: 'rgba(15, 23, 42, 0.75)',
-                  color: 'white',
-                  border: 'none',
+                  backgroundColor: 'rgba(12, 13, 56, 0.85)',
+                  color: '#FFFFFF',
+                  border: '1px solid var(--border-glass)',
                   borderRadius: '50%',
                   width: '36px',
                   height: '36px',
@@ -291,12 +290,12 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
               <button
                 onClick={analyzeImage}
                 disabled={isAnalyzing}
-                className="btn btn-secondary"
+                className="btn btn-amber"
                 style={{ padding: '0.85rem 2rem', fontSize: '1.05rem' }}
               >
                 {isAnalyzing ? (
                   <>
-                    <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid white', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
+                    <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid #0C0D38', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
                     <span>Analyzing Photo...</span>
                   </>
                 ) : (
@@ -315,8 +314,8 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
       </div>
 
       {/* 2. Detected & Added Ingredients */}
-      <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', backgroundColor: '#f0f9ff' }}>
-        <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '1rem', color: '#0369a1', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', border: '1px solid rgba(127, 245, 231, 0.3)' }}>
+        <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--cyan-glow)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <CheckCircle2 size={24} /> Available Ingredients ({ingredients.length})
         </h3>
 
@@ -326,10 +325,11 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
               <div
                 key={idx}
                 style={{
-                  backgroundColor: 'white',
+                  backgroundColor: 'rgba(127, 245, 231, 0.12)',
+                  border: '1px solid rgba(127, 245, 231, 0.3)',
+                  color: '#FFFFFF',
                   padding: '0.5rem 0.9rem',
                   borderRadius: '20px',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
@@ -337,11 +337,11 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
                   fontSize: '0.95rem'
                 }}
               >
-                <span style={{ color: '#0284c7' }}>✓</span>
+                <span style={{ color: 'var(--cyan-glow)' }}>✓</span>
                 <span>{item}</span>
                 <button
                   onClick={() => removeIngredient(idx)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
+                  style={{ background: 'none', border: 'none', color: 'var(--text-body)', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
                   title="Remove ingredient"
                 >
                   <X size={14} />
@@ -350,14 +350,14 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
             ))}
           </div>
         ) : (
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontStyle: 'italic' }}>
+          <p style={{ color: 'var(--text-body)', marginBottom: '1.5rem', fontStyle: 'italic' }}>
             No ingredients added yet. Upload a photo or manually enter items below.
           </p>
         )}
 
         {/* Manual Add Input */}
         <div>
-          <h4 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-main)' }}>
+          <h4 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#FFFFFF' }}>
             Add Ingredients Manually
           </h4>
           <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '600px' }}>
@@ -376,7 +376,7 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
         </div>
 
         {/* Recipe Generation Trigger */}
-        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #bae6fd', display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'flex-end' }}>
           <button
             onClick={generateRecipe}
             disabled={isGeneratingRecipe || ingredients.length === 0}
@@ -399,16 +399,16 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
 
       {/* 3. Generated Recipe Result */}
       {generatedRecipe && (
-        <div className="glass-card animate-scale-in" style={{ padding: '2.5rem', border: '2px solid var(--primary-light)' }}>
+        <div className="glass-card animate-scale-in" style={{ padding: '2.5rem', border: '1px solid var(--magma-red)' }}>
           
           {/* Header & Actions */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
             <div>
-              <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
+              <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.5rem' }}>
                 {generatedRecipe.title}
               </h2>
               {generatedRecipe.cuisine_type && (
-                <span style={{ backgroundColor: 'var(--primary)', color: 'white', padding: '0.3rem 0.85rem', borderRadius: '12px', fontSize: '0.875rem', fontWeight: 600 }}>
+                <span style={{ backgroundColor: 'var(--magma-red)', color: 'white', padding: '0.3rem 0.85rem', borderRadius: '12px', fontSize: '0.875rem', fontWeight: 600 }}>
                   {generatedRecipe.cuisine_type}
                 </span>
               )}
@@ -425,21 +425,21 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
           </div>
 
           {/* Quick Metrics Badges */}
-          <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap', color: 'var(--text-body)', fontSize: '0.95rem' }}>
             {generatedRecipe.prep_time && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Clock size={18} style={{ color: 'var(--primary)' }} />
+                <Clock size={18} style={{ color: 'var(--cyan-glow)' }} />
                 <span>{generatedRecipe.prep_time}</span>
               </div>
             )}
             {generatedRecipe.servings && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Users size={18} style={{ color: 'var(--primary)' }} />
+                <Users size={18} style={{ color: 'var(--cyan-glow)' }} />
                 <span>{generatedRecipe.servings} servings</span>
               </div>
             )}
             {generatedRecipe.difficulty && (
-              <div style={{ backgroundColor: '#f1f5f9', padding: '0.25rem 0.75rem', borderRadius: '6px', fontWeight: 600 }}>
+              <div style={{ backgroundColor: 'rgba(127, 153, 245, 0.15)', border: '1px solid var(--border-glass)', padding: '0.25rem 0.75rem', borderRadius: '6px', fontWeight: 600, color: 'var(--periwinkle-glow)' }}>
                 {generatedRecipe.difficulty}
               </div>
             )}
@@ -449,14 +449,14 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
             
             {/* Ingredients List */}
-            <div style={{ backgroundColor: '#fafafa', padding: '1.5rem', borderRadius: '12px' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '1rem' }}>
+            <div style={{ backgroundColor: 'rgba(12, 13, 56, 0.6)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-glass)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--cyan-glow)', marginBottom: '1rem' }}>
                 Ingredients Required
               </h3>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {generatedRecipe.ingredients?.map((ing, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.95rem' }}>
-                    <span style={{ color: 'var(--secondary)', fontWeight: 'bold' }}>•</span>
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.95rem', color: '#FFFFFF' }}>
+                    <span style={{ color: 'var(--lava-amber)', fontWeight: 'bold' }}>•</span>
                     <span>{ing}</span>
                   </li>
                 ))}
@@ -465,12 +465,12 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
 
             {/* Step-by-Step Instructions */}
             <div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--lava-amber)', marginBottom: '1rem' }}>
                 Preparation Instructions
               </h3>
               <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 {generatedRecipe.instructions?.map((step, i) => (
-                  <li key={i} style={{ fontSize: '0.975rem', lineHeight: 1.6 }}>
+                  <li key={i} style={{ fontSize: '0.975rem', lineHeight: 1.6, color: 'var(--text-body)' }}>
                     {step}
                   </li>
                 ))}
@@ -480,22 +480,22 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
 
           {/* Nutrition Info Bar */}
           {generatedRecipe.nutrition && (
-            <div style={{ backgroundColor: 'var(--primary-light)', padding: '1.25rem 1.5rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem', textAlign: 'center' }}>
+            <div style={{ backgroundColor: 'rgba(12, 13, 56, 0.7)', border: '1px solid var(--border-glass)', padding: '1.25rem 1.5rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem', textAlign: 'center' }}>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--primary)' }}>{generatedRecipe.nutrition.calories || 0}</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Calories</div>
+                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#FFFFFF' }}>{generatedRecipe.nutrition.calories || 0}</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-body)' }}>Calories</div>
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--secondary)' }}>{generatedRecipe.nutrition.protein || 0}g</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Protein</div>
+                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--magma-red)' }}>{generatedRecipe.nutrition.protein || 0}g</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-body)' }}>Protein</div>
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#d97706' }}>{generatedRecipe.nutrition.carbs || 0}g</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Carbs</div>
+                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--lava-amber)' }}>{generatedRecipe.nutrition.carbs || 0}g</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-body)' }}>Carbs</div>
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#e11d48' }}>{generatedRecipe.nutrition.fat || 0}g</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Fat</div>
+                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--sulphur-gold)' }}>{generatedRecipe.nutrition.fat || 0}g</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-body)' }}>Fat</div>
               </div>
             </div>
           )}
