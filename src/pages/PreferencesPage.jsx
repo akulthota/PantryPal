@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Save, Check, Plus, X, Shield, Award, Target, Heart } from 'lucide-react';
+import { Settings, Save, Check, Plus, X, Shield, Award, Target, Heart, UtensilsCrossed } from 'lucide-react';
 import { db } from '../lib/supabase';
 
 export default function PreferencesPage({ userPreferences, onUpdatePreferences, showToast }) {
   const [dietary, setDietary] = useState([]);
   const [cuisines, setCuisines] = useState([]);
+  const [newCuisine, setNewCuisine] = useState('');
   const [allergies, setAllergies] = useState([]);
   const [newAllergy, setNewAllergy] = useState('');
   const [skill, setSkill] = useState('Intermediate');
@@ -22,8 +23,17 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
     }
   }, [userPreferences]);
 
-  const DIETARY_OPTIONS = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Keto', 'Paleo', 'Low-Carb', 'Nut-Free', 'Halal', 'Kosher'];
-  const CUISINE_OPTIONS = ['Italian', 'Mexican', 'Asian', 'Indian', 'Mediterranean', 'American', 'French', 'Japanese', 'Thai', 'Middle Eastern'];
+  const DIETARY_OPTIONS = [
+    'Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Keto', 'Paleo', 'Low-Carb', 'Nut-Free', 'Halal', 'Kosher', 'Pescatarian', 'Low-FODMAP'
+  ];
+
+  const CUISINE_OPTIONS = [
+    'Italian', 'Mexican', 'Chinese', 'Japanese', 'Indian', 'Thai', 'Vietnamese', 'Korean',
+    'Mediterranean', 'French', 'Spanish', 'Greek', 'American', 'Latin American', 'Caribbean',
+    'Middle Eastern', 'Turkish', 'African', 'Ethiopian', 'German', 'British', 'Cajun & Creole',
+    'Peruvian', 'Brazilian', 'Fusion'
+  ];
+
   const SKILL_LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Master Chef'];
 
   const toggleTag = (list, setList, item) => {
@@ -31,6 +41,13 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
       setList(list.filter(i => i !== item));
     } else {
       setList([...list, item]);
+    }
+  };
+
+  const addCustomCuisine = () => {
+    if (newCuisine.trim() && !cuisines.includes(newCuisine.trim())) {
+      setCuisines([...cuisines, newCuisine.trim()]);
+      setNewCuisine('');
     }
   };
 
@@ -68,7 +85,7 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
   };
 
   return (
-    <div style={{ maxWidth: '900px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
+    <div style={{ maxWidth: '950px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
       
       {/* Page Header */}
       <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
@@ -118,12 +135,16 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
           </div>
         </div>
 
-        {/* 2. Favorite Cuisines */}
+        {/* 2. Favorite Cuisines (25+ Cuisines + Custom Input) */}
         <div className="glass-card" style={{ padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Award size={20} style={{ color: 'var(--lava-amber)' }} /> Favorite Cuisines
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Award size={20} style={{ color: 'var(--lava-amber)' }} /> Favorite Cuisines ({cuisines.length} selected)
           </h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <p style={{ color: 'var(--text-body)', fontSize: '0.875rem', marginBottom: '1.25rem' }}>
+            Select your preferred cuisines or type a custom region below.
+          </p>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem', marginBottom: '1.5rem' }}>
             {CUISINE_OPTIONS.map((opt) => {
               const selected = cuisines.includes(opt);
               return (
@@ -132,13 +153,13 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                   key={opt}
                   onClick={() => toggleTag(cuisines, setCuisines, opt)}
                   style={{
-                    padding: '0.6rem 1.2rem',
+                    padding: '0.55rem 1.1rem',
                     borderRadius: '20px',
                     border: selected ? '1px solid var(--lava-amber)' : '1px solid var(--border-glass)',
                     backgroundColor: selected ? 'rgba(245, 165, 91, 0.2)' : 'rgba(12, 13, 56, 0.6)',
                     color: selected ? '#FFFFFF' : 'var(--text-body)',
                     fontWeight: 600,
-                    fontSize: '0.9rem',
+                    fontSize: '0.875rem',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -151,6 +172,45 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                 </button>
               );
             })}
+
+            {/* Render custom cuisines not in default list */}
+            {cuisines.filter(c => !CUISINE_OPTIONS.includes(c)).map((custom) => (
+              <button
+                type="button"
+                key={custom}
+                onClick={() => toggleTag(cuisines, setCuisines, custom)}
+                style={{
+                  padding: '0.55rem 1.1rem',
+                  borderRadius: '20px',
+                  border: '1px solid var(--cyan-glow)',
+                  backgroundColor: 'rgba(127, 245, 231, 0.2)',
+                  color: '#FFFFFF',
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Check size={14} style={{ color: 'var(--cyan-glow)' }} /> {custom}
+              </button>
+            ))}
+          </div>
+
+          {/* Add Custom Cuisine Input */}
+          <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '500px' }}>
+            <input
+              type="text"
+              className="input-control"
+              placeholder="Add another cuisine (e.g., Moroccan, Tex-Mex)..."
+              value={newCuisine}
+              onChange={(e) => setNewCuisine(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomCuisine())}
+            />
+            <button type="button" onClick={addCustomCuisine} className="btn btn-outline" style={{ whiteSpace: 'nowrap' }}>
+              <Plus size={16} /> Add Custom
+            </button>
           </div>
         </div>
 

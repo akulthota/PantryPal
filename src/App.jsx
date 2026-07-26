@@ -174,7 +174,7 @@ export default function App() {
                 className="btn btn-primary"
                 style={{ padding: '0.5rem 1.25rem', fontSize: '0.9rem', minHeight: '40px' }}
               >
-                <User size={16} /> Log In
+                <User size={16} /> Log In / Sign Up
               </button>
             )}
 
@@ -237,9 +237,11 @@ export default function App() {
         )}
         {activeTab === 'analyze' && (
           <AnalyzePantryPage
+            user={user}
             userPreferences={userPreferences}
             onSaveRecipeSuccess={() => loadInitialData()}
             showToast={showToast}
+            onOpenAuthModal={() => setAuthModalOpen(true)}
           />
         )}
         {activeTab === 'calories' && (

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat } from 'lucide-react';
+import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
 
-export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess, showToast }) {
+export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeSuccess, showToast, onOpenAuthModal }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [ingredients, setIngredients] = useState([]);
@@ -17,7 +17,7 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
   const [errorMessage, setErrorMessage] = useState(null);
 
   const [scanCount, setScanCount] = useState(0);
-  const SCAN_LIMIT = 3;
+  const GUEST_SCAN_LIMIT = 3;
 
   useEffect(() => {
     loadScanHistory();
@@ -56,6 +56,12 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
 
   const analyzeImage = async () => {
     if (!selectedFile) return;
+
+    // Check scan limit if not logged in
+    if (!user && scanCount >= GUEST_SCAN_LIMIT) {
+      setErrorMessage(`Daily guest limit reached (3/3). Log in or Sign up for free to unlock UNLIMITED scans!`);
+      return;
+    }
 
     setIsAnalyzing(true);
     setErrorMessage(null);
@@ -210,13 +216,31 @@ export default function AnalyzePantryPage({ userPreferences, onSaveRecipeSuccess
               Snap or upload a photo of your fridge to extract ingredients and generate custom recipes.
             </p>
           </div>
+
+          {/* Daily Scan Limit Status Badge */}
+          {user ? (
+            <div style={{ backgroundColor: 'rgba(127, 245, 231, 0.15)', border: '1px solid rgba(127, 245, 231, 0.3)', color: 'var(--cyan-glow)', padding: '0.5rem 1rem', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.9rem' }}>
+              <UserCheck size={18} /> Unlimited Scans Active
+            </div>
+          ) : (
+            <div style={{ backgroundColor: scanCount >= GUEST_SCAN_LIMIT ? 'rgba(242, 119, 119, 0.15)' : 'rgba(245, 165, 91, 0.15)', border: `1px solid ${scanCount >= GUEST_SCAN_LIMIT ? 'var(--magma-red)' : 'var(--lava-amber)'}`, color: scanCount >= GUEST_SCAN_LIMIT ? 'var(--magma-red)' : 'var(--lava-amber)', padding: '0.5rem 1rem', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.9rem' }}>
+              <Lock size={16} /> Guest Scans: {scanCount} / {GUEST_SCAN_LIMIT} Daily
+            </div>
+          )}
         </div>
       </div>
 
       {errorMessage && (
-        <div style={{ backgroundColor: 'rgba(242, 119, 119, 0.15)', border: '1px solid var(--magma-red)', color: '#FFFFFF', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <AlertCircle size={20} style={{ color: 'var(--magma-red)' }} />
-          <span>{errorMessage}</span>
+        <div style={{ backgroundColor: 'rgba(242, 119, 119, 0.15)', border: '1px solid var(--magma-red)', color: '#FFFFFF', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <AlertCircle size={20} style={{ color: 'var(--magma-red)' }} />
+            <span>{errorMessage}</span>
+          </div>
+          {!user && (
+            <button onClick={onOpenAuthModal} className="btn btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', minHeight: '36px' }}>
+              Log In for Unlimited Scans
+            </button>
+          )}
         </div>
       )}
 

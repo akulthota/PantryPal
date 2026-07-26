@@ -12,12 +12,10 @@ try {
     typeof supabaseAnonKey === 'string' &&
     supabaseUrl.startsWith('https://') &&
     !supabaseUrl.includes('your-supabase-project') &&
-    !supabaseAnonKey.includes('service_role') // Prevent using secret service_role key in browser
+    !supabaseAnonKey.includes('service_role')
   ) {
     client = createClient(supabaseUrl, supabaseAnonKey);
     configured = true;
-  } else if (supabaseAnonKey.includes('service_role')) {
-    console.warn('PantryPal Warning: VITE_SUPABASE_ANON_KEY is set to a secret service_role key! Please replace it with the public anon key in Vercel.');
   }
 } catch (e) {
   console.warn('Supabase initialization fallback active:', e);
@@ -26,108 +24,19 @@ try {
 export const isSupabaseConfigured = configured;
 export const supabase = client;
 
-// Initial sample data for standalone fallback
+// Initial clean default preferences (No pre-selected presets)
 const DEFAULT_PREFERENCES = {
-  dietary_restrictions: ['Vegetarian'],
-  favorite_cuisines: ['Italian', 'Mediterranean'],
+  dietary_restrictions: [],
+  favorite_cuisines: [],
   allergies: [],
   cooking_skill: 'Intermediate',
   daily_protein_goal: 80
 };
 
-const DEFAULT_RECIPES = [
-  {
-    id: 'rec-1',
-    title: 'Mediterranean Chickpea & Vegetable Skillet',
-    cuisine_type: 'Mediterranean',
-    prep_time: '15 mins',
-    servings: '2',
-    difficulty: 'Easy',
-    ingredients: [
-      '1 can (15 oz) Chickpeas, rinsed and drained',
-      '1 Red Bell Pepper, diced',
-      '1 Zucchini, sliced',
-      '2 cloves Garlic, minced',
-      '2 tbsp Olive Oil',
-      '1 tsp Dried Oregano',
-      '1/2 cup Feta Cheese, crumbled',
-      'Fresh Parsley for garnish'
-    ],
-    instructions: [
-      'Heat olive oil in a large skillet over medium-high heat.',
-      'Add minced garlic and sauté for 1 minute until fragrant.',
-      'Add diced bell pepper and zucchini slices; cook for 5-7 minutes until tender.',
-      'Stir in drained chickpeas, oregano, salt, and black pepper. Sauté for 3 additional minutes.',
-      'Remove from heat, top with crumbled feta and fresh parsley. Serve warm.'
-    ],
-    nutrition: {
-      calories: 380,
-      protein: 16,
-      carbs: 45,
-      fat: 14,
-      fiber: 10
-    },
-    created_at: new Date(Date.now() - 86400000).toISOString()
-  },
-  {
-    id: 'rec-2',
-    title: 'Garlic Butter Salmon with Asparagus',
-    cuisine_type: 'American',
-    prep_time: '20 mins',
-    servings: '2',
-    difficulty: 'Intermediate',
-    ingredients: [
-      '2 Salmon Filets (6 oz each)',
-      '1 bunch Asparagus, trimmed',
-      '2 tbsp Butter, melted',
-      '3 cloves Garlic, minced',
-      '1 Lemon, sliced & juiced',
-      'Salt & Lemon Pepper to taste'
-    ],
-    instructions: [
-      'Preheat oven to 400°F (200°C) or prepare a large skillet.',
-      'Combine melted butter, minced garlic, lemon juice, salt, and pepper.',
-      'Place salmon fillets and trimmed asparagus on a lined baking tray.',
-      'Drizzle garlic butter mixture generously over salmon and asparagus.',
-      'Bake for 12-15 minutes until salmon flakes easily with a fork.'
-    ],
-    nutrition: {
-      calories: 490,
-      protein: 42,
-      carbs: 8,
-      fat: 32,
-      fiber: 4
-    },
-    created_at: new Date(Date.now() - 172800000).toISOString()
-  }
-];
+// Clean empty recipes array (No hardcoded default recipes)
+const DEFAULT_RECIPES = [];
 
-const DEFAULT_PROTEIN_LOGS = [
-  {
-    id: 'prot-1',
-    item: 'Greek Yogurt & Protein Powder Smoothie',
-    total_protein: 34,
-    animal_protein: 0,
-    plant_protein: 10,
-    dairy_protein: 24,
-    total_calories: 310,
-    total_fiber: 4,
-    logged_date: new Date().toISOString().split('T')[0],
-    created_at: new Date().toISOString()
-  },
-  {
-    id: 'prot-2',
-    item: 'Grilled Chicken Breast Bowl',
-    total_protein: 42,
-    animal_protein: 42,
-    plant_protein: 0,
-    dairy_protein: 0,
-    total_calories: 380,
-    total_fiber: 2,
-    logged_date: new Date().toISOString().split('T')[0],
-    created_at: new Date().toISOString()
-  }
-];
+const DEFAULT_PROTEIN_LOGS = [];
 
 // Helper functions for LocalStorage fallback
 const getLocal = (key, fallback) => {
