@@ -1,14 +1,14 @@
-/* PantryPal — Hand-Crafted Premium Design System (Human & Tactile) */
+/* PantryPal — Premium Editorial Human Design System */
 
 :root {
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-heading: 'Outfit', 'Inter', sans-serif;
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   
-  /* Natural Warm Slate Palette */
-  --bg-canvas: #0E0F17;
-  --bg-card: #151724;
-  --bg-card-hover: #1D1F30;
-  --bg-card-elevated: #1B1D2E;
+  /* Natural Warm Obsidian Palette */
+  --bg-canvas: #0D0E15;
+  --bg-card: #141522;
+  --bg-card-hover: #1C1E2E;
+  --bg-card-elevated: #181A2A;
   
   /* Primary Warm Terracotta Coral */
   --coral-primary: #FF6B57;
@@ -23,29 +23,26 @@
   --sage-green: #4EAA83;
   --sage-soft: rgba(78, 170, 131, 0.12);
   
-  /* Slate Periwinkle for Subtle Accents */
-  --slate-accent: #6C7A9C;
-  
   /* Typography Colors */
   --text-heading: #FFFFFF;
   --text-subheading: #E2E6F0;
-  --text-body: #A0A7BC;
-  --text-muted: #6B7285;
+  --text-body: #9EA6BC;
+  --text-muted: #666E82;
   
-  /* Subtle 1px Hand-Crafted Borders */
-  --border-subtle: rgba(255, 255, 255, 0.08);
+  /* Hand-Crafted 1px Micro Borders */
+  --border-subtle: rgba(255, 255, 255, 0.07);
   --border-active: rgba(255, 107, 87, 0.35);
-  --border-hover: rgba(255, 255, 255, 0.16);
+  --border-hover: rgba(255, 255, 255, 0.15);
   
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
   --radius-full: 9999px;
   
-  /* Depth Shadows (Subtle & Soft, No Oversaturated Neon) */
+  /* Soft Shadows */
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.25);
-  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
-  --shadow-button: 0 4px 14px rgba(255, 107, 87, 0.28);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-button: 0 4px 14px rgba(255, 107, 87, 0.25);
 }
 
 * {
@@ -68,17 +65,17 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   color: var(--text-heading);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
+  from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.97); }
+  from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
 
@@ -87,17 +84,17 @@ h1, h2, h3, h4, h5, h6 {
   100% { transform: rotate(360deg); }
 }
 
-.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
-.animate-scale-in { animation: scaleIn 0.3s ease-out forwards; }
+.animate-fade-in { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-scale-in { animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-spin { animation: spin 0.8s linear infinite; }
 
-/* Hand-Crafted Modern Card */
+/* Hand-Crafted Cards */
 .glass-card {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-card);
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .glass-card:hover {
@@ -105,16 +102,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .feature-card-hover {
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .feature-card-hover:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
-/* Clean Terracotta Highlight */
+/* Clean Accent Utility */
 .text-coral {
   color: var(--coral-primary);
 }
@@ -125,11 +122,11 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 0.65rem 1.35rem;
+  min-height: 42px;
+  padding: 0.6rem 1.25rem;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.925rem;
+  font-size: 0.9rem;
   cursor: pointer;
   border: none;
   transition: all 0.2s ease;
@@ -146,12 +143,12 @@ h1, h2, h3, h4, h5, h6 {
 .btn-primary:hover:not(:disabled) {
   background: var(--coral-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(255, 107, 87, 0.38);
+  box-shadow: 0 6px 16px rgba(255, 107, 87, 0.35);
 }
 
 .btn-amber {
   background: var(--honey-amber);
-  color: #0E0F17;
+  color: #0D0E15;
   font-weight: 700;
 }
 
@@ -190,12 +187,12 @@ h1, h2, h3, h4, h5, h6 {
 /* Form Controls */
 .input-control {
   width: 100%;
-  min-height: 44px;
-  padding: 0.65rem 1rem;
+  min-height: 42px;
+  padding: 0.6rem 0.95rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  font-size: 0.925rem;
+  font-size: 0.9rem;
   font-family: inherit;
   color: var(--text-heading);
   outline: none;
@@ -213,16 +210,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0E0F17;
+  background: #0D0E15;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 4px;
 }
 
@@ -234,7 +231,7 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) {
   .desktop-nav { display: none !important; }
   .mobile-menu-btn { display: block !important; }
-  .glass-card { border-radius: 16px; padding: 1.25rem !important; }
+  .glass-card { border-radius: 14px; padding: 1.25rem !important; }
   .btn { width: 100%; }
 }
 

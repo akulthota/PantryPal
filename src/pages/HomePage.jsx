@@ -13,7 +13,7 @@ export default function HomePage({ onNavigate, stats = {} }) {
         style={{
           padding: '3.5rem 3rem',
           marginBottom: '2.5rem',
-          background: 'linear-gradient(145deg, #181A29 0%, #12131F 100%)',
+          background: 'linear-gradient(145deg, #181A2A 0%, #12131F 100%)',
           position: 'relative',
           overflow: 'hidden',
           border: '1px solid rgba(255, 255, 255, 0.08)'
@@ -34,11 +34,11 @@ export default function HomePage({ onNavigate, stats = {} }) {
               color: '#FFFFFF'
             }}
           >
-            Cook smarter with <span className="text-coral">pantry-pal.dev</span>
+            Cook smarter with <span className="text-coral">PantryPal</span>
           </h1>
 
           <p style={{ fontSize: '1.15rem', color: 'var(--text-body)', marginBottom: '2.25rem', lineHeight: 1.65 }}>
-            Snap a photo of your fridge or pantry to automatically detect ingredients, discover custom recipes based on your dietary preferences, and track your daily nutrition.
+            Snap a photo of your fridge or pantry to automatically detect ingredients, discover custom recipes tailored to your dietary preferences, and track your daily nutrition.
           </p>
 
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
