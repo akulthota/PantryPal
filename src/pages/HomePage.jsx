@@ -1,33 +1,32 @@
 import React from 'react';
-import { Camera, Utensils, Activity, ArrowRight, Sparkles, Flame, CheckCircle, Flame as LavaIcon, ShieldCheck } from 'lucide-react';
+import { Camera, Utensils, Activity, ArrowRight, Flame, CheckCircle2, ShieldCheck, HeartPulse } from 'lucide-react';
 
 export default function HomePage({ onNavigate, stats = {} }) {
   const { recipeCount = 0, todayProtein = 0, proteinGoal = 80 } = stats;
 
   return (
-    <div style={{ maxWidth: '1250px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
+    <div style={{ maxWidth: '1200px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
       
-      {/* Hero Welcome Banner with Volcanic Night Glow */}
+      {/* Hero Welcome Banner */}
       <div
-        className="animate-slide-in glass-card"
+        className="animate-fade-in glass-card"
         style={{
           padding: '3.5rem 3rem',
           marginBottom: '2.5rem',
-          background: 'radial-gradient(ellipse at 80% 20%, rgba(242, 119, 119, 0.15) 0%, rgba(245, 165, 91, 0.08) 45%, rgba(18, 19, 70, 0.85) 100%)',
+          background: 'linear-gradient(145deg, #181A29 0%, #12131F 100%)',
           position: 'relative',
           overflow: 'hidden',
-          border: '1px solid rgba(242, 119, 119, 0.25)',
-          boxShadow: 'var(--shadow-card), 0 0 30px rgba(242, 119, 119, 0.1)'
+          border: '1px solid rgba(255, 255, 255, 0.08)'
         }}
       >
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: '780px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(242, 119, 119, 0.15)', color: 'var(--magma-red)', border: '1px solid rgba(242, 119, 119, 0.3)', padding: '0.4rem 1.1rem', borderRadius: '20px', fontSize: '0.875rem', fontWeight: 600, marginBottom: '1.25rem' }}>
-            <LavaIcon size={16} /> Volcanic Night Kitchen Assistant
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: '750px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid rgba(255, 107, 87, 0.25)', padding: '0.35rem 1rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1.25rem' }}>
+            <HeartPulse size={16} /> Smart Kitchen & Nutrition Assistant
           </div>
 
           <h1
             style={{
-              fontSize: 'clamp(2.4rem, 5vw, 3.4rem)',
+              fontSize: 'clamp(2.4rem, 4.5vw, 3.3rem)',
               fontWeight: 800,
               lineHeight: 1.15,
               marginBottom: '1.25rem',
@@ -35,42 +34,35 @@ export default function HomePage({ onNavigate, stats = {} }) {
               color: '#FFFFFF'
             }}
           >
-            Welcome to <span className="gradient-text-magma">PantryPal</span>
+            Cook smarter with <span className="text-coral">pantry-pal.dev</span>
           </h1>
 
-          <p style={{ fontSize: '1.2rem', color: 'var(--text-body)', marginBottom: '2.25rem', lineHeight: 1.65 }}>
-            Your personal culinary assistant. Snap a photo of your fridge or meal to organize ingredients, calculate calories, discover personalized recipes, and track your daily macros.
+          <p style={{ fontSize: '1.15rem', color: 'var(--text-body)', marginBottom: '2.25rem', lineHeight: 1.65 }}>
+            Snap a photo of your fridge or pantry to automatically detect ingredients, discover custom recipes based on your dietary preferences, and track your daily nutrition.
           </p>
 
-          <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <button
               onClick={() => onNavigate('analyze')}
               className="btn btn-primary"
-              style={{ fontSize: '1.05rem', padding: '0.85rem 1.85rem' }}
+              style={{ fontSize: '1rem', padding: '0.8rem 1.75rem' }}
             >
-              <Camera size={20} /> Scan Pantry Now
-            </button>
-            <button
-              onClick={() => onNavigate('calories')}
-              className="btn btn-amber"
-              style={{ fontSize: '1.05rem', padding: '0.85rem 1.85rem' }}
-            >
-              <Flame size={20} /> Calorie Scanner
+              <Camera size={18} /> Scan Pantry Ingredients
             </button>
             <button
               onClick={() => onNavigate('recipes')}
               className="btn btn-outline"
-              style={{ fontSize: '1.05rem', padding: '0.85rem 1.85rem' }}
+              style={{ fontSize: '1rem', padding: '0.8rem 1.75rem' }}
             >
-              <Utensils size={20} /> Saved Recipes
+              <Utensils size={18} /> Saved Recipes ({recipeCount})
             </button>
           </div>
         </div>
       </div>
 
       {/* Feature Cards Grid */}
-      <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem', color: '#FFFFFF' }}>
-        Kitchen Tools & Features
+      <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '1.25rem', color: '#FFFFFF' }}>
+        Kitchen & Health Features
       </h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
         
@@ -80,18 +72,18 @@ export default function HomePage({ onNavigate, stats = {} }) {
           style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         >
           <div>
-            <div style={{ width: '56px', height: '56px', borderRadius: '16px', backgroundColor: 'rgba(127, 245, 231, 0.15)', color: 'var(--cyan-glow)', border: '1px solid rgba(127, 245, 231, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-              <Camera size={28} />
+            <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid rgba(255, 107, 87, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+              <Camera size={26} />
             </div>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem', color: '#FFFFFF' }}>
-              Fridge & Pantry Scanner
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.65rem', color: '#FFFFFF' }}>
+              Fridge & Pantry Vision Scanner
             </h3>
-            <p style={{ color: 'var(--text-body)', fontSize: '0.975rem', marginBottom: '1.5rem' }}>
-              Snap a photo of your fridge, freezer, or shelves to automatically identify all your available ingredients in seconds.
+            <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
+              Upload or snap a photo of your shelves to identify ingredients and instantly craft step-by-step custom recipes.
             </p>
           </div>
           <button onClick={() => onNavigate('analyze')} className="btn btn-outline" style={{ width: '100%', justifyContent: 'space-between' }}>
-            <span>Scan Pantry</span>
+            <span>Open Pantry Scanner</span>
             <ArrowRight size={18} />
           </button>
         </div>
@@ -102,14 +94,14 @@ export default function HomePage({ onNavigate, stats = {} }) {
           style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         >
           <div>
-            <div style={{ width: '56px', height: '56px', borderRadius: '16px', backgroundColor: 'rgba(242, 119, 119, 0.15)', color: 'var(--magma-red)', border: '1px solid rgba(242, 119, 119, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-              <Flame size={28} />
+            <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--honey-soft)', color: 'var(--honey-amber)', border: '1px solid rgba(244, 185, 66, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+              <Flame size={26} />
             </div>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem', color: '#FFFFFF' }}>
-              Calorie & Nutrition Scanner
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.65rem', color: '#FFFFFF' }}>
+              Meal Calorie & Macro Estimator
             </h3>
-            <p style={{ color: 'var(--text-body)', fontSize: '0.975rem', marginBottom: '1.5rem' }}>
-              Take a photo of any prepared plate or snack to estimate total calories, protein, carbs, fat, and log to daily goals.
+            <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
+              Take a photo of any cooked plate or snack to calculate calories, protein, carbs, fat, and log to your daily tracker.
             </p>
           </div>
           <button onClick={() => onNavigate('calories')} className="btn btn-outline" style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -118,20 +110,20 @@ export default function HomePage({ onNavigate, stats = {} }) {
           </button>
         </div>
 
-        {/* Card 3: Personalized Recipes */}
+        {/* Card 3: Saved Recipes */}
         <div
           className="glass-card feature-card-hover"
           style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         >
           <div>
-            <div style={{ width: '56px', height: '56px', borderRadius: '16px', backgroundColor: 'rgba(245, 165, 91, 0.15)', color: 'var(--lava-amber)', border: '1px solid rgba(245, 165, 91, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-              <Utensils size={28} />
+            <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--sage-soft)', color: 'var(--sage-green)', border: '1px solid rgba(78, 170, 131, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+              <Utensils size={26} />
             </div>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem', color: '#FFFFFF' }}>
-              Personalized Recipe Generator
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.65rem', color: '#FFFFFF' }}>
+              Personalized Saved Recipes
             </h3>
-            <p style={{ color: 'var(--text-body)', fontSize: '0.975rem', marginBottom: '1.5rem' }}>
-              Get step-by-step recipes tailored to your dietary restrictions, favorite cuisines, and cooking skill level.
+            <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
+              Save your favorite recipes, view step-by-step instructions, watch YouTube cooking tutorials, and log cooked meals.
             </p>
           </div>
           <button onClick={() => onNavigate('recipes')} className="btn btn-outline" style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -143,26 +135,27 @@ export default function HomePage({ onNavigate, stats = {} }) {
       </div>
 
       {/* Daily Summary Bar */}
-      <div className="glass-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
-        <div style={{ padding: '1rem', borderRight: '1px solid var(--border-glass)' }}>
-          <div style={{ color: 'var(--cyan-glow)', fontWeight: 800, fontSize: '2.2rem' }}>{recipeCount}</div>
-          <div style={{ color: 'var(--text-body)', fontSize: '0.9rem', fontWeight: 500 }}>Saved Recipes</div>
+      <div className="glass-card" style={{ padding: '1.75rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
+        <div style={{ padding: '0.75rem', borderRight: '1px solid var(--border-subtle)' }}>
+          <div style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '2.1rem' }}>{recipeCount}</div>
+          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight: 500 }}>Saved Recipes</div>
         </div>
-        <div style={{ padding: '1rem', borderRight: '1px solid var(--border-glass)' }}>
-          <div style={{ color: 'var(--magma-red)', fontWeight: 800, fontSize: '2.2rem' }}>{todayProtein}g</div>
-          <div style={{ color: 'var(--text-body)', fontSize: '0.9rem', fontWeight: 500 }}>Today's Protein</div>
+        <div style={{ padding: '0.75rem', borderRight: '1px solid var(--border-subtle)' }}>
+          <div style={{ color: 'var(--coral-primary)', fontWeight: 800, fontSize: '2.1rem' }}>{todayProtein}g</div>
+          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight: 500 }}>Today's Protein</div>
         </div>
-        <div style={{ padding: '1rem', borderRight: '1px solid var(--border-glass)' }}>
-          <div style={{ color: 'var(--sulphur-gold)', fontWeight: 800, fontSize: '2.2rem' }}>{proteinGoal}g</div>
-          <div style={{ color: 'var(--text-body)', fontSize: '0.9rem', fontWeight: 500 }}>Daily Goal Target</div>
+        <div style={{ padding: '0.75rem', borderRight: '1px solid var(--border-subtle)' }}>
+          <div style={{ color: 'var(--honey-amber)', fontWeight: 800, fontSize: '2.1rem' }}>{proteinGoal}g</div>
+          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight: 500 }}>Daily Goal Target</div>
         </div>
-        <div style={{ padding: '1rem' }}>
-          <div style={{ color: 'var(--cyan-glow)', fontWeight: 800, fontSize: '2.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-            <CheckCircle size={28} /> Active
+        <div style={{ padding: '0.75rem' }}>
+          <div style={{ color: 'var(--sage-green)', fontWeight: 800, fontSize: '2.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <CheckCircle2 size={26} /> Active
           </div>
-          <div style={{ color: 'var(--text-body)', fontSize: '0.9rem', fontWeight: 500 }}>Volcanic Engine</div>
+          <div style={{ color: 'var(--text-body)', fontSize: '0.875rem', fontWeight: 500 }}>Kitchen Engine</div>
         </div>
       </div>
+
     </div>
   );
 }
