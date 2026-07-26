@@ -99,11 +99,12 @@ export default function App() {
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          backgroundColor: 'rgba(13, 14, 21, 0.9)',
+          backgroundColor: 'rgba(13, 14, 21, 0.92)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: 'var(--shadow-card)'
+          boxShadow: 'var(--shadow-card)',
+          transition: 'all 0.3s var(--ease-spring)'
         }}
       >
         <div
@@ -117,21 +118,23 @@ export default function App() {
             gap: '1.5rem'
           }}
         >
-          {/* 1. Left: Official Brand Logo — PantryPal */}
+          {/* 1. Left: Official Brand Logo — PantryPal (Clean Line Height & No Overlap) */}
           <div
             onClick={() => setActiveTab('home')}
-            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flexShrink: 0 }}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', flexShrink: 0 }}
           >
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f6266f0b1234320ee6e827/43c4aa785_logo.png"
               alt="PantryPal Logo"
-              style={{ width: '38px', height: '38px', borderRadius: '10px', objectFit: 'cover' }}
+              style={{ width: '40px', height: '40px', borderRadius: '10px', objectFit: 'cover' }}
             />
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#FFFFFF', letterSpacing: '-0.03em' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <span style={{ fontSize: '1.45rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.05 }}>
                 Pantry<span className="text-coral">Pal</span>
               </span>
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em' }}>pantry-pal.dev</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em', marginTop: '3px' }}>
+                pantry-pal.dev
+              </span>
             </div>
           </div>
 
@@ -156,7 +159,7 @@ export default function App() {
                     fontWeight: isActive ? 700 : 500,
                     fontSize: '0.9rem',
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease',
+                    transition: 'all 0.25s var(--ease-spring)',
                     whiteSpace: 'nowrap'
                   }}
                 >
@@ -181,7 +184,7 @@ export default function App() {
                 fontSize: '0.875rem',
                 fontWeight: 600,
                 cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.25s var(--ease-spring)'
               }}
             >
               <HeartPulse size={17} style={{ color: healthDashboardOpen ? 'var(--coral-primary)' : 'var(--sage-green)' }} />
