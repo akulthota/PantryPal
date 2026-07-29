@@ -89,16 +89,15 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
         }
       }
 
-      // Save onboarding preferences
       await db.preferences.update(userPrefs);
       onLoginSuccess(createdUser);
-      showToast('Welcome to PantryPal!', `Your account & profile setup is complete. Enjoy unlimited scans!`, 'success');
+      showToast('Welcome to PantryPal!', `Your account setup is complete. Enjoy unlimited scans!`, 'success');
       onClose();
     } catch (err) {
       const mockUser = { id: `usr-${Date.now()}`, email, name: email.split('@')[0] };
       await db.preferences.update(userPrefs);
       onLoginSuccess(mockUser);
-      showToast('Welcome to PantryPal!', 'Your culinary account is ready!', 'success');
+      showToast('Welcome to PantryPal!', 'Your account is ready!', 'success');
       onClose();
     } finally {
       setIsLoading(false);
@@ -113,7 +112,7 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(12, 13, 56, 0.88)',
+        backgroundColor: 'rgba(17, 24, 39, 0.65)',
         backdropFilter: 'blur(12px)',
         display: 'flex',
         alignItems: 'center',
@@ -126,52 +125,70 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
       <div
         className="glass-card animate-scale-in"
         style={{
-          maxWidth: mode === 'signup' ? '540px' : '440px',
+          maxWidth: mode === 'signup' ? '520px' : '440px',
           width: '100%',
           padding: '2.5rem',
           position: 'relative',
           borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--cyan-glow)',
-          boxShadow: 'var(--shadow-card), var(--shadow-cyan)',
+          backgroundColor: '#FFFFFF',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
           transition: 'all 0.3s ease'
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Modal Close Button */}
         <button
           onClick={onClose}
-          style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-body)' }}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: '#F1F5F9',
+            border: '1px solid #E2E8F0',
+            borderRadius: '50%',
+            width: '32px',
+            height: '32px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: '#64748B'
+          }}
+          title="Close"
         >
-          <X size={22} />
+          <X size={18} />
         </button>
 
         {/* Header Title */}
         <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-          <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'rgba(242, 119, 119, 0.15)', color: 'var(--magma-red)', border: '1px solid rgba(242, 119, 119, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+          <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid var(--coral-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', boxShadow: '0 4px 12px rgba(255, 82, 82, 0.15)' }}>
             <Sparkles size={26} />
           </div>
-          <h2 style={{ fontSize: '1.7rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.25rem' }}>
+          <h2 style={{ fontSize: '1.7rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '0.35rem' }}>
             {mode === 'login' ? 'Welcome Back to PantryPal' : 'Create Your PantryPal Account'}
           </h2>
-          <p style={{ color: 'var(--text-body)', fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--text-body)', fontSize: '0.9rem', fontWeight: 500 }}>
             {mode === 'login' ? 'Sign in to access your saved recipes & unlimited scans.' : `Step ${step} of 4: Setup your personal culinary profile`}
           </p>
         </div>
 
-        {/* Mode Switcher Tabs */}
-        <div style={{ display: 'flex', backgroundColor: 'rgba(12, 13, 56, 0.8)', padding: '4px', borderRadius: '12px', marginBottom: '1.75rem', border: '1px solid var(--border-glass)' }}>
+        {/* Mode Switcher Tabs (High Contrast Light Gray & Strawberry Red) */}
+        <div style={{ display: 'flex', backgroundColor: '#F1F5F9', padding: '4px', borderRadius: '12px', marginBottom: '1.75rem', border: '1px solid #E2E8F0' }}>
           <button
             type="button"
             onClick={() => { setMode('login'); setStep(1); }}
             style={{
               flex: 1,
-              padding: '0.5rem',
+              padding: '0.6rem',
               borderRadius: '8px',
               border: 'none',
-              fontWeight: 600,
+              fontWeight: 700,
               fontSize: '0.9rem',
               cursor: 'pointer',
-              backgroundColor: mode === 'login' ? 'var(--magma-red)' : 'transparent',
-              color: mode === 'login' ? 'white' : 'var(--text-body)',
+              backgroundColor: mode === 'login' ? 'var(--coral-primary)' : 'transparent',
+              color: mode === 'login' ? '#FFFFFF' : '#64748B',
+              boxShadow: mode === 'login' ? '0 2px 8px rgba(255, 82, 82, 0.25)' : 'none',
               transition: 'all 0.2s'
             }}
           >
@@ -182,14 +199,15 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
             onClick={() => { setMode('signup'); setStep(1); }}
             style={{
               flex: 1,
-              padding: '0.5rem',
+              padding: '0.6rem',
               borderRadius: '8px',
               border: 'none',
-              fontWeight: 600,
+              fontWeight: 700,
               fontSize: '0.9rem',
               cursor: 'pointer',
-              backgroundColor: mode === 'signup' ? 'var(--magma-red)' : 'transparent',
-              color: mode === 'signup' ? 'white' : 'var(--text-body)',
+              backgroundColor: mode === 'signup' ? 'var(--coral-primary)' : 'transparent',
+              color: mode === 'signup' ? '#FFFFFF' : '#64748B',
+              boxShadow: mode === 'signup' ? '0 2px 8px rgba(255, 82, 82, 0.25)' : 'none',
               transition: 'all 0.2s'
             }}
           >
@@ -199,15 +217,15 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
 
         {/* MODE 1: LOGIN FORM */}
         {mode === 'login' && (
-          <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-body)', marginBottom: '0.3rem', display: 'block' }}>Email Address</label>
+              <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '0.4rem', display: 'block' }}>Email Address</label>
               <div style={{ position: 'relative' }}>
-                <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--periwinkle-glow)' }} />
+                <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
                 <input
                   type="email"
                   className="input-control"
-                  style={{ paddingLeft: '2.4rem' }}
+                  style={{ paddingLeft: '2.6rem' }}
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -217,13 +235,13 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
             </div>
 
             <div>
-              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-body)', marginBottom: '0.3rem', display: 'block' }}>Password</label>
+              <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '0.4rem', display: 'block' }}>Password</label>
               <div style={{ position: 'relative' }}>
-                <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--periwinkle-glow)' }} />
+                <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
                 <input
                   type="password"
                   className="input-control"
-                  style={{ paddingLeft: '2.4rem' }}
+                  style={{ paddingLeft: '2.6rem' }}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -232,7 +250,7 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
               </div>
             </div>
 
-            <button type="submit" disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: '0.85rem', marginTop: '0.5rem' }}>
+            <button type="submit" disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: '0.85rem', marginTop: '0.5rem', fontSize: '1rem' }}>
               {isLoading ? 'Signing In...' : 'Log In & Unlock Unlimited Scans'}
             </button>
           </form>
@@ -248,9 +266,9 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
                   key={s}
                   style={{
                     flex: 1,
-                    height: '4px',
-                    borderRadius: '2px',
-                    backgroundColor: s <= step ? 'var(--magma-red)' : 'rgba(127, 153, 245, 0.2)',
+                    height: '5px',
+                    borderRadius: '3px',
+                    backgroundColor: s <= step ? 'var(--coral-primary)' : '#E2E8F0',
                     transition: 'all 0.3s ease'
                   }}
                 />
@@ -259,15 +277,15 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
 
             {/* WIZARD STEP 1: CREDENTIALS */}
             {step === 1 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-body)', marginBottom: '0.3rem', display: 'block' }}>Email Address</label>
+                  <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '0.4rem', display: 'block' }}>Email Address</label>
                   <div style={{ position: 'relative' }}>
-                    <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--periwinkle-glow)' }} />
+                    <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
                     <input
                       type="email"
                       className="input-control"
-                      style={{ paddingLeft: '2.4rem' }}
+                      style={{ paddingLeft: '2.6rem' }}
                       placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -277,13 +295,13 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-body)', marginBottom: '0.3rem', display: 'block' }}>Password</label>
+                  <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '0.4rem', display: 'block' }}>Password</label>
                   <div style={{ position: 'relative' }}>
-                    <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--periwinkle-glow)' }} />
+                    <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
                     <input
                       type="password"
                       className="input-control"
-                      style={{ paddingLeft: '2.4rem' }}
+                      style={{ paddingLeft: '2.6rem' }}
                       placeholder="At least 6 characters"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -297,7 +315,7 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
                   disabled={!email || !password}
                   onClick={() => setStep(2)}
                   className="btn btn-primary"
-                  style={{ width: '100%', padding: '0.85rem', marginTop: '0.5rem', justifyContent: 'space-between' }}
+                  style={{ width: '100%', padding: '0.85rem', marginTop: '0.5rem', justifyContent: 'space-between', fontSize: '1rem' }}
                 >
                   <span>Continue to Dietary Setup</span>
                   <ArrowRight size={18} />
@@ -308,10 +326,10 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
             {/* WIZARD STEP 2: DIETARY RESTRICTIONS */}
             {step === 2 && (
               <div>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Heart size={18} style={{ color: 'var(--magma-red)' }} /> Any Dietary Restrictions?
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Heart size={18} style={{ color: 'var(--coral-primary)' }} /> Any Dietary Restrictions?
                 </h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem', marginBottom: '1.5rem' }}>
                   {DIETARY_OPTIONS.map(opt => {
                     const sel = dietary.includes(opt);
                     return (
@@ -320,13 +338,13 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
                         key={opt}
                         onClick={() => toggleTag(dietary, setDietary, opt)}
                         style={{
-                          padding: '0.45rem 0.85rem',
+                          padding: '0.5rem 0.95rem',
                           borderRadius: '16px',
-                          border: sel ? '1px solid var(--magma-red)' : '1px solid var(--border-glass)',
-                          backgroundColor: sel ? 'rgba(242, 119, 119, 0.2)' : 'rgba(12, 13, 56, 0.6)',
-                          color: sel ? '#FFFFFF' : 'var(--text-body)',
-                          fontSize: '0.85rem',
-                          fontWeight: 600,
+                          border: sel ? '2px solid var(--coral-primary)' : '1px solid #CBD5E1',
+                          backgroundColor: sel ? 'var(--coral-soft)' : '#F8FAFC',
+                          color: sel ? 'var(--coral-primary)' : '#334155',
+                          fontSize: '0.875rem',
+                          fontWeight: sel ? 700 : 500,
                           cursor: 'pointer'
                         }}
                       >
@@ -351,10 +369,10 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
             {/* WIZARD STEP 3: FAVORITE CUISINES & SKILL */}
             {step === 3 && (
               <div>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Award size={18} style={{ color: 'var(--lava-amber)' }} /> Favorite Cuisines
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Award size={18} style={{ color: 'var(--honey-amber)' }} /> Favorite Regional Cuisines
                 </h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem', maxHeight: '160px', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem', marginBottom: '1.25rem', maxHeight: '160px', overflowY: 'auto' }}>
                   {CUISINE_OPTIONS.map(c => {
                     const sel = cuisines.includes(c);
                     return (
@@ -363,13 +381,13 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
                         key={c}
                         onClick={() => toggleTag(cuisines, setCuisines, c)}
                         style={{
-                          padding: '0.4rem 0.8rem',
+                          padding: '0.45rem 0.9rem',
                           borderRadius: '16px',
-                          border: sel ? '1px solid var(--lava-amber)' : '1px solid var(--border-glass)',
-                          backgroundColor: sel ? 'rgba(245, 165, 91, 0.2)' : 'rgba(12, 13, 56, 0.6)',
-                          color: sel ? '#FFFFFF' : 'var(--text-body)',
-                          fontSize: '0.825rem',
-                          fontWeight: 600,
+                          border: sel ? '2px solid var(--honey-amber)' : '1px solid #CBD5E1',
+                          backgroundColor: sel ? 'var(--honey-soft)' : '#F8FAFC',
+                          color: sel ? 'var(--honey-amber)' : '#334155',
+                          fontSize: '0.85rem',
+                          fontWeight: sel ? 700 : 500,
                           cursor: 'pointer'
                         }}
                       >
@@ -394,21 +412,25 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
             {/* WIZARD STEP 4: PROTEIN GOAL & FINISH */}
             {step === 4 && (
               <div>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Target size={18} style={{ color: 'var(--sulphur-gold)' }} /> Daily Protein Target (grams)
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Target size={18} style={{ color: 'var(--coral-primary)' }} /> Daily Protein Target (grams)
                 </h4>
                 <p style={{ color: 'var(--text-body)', fontSize: '0.85rem', marginBottom: '1rem' }}>
                   Set your daily protein goal to track progress in your nutrition dashboard.
                 </p>
 
+                <div style={{ backgroundColor: '#F8FAFC', padding: '1rem', borderRadius: '12px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '1rem' }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--coral-primary)' }}>{proteinGoal}g</div>
+                </div>
+
                 <input
-                  type="number"
-                  className="input-control"
-                  style={{ marginBottom: '1.5rem' }}
+                  type="range"
+                  min="20"
+                  max="250"
+                  step="5"
                   value={proteinGoal}
                   onChange={(e) => setProteinGoal(e.target.value)}
-                  min="20"
-                  max="300"
+                  style={{ width: '100%', accentColor: 'var(--coral-primary)', marginBottom: '1.5rem', cursor: 'pointer' }}
                 />
 
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -420,7 +442,7 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
                     disabled={isLoading}
                     onClick={handleCompleteSignUpWizard}
                     className="btn btn-amber"
-                    style={{ flex: 2, padding: '0.85rem', justifyContent: 'center' }}
+                    style={{ flex: 2, padding: '0.85rem', justifyContent: 'center', fontSize: '0.95rem' }}
                   >
                     {isLoading ? 'Creating Account...' : 'Complete & Unlock Unlimited Scans 🎉'}
                   </button>
@@ -431,10 +453,10 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
           </div>
         )}
 
-        {/* Guest Mode Option */}
-        <div style={{ position: 'relative', textAlign: 'center', margin: '1.5rem 0 1rem' }}>
-          <div style={{ height: '1px', backgroundColor: 'var(--border-glass)', width: '100%', position: 'absolute', top: '50%' }} />
-          <span style={{ backgroundColor: '#121346', padding: '0 0.75rem', position: 'relative', fontSize: '0.8rem', color: 'var(--text-body)', fontWeight: 500 }}>
+        {/* Clean Divider ("or continue as Guest") */}
+        <div style={{ position: 'relative', textAlign: 'center', margin: '1.75rem 0 1.25rem' }}>
+          <div style={{ height: '1px', backgroundColor: '#E2E8F0', width: '100%', position: 'absolute', top: '50%' }} />
+          <span style={{ backgroundColor: '#FFFFFF', padding: '0 0.85rem', position: 'relative', fontSize: '0.825rem', color: '#64748B', fontWeight: 600 }}>
             or continue as Guest (3 free scans/day)
           </span>
         </div>
@@ -443,7 +465,7 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
           type="button"
           onClick={onClose}
           className="btn btn-outline"
-          style={{ width: '100%', justifyContent: 'center' }}
+          style={{ width: '100%', justifyContent: 'center', fontWeight: 600 }}
         >
           <span>Continue as Guest</span>
           <ArrowRight size={16} />
