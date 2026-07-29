@@ -118,9 +118,13 @@ export default function App() {
             gap: '1.5rem'
           }}
         >
-          {/* 1. Left: Official Brand Logo — PantryPal (Clean Line Height & No Overlap) */}
+          {/* 1. Left: Official Brand Logo — PantryPal */}
           <div
-            onClick={() => setActiveTab('home')}
+            onClick={() => {
+              setActiveTab('home');
+              setHealthDashboardOpen(false);
+              setMobileMenuOpen(false);
+            }}
             style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', flexShrink: 0 }}
           >
             <img
@@ -146,7 +150,10 @@ export default function App() {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setHealthDashboardOpen(false);
+                  }}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -230,7 +237,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* TOP HEALTH & NUTRITION DASHBOARD ANIMATED DROPDOWN BAR */}
+        {/* TOP HEALTH & NUTRITION DASHBOARD ANIMATED DROPDOWN BAR (WITH EXPLICIT MOBILE CLOSE BUTTON) */}
         {healthDashboardOpen && (
           <div
             className="animate-fade-in"
@@ -243,6 +250,30 @@ export default function App() {
               zIndex: 90
             }}
           >
+            {/* Dedicated Explicit Close Button for Mobile & Desktop */}
+            <button
+              onClick={() => setHealthDashboardOpen(false)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '16px',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid var(--coral-border)',
+                color: 'var(--coral-primary)',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+              }}
+              title="Close Health Dashboard"
+            >
+              <X size={18} />
+            </button>
+
             <div
               style={{
                 maxWidth: '1150px',
@@ -251,11 +282,12 @@ export default function App() {
                 gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
                 gap: '1.25rem',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                paddingRight: '1rem'
               }}
             >
               
-              {/* Metric 1: Today's Calories (Strawberry Tint) */}
+              {/* Metric 1: Today's Calories */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--coral-border)', boxShadow: 'var(--shadow-sm)' }}>
                 <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--coral-border)' }}>
                   <Flame size={22} />
@@ -266,7 +298,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Metric 2: Today's Protein (Mango Gold Tint) */}
+              {/* Metric 2: Today's Protein */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--honey-border)', boxShadow: 'var(--shadow-sm)' }}>
                 <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--honey-soft)', color: 'var(--honey-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--honey-border)' }}>
                   <Target size={22} />
@@ -283,14 +315,22 @@ export default function App() {
               {/* Metric 3: Quick Action Shortcuts */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button
-                  onClick={() => { setActiveTab('calories'); setHealthDashboardOpen(false); }}
+                  onClick={() => {
+                    setActiveTab('calories');
+                    setHealthDashboardOpen(false);
+                    setMobileMenuOpen(false);
+                  }}
                   className="btn btn-amber"
                   style={{ padding: '0.65rem 1.1rem', fontSize: '0.875rem', flex: 1, minWidth: '150px', justifyContent: 'center' }}
                 >
                   <Flame size={17} /> Scan Meal Calories
                 </button>
                 <button
-                  onClick={() => { setActiveTab('protein'); setHealthDashboardOpen(false); }}
+                  onClick={() => {
+                    setActiveTab('protein');
+                    setHealthDashboardOpen(false);
+                    setMobileMenuOpen(false);
+                  }}
                   className="btn btn-secondary"
                   style={{ padding: '0.65rem 1.1rem', fontSize: '0.875rem', flex: 1, minWidth: '150px', justifyContent: 'center' }}
                 >
@@ -306,10 +346,7 @@ export default function App() {
         {mobileMenuOpen && (
           <div style={{ backgroundColor: '#FFFFFF', borderTop: '1px solid #E2E8F0', padding: '0.85rem 1.25rem' }}>
             <button
-              onClick={() => {
-                setHealthDashboardOpen(!healthDashboardOpen);
-                setMobileMenuOpen(false);
-              }}
+              onClick={() => setHealthDashboardOpen(!healthDashboardOpen)}
               style={{
                 width: '100%',
                 display: 'flex',
@@ -340,6 +377,7 @@ export default function App() {
                   key={item.id}
                   onClick={() => {
                     setActiveTab(item.id);
+                    setHealthDashboardOpen(false);
                     setMobileMenuOpen(false);
                   }}
                   style={{
