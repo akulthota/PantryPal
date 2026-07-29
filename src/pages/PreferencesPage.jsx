@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Save, Check, Plus, X, Shield, Award, Target, Heart, UtensilsCrossed } from 'lucide-react';
+import { Settings, Save, Check, Plus, X, Shield, Award, Target, Heart, UtensilsCrossed, ChefHat } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
 
 export default function PreferencesPage({ userPreferences, onUpdatePreferences, showToast }) {
@@ -34,7 +35,12 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
     'Peruvian', 'Brazilian', 'Fusion'
   ];
 
-  const SKILL_LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Master Chef'];
+  const SKILL_LEVELS = [
+    { id: 'Beginner', title: 'Beginner', desc: 'Quick & simple 15-min recipes' },
+    { id: 'Intermediate', title: 'Intermediate', desc: 'Standard home cooking & skillet meals' },
+    { id: 'Advanced', title: 'Advanced', desc: 'Multi-step culinary techniques' },
+    { id: 'Master Chef', title: 'Master Chef', desc: 'Gourmet restaurant-quality dishes' }
+  ];
 
   const toggleTag = (list, setList, item) => {
     if (list.includes(item)) {
@@ -76,7 +82,8 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
     try {
       await db.preferences.update(updated);
       onUpdatePreferences(updated);
-      showToast('Preferences Saved', 'Your culinary profile has been updated.', 'success');
+      try { confetti({ particleCount: 70, spread: 50, origin: { y: 0.6 } }); } catch {}
+      showToast('Preferences Saved! ⚙️', 'Your culinary profile has been updated.', 'success');
     } catch (err) {
       showToast('Error', 'Failed to save preferences.', 'error');
     } finally {
@@ -85,25 +92,40 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
   };
 
   return (
-    <div style={{ maxWidth: '950px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
+    <div style={{ maxWidth: '950px', margin: '2rem auto', padding: '0 1.5rem 4rem 1.5rem' }}>
       
-      {/* Page Header */}
-      <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.5rem' }}>
-          User Preferences & <span className="gradient-text-magma">Profile</span>
-        </h1>
-        <p style={{ color: 'var(--text-body)', fontSize: '1rem' }}>
-          Customize your dietary restrictions, favorite cuisines, and skill level. PantryPal will tailor all generated recipes to these settings.
-        </p>
+      {/* Page Header Banner */}
+      <div className="glass-card animate-fade-in" style={{ padding: '2.25rem 2rem', marginBottom: '2rem', background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)', border: '1px solid var(--coral-border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '0.5rem' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--coral-border)' }}>
+            <Settings size={26} />
+          </div>
+          <div>
+            <h1 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-heading)' }}>
+              Culinary Preferences & <span className="text-coral">Profile</span>
+            </h1>
+            <p style={{ color: 'var(--text-body)', fontSize: '0.975rem', marginTop: '0.2rem' }}>
+              Customize your dietary restrictions, favorite cuisines, and skill level. PantryPal tailors every recipe to these settings.
+            </p>
+          </div>
+        </div>
       </div>
 
       <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         
         {/* 1. Dietary Restrictions */}
-        <div className="glass-card" style={{ padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Heart size={20} style={{ color: 'var(--magma-red)' }} /> Dietary Restrictions & Diets
-          </h3>
+        <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Heart size={22} style={{ color: 'var(--coral-primary)' }} /> Dietary Restrictions & Diets
+            </h3>
+            {dietary.length > 0 && (
+              <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--coral-primary)', backgroundColor: 'var(--coral-soft)', padding: '0.2rem 0.65rem', borderRadius: '12px' }}>
+                {dietary.length} selected
+              </span>
+            )}
+          </div>
+
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
             {DIETARY_OPTIONS.map((opt) => {
               const selected = dietary.includes(opt);
@@ -113,35 +135,42 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                   key={opt}
                   onClick={() => toggleTag(dietary, setDietary, opt)}
                   style={{
-                    padding: '0.6rem 1.2rem',
+                    padding: '0.65rem 1.25rem',
                     borderRadius: '20px',
-                    border: selected ? '1px solid var(--magma-red)' : '1px solid var(--border-glass)',
-                    backgroundColor: selected ? 'rgba(242, 119, 119, 0.2)' : 'rgba(12, 13, 56, 0.6)',
-                    color: selected ? '#FFFFFF' : 'var(--text-body)',
-                    fontWeight: 600,
+                    border: selected ? '2px solid var(--coral-primary)' : '1px solid #CBD5E1',
+                    backgroundColor: selected ? 'var(--coral-soft)' : '#F8FAFC',
+                    color: selected ? 'var(--coral-primary)' : '#334155',
+                    fontWeight: selected ? 700 : 500,
                     fontSize: '0.9rem',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    transition: 'all 0.2s ease',
-                    boxShadow: selected ? '0 0 10px rgba(242, 119, 119, 0.3)' : 'none'
+                    transition: 'all 0.2s var(--ease-spring)',
+                    boxShadow: selected ? '0 4px 12px rgba(255, 82, 82, 0.15)' : 'none'
                   }}
                 >
-                  {selected && <Check size={14} style={{ color: 'var(--magma-red)' }} />} {opt}
+                  {selected && <Check size={16} style={{ color: 'var(--coral-primary)' }} />} {opt}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* 2. Favorite Cuisines (25+ Cuisines + Custom Input) */}
-        <div className="glass-card" style={{ padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Award size={20} style={{ color: 'var(--lava-amber)' }} /> Favorite Cuisines ({cuisines.length} selected)
-          </h3>
+        {/* 2. Favorite Cuisines */}
+        <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Award size={22} style={{ color: 'var(--honey-amber)' }} /> Favorite Regional Cuisines
+            </h3>
+            {cuisines.length > 0 && (
+              <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--honey-amber)', backgroundColor: 'var(--honey-soft)', padding: '0.2rem 0.65rem', borderRadius: '12px' }}>
+                {cuisines.length} selected
+              </span>
+            )}
+          </div>
           <p style={{ color: 'var(--text-body)', fontSize: '0.875rem', marginBottom: '1.25rem' }}>
-            Select your preferred cuisines or type a custom region below.
+            Select your preferred regional flavors or add a custom cuisine below.
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem', marginBottom: '1.5rem' }}>
@@ -153,39 +182,39 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                   key={opt}
                   onClick={() => toggleTag(cuisines, setCuisines, opt)}
                   style={{
-                    padding: '0.55rem 1.1rem',
+                    padding: '0.6rem 1.15rem',
                     borderRadius: '20px',
-                    border: selected ? '1px solid var(--lava-amber)' : '1px solid var(--border-glass)',
-                    backgroundColor: selected ? 'rgba(245, 165, 91, 0.2)' : 'rgba(12, 13, 56, 0.6)',
-                    color: selected ? '#FFFFFF' : 'var(--text-body)',
-                    fontWeight: 600,
+                    border: selected ? '2px solid var(--honey-amber)' : '1px solid #CBD5E1',
+                    backgroundColor: selected ? 'var(--honey-soft)' : '#F8FAFC',
+                    color: selected ? 'var(--honey-amber)' : '#334155',
+                    fontWeight: selected ? 700 : 500,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    transition: 'all 0.2s ease',
-                    boxShadow: selected ? '0 0 10px rgba(245, 165, 91, 0.3)' : 'none'
+                    transition: 'all 0.2s var(--ease-spring)',
+                    boxShadow: selected ? '0 4px 12px rgba(245, 158, 11, 0.15)' : 'none'
                   }}
                 >
-                  {selected && <Check size={14} style={{ color: 'var(--lava-amber)' }} />} {opt}
+                  {selected && <Check size={15} style={{ color: 'var(--honey-amber)' }} />} {opt}
                 </button>
               );
             })}
 
-            {/* Render custom cuisines not in default list */}
+            {/* Custom Cuisines */}
             {cuisines.filter(c => !CUISINE_OPTIONS.includes(c)).map((custom) => (
               <button
                 type="button"
                 key={custom}
                 onClick={() => toggleTag(cuisines, setCuisines, custom)}
                 style={{
-                  padding: '0.55rem 1.1rem',
+                  padding: '0.6rem 1.15rem',
                   borderRadius: '20px',
-                  border: '1px solid var(--cyan-glow)',
-                  backgroundColor: 'rgba(127, 245, 231, 0.2)',
-                  color: '#FFFFFF',
-                  fontWeight: 600,
+                  border: '2px solid var(--sage-green)',
+                  backgroundColor: 'var(--sage-soft)',
+                  color: 'var(--sage-green)',
+                  fontWeight: 700,
                   fontSize: '0.875rem',
                   cursor: 'pointer',
                   display: 'flex',
@@ -193,7 +222,7 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                   gap: '6px'
                 }}
               >
-                <Check size={14} style={{ color: 'var(--cyan-glow)' }} /> {custom}
+                <Check size={15} style={{ color: 'var(--sage-green)' }} /> {custom}
               </button>
             ))}
           </div>
@@ -203,7 +232,7 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
             <input
               type="text"
               className="input-control"
-              placeholder="Add another cuisine (e.g., Moroccan, Tex-Mex)..."
+              placeholder="Add custom cuisine (e.g. Tex-Mex, Moroccan)..."
               value={newCuisine}
               onChange={(e) => setNewCuisine(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomCuisine())}
@@ -215,30 +244,30 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
         </div>
 
         {/* 3. Allergies & Intolerances */}
-        <div className="glass-card" style={{ padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Shield size={20} style={{ color: 'var(--sulphur-gold)' }} /> Allergies & Ingredients to Avoid
+        <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF' }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Shield size={22} style={{ color: 'var(--sage-green)' }} /> Allergies & Avoided Ingredients
           </h3>
           
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '1.25rem' }}>
             {allergies.map((all, idx) => (
               <span
                 key={idx}
                 style={{
-                  backgroundColor: 'rgba(242, 230, 119, 0.15)',
-                  border: '1px solid rgba(242, 230, 119, 0.3)',
-                  color: 'var(--sulphur-gold)',
-                  padding: '0.4rem 0.85rem',
+                  backgroundColor: 'var(--coral-soft)',
+                  border: '1px solid var(--coral-border)',
+                  color: 'var(--coral-primary)',
+                  padding: '0.45rem 0.9rem',
                   borderRadius: '16px',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: '0.875rem',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px'
+                  gap: '8px'
                 }}
               >
                 {all}
-                <button type="button" onClick={() => removeAllergy(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sulphur-gold)' }}>
+                <button type="button" onClick={() => removeAllergy(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center' }}>
                   <X size={14} />
                 </button>
               </span>
@@ -249,61 +278,93 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
             <input
               type="text"
               className="input-control"
-              placeholder="e.g. Peanuts, Shellfish, Soy..."
+              placeholder="e.g. Peanuts, Shellfish, Soy, Mushrooms..."
               value={newAllergy}
               onChange={(e) => setNewAllergy(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAllergy())}
             />
-            <button type="button" onClick={addAllergy} className="btn btn-outline">
-              <Plus size={16} /> Add
+            <button type="button" onClick={addAllergy} className="btn btn-outline" style={{ whiteSpace: 'nowrap' }}>
+              <Plus size={16} /> Add Allergy
             </button>
           </div>
         </div>
 
         {/* 4. Skill Level & Protein Goal */}
-        <div className="glass-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+        <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem' }}>
+          
+          {/* Skill Level Selection Cards */}
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Award size={18} style={{ color: 'var(--cyan-glow)' }} /> Cooking Skill Level
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <ChefHat size={20} style={{ color: 'var(--coral-primary)' }} /> Cooking Skill Level
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              {SKILL_LEVELS.map((lvl) => (
-                <label key={lvl} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', cursor: 'pointer', color: 'var(--text-body)' }}>
-                  <input
-                    type="radio"
-                    name="skillLevel"
-                    value={lvl}
-                    checked={skill === lvl}
-                    onChange={(e) => setSkill(e.target.value)}
-                  />
-                  <span>{lvl}</span>
-                </label>
-              ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {SKILL_LEVELS.map((lvl) => {
+                const selected = skill === lvl.id;
+                return (
+                  <div
+                    key={lvl.id}
+                    onClick={() => setSkill(lvl.id)}
+                    style={{
+                      padding: '0.9rem 1.1rem',
+                      borderRadius: '12px',
+                      border: selected ? '2px solid var(--coral-primary)' : '1px solid #E2E8F0',
+                      backgroundColor: selected ? 'var(--coral-soft)' : '#F8FAFC',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '0.95rem', color: selected ? 'var(--coral-primary)' : 'var(--text-heading)' }}>
+                        {lvl.title}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        {lvl.desc}
+                      </div>
+                    </div>
+                    {selected && <Check size={18} style={{ color: 'var(--coral-primary)' }} />}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
+          {/* Protein Target Goal */}
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Target size={18} style={{ color: 'var(--magma-red)' }} /> Daily Protein Goal (grams)
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Target size={20} style={{ color: 'var(--honey-amber)' }} /> Daily Protein Target (grams)
             </h3>
+            
+            <div style={{ backgroundColor: '#F8FAFC', padding: '1.5rem', borderRadius: '14px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '1rem' }}>
+              <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--coral-primary)', lineHeight: 1 }}>
+                {proteinGoal}g
+              </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.35rem', fontWeight: 600 }}>
+                Daily Target Protein Intake
+              </div>
+            </div>
+
             <input
-              type="number"
-              className="input-control"
-              style={{ maxWidth: '200px' }}
+              type="range"
+              min="20"
+              max="250"
+              step="5"
               value={proteinGoal}
               onChange={(e) => setProteinGoal(e.target.value)}
-              min="10"
-              max="300"
+              style={{ width: '100%', accentColor: 'var(--coral-primary)', cursor: 'pointer', marginBottom: '0.75rem' }}
             />
-            <p style={{ color: 'var(--text-body)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-              Used to calculate progress in the Protein Tracker.
+            <p style={{ color: 'var(--text-body)', fontSize: '0.85rem' }}>
+              Slide to adjust your daily protein target for the Health & Nutrition dashboard.
             </p>
           </div>
+
         </div>
 
-        {/* Submit Button */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button type="submit" disabled={isSaving} className="btn btn-primary" style={{ padding: '0.85rem 2.5rem', fontSize: '1.1rem' }}>
+        {/* Submit Save Button */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+          <button type="submit" disabled={isSaving} className="btn btn-primary" style={{ padding: '0.85rem 2.75rem', fontSize: '1.1rem' }}>
             <Save size={20} /> {isSaving ? 'Saving...' : 'Save Preferences'}
           </button>
         </div>
