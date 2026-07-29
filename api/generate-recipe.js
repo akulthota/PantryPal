@@ -19,38 +19,47 @@ export default async function handler(req, res) {
 
     const ai = new GoogleGenAI({ apiKey });
 
-    const prompt = `You are a world-class executive chef. Create a delicious, custom recipe tailored specifically to these available ingredients and dietary preferences.
+    // Strict prompt enforcing listed ingredients and prohibiting unlisted major items
+    const prompt = `You are a creative executive chef. Create a delicious custom recipe built DIRECTLY around these detected pantry/fridge ingredients.
 
-Available Ingredients: ${ingredients.join(', ')}
-Dietary Restrictions: ${preferences.dietary_restrictions?.join(', ') || 'None'}
-Favorite Cuisines: ${preferences.favorite_cuisines?.join(', ') || 'Any'}
-Allergies / Avoid: ${preferences.allergies?.join(', ') || 'None'}
-Skill Level: ${preferences.cooking_skill || 'Intermediate'}
+USER DETECTED INGREDIENTS: ${ingredients.join(', ')}
 
-Return ONLY a raw valid JSON object without any markdown code fences or backticks. Follow this exact JSON schema:
+DIETARY PREFERENCES & RESTRICTIONS:
+- Dietary Restrictions: ${preferences.dietary_restrictions?.join(', ') || 'None'}
+- Favorite Cuisines: ${preferences.favorite_cuisines?.join(', ') || 'Any'}
+- Allergies / Avoid: ${preferences.allergies?.join(', ') || 'None'}
+- Cooking Skill Level: ${preferences.cooking_skill || 'Intermediate'}
+
+STRICT RECIPE GENERATION RULES:
+1. BASE DISH ON DETECTED INGREDIENTS: You MUST construct the recipe primarily using the provided ingredients (${ingredients.join(', ')}).
+2. NO UNLISTED MAJOR INGREDIENTS: DO NOT add major ingredients like meats (chicken, beef, pork, bacon), seafood (salmon, shrimp, tuna), breads, pasta, eggs, or large main vegetables if they are NOT in the detected list above.
+3. ALLOWED KITCHEN STAPLES: You may freely use basic condiments, cooking oil, butter, salt, pepper, garlic powder, water, soy sauce, and common household spices.
+4. INGREDIENT LIST FOR THE RECIPE: Do NOT just dump all fridge items into a flat list. Only list the specific ingredients (and amounts) actually required to cook this dish.
+
+Return ONLY a raw valid JSON object without any markdown code fences. Schema:
 {
   "title": "Recipe Title",
-  "cuisine_type": "Cuisine Category",
-  "prep_time": "Prep & Cooking Time e.g. 25 mins",
+  "cuisine_type": "Cuisine Category e.g. Italian, Asian, Mediterranean",
+  "prep_time": "20 mins",
   "servings": "2",
   "difficulty": "Easy",
-  "ingredients": ["ingredient 1", "ingredient 2"],
-  "instructions": ["Step 1...", "Step 2..."],
+  "ingredients": ["1 cup ingredient 1", "2 tbsp ingredient 2"],
+  "instructions": ["Step 1: ...", "Step 2: ..."],
   "nutrition": {
-    "calories": 450,
-    "protein": 35,
-    "carbs": 40,
-    "fat": 15,
-    "fiber": 6
+    "calories": 380,
+    "protein": 24,
+    "carbs": 35,
+    "fat": 12,
+    "fiber": 5
   },
-  "youtube_search_query": "Exact Recipe Name Cooking Tutorial"
+  "youtube_search_query": "Recipe Name Cooking Tutorial"
 }`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
-        temperature: 0.7,
+        temperature: 0.8,
         responseMimeType: 'application/json'
       }
     });
