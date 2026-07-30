@@ -19,60 +19,55 @@ export default async function handler(req, res) {
 
     const ai = new GoogleGenAI({ apiKey });
 
-    // Diverse dish format options to ensure variety (NO repetitive Skillets!)
-    const dishFormats = [
-      'Bowl / Grain Bowl',
-      'Fresh Salad with Homemade Dressing',
-      'Sheet Pan Roasted Dish',
-      'Stir-Fry / Sauté',
-      'Comforting Soup or Chowder',
-      'Hearty Stew or Curry',
-      'Savory Omelette or Scramble',
-      'Stuffed Wrap or Sandwich',
-      'Baked Casserole',
-      'Warm Pasta or Noodle Bowl',
-      'Crispy Tacos or Quesadillas'
+    // Wide array of real cookbook dish categories (inspired by Allrecipes, NYT Cooking, Serious Eats)
+    const cookbookCategories = [
+      'Gourmet Pasta / Noodle Dish',
+      'Artisanal Grain & Warm Protein Bowl',
+      'Classic Hearty Stew / Curry',
+      'Rustic Sheet-Pan Roast',
+      'Zesty Tacos / Wraps / Flatbread',
+      'Fresh Vibrant Salad with Homemade Vinaigrette',
+      'Rich Comfort Soup / Bisque / Chowder',
+      'Crispy Sauté / Sizzling Stir-Fry',
+      'Stuffed Baked Dish or Casserole',
+      'Savory Omelette / Frittata / Breakfast Skillet'
     ];
 
-    const randomDishFormat = dishFormats[Math.floor(Math.random() * dishFormats.length)];
-    const timestampSeed = Date.now();
+    const chosenCategory = cookbookCategories[Math.floor(Math.random() * cookbookCategories.length)];
+    const seed = Date.now();
 
-    const prompt = `You are a creative executive chef. Create a UNIQUE and appetizing custom recipe built DIRECTLY around these detected pantry/fridge ingredients.
+    const prompt = `You are a master executive chef with access to the world's largest culinary recipe database (inspired by Allrecipes, Serious Eats, NYT Cooking, Epicurious, and Food Network).
 
-USER DETECTED INGREDIENTS: ${ingredients.join(', ')}
+USER DETECTED PANTRY/FRIDGE INGREDIENTS:
+${ingredients.join(', ')}
 
-DIETARY PREFERENCES & RESTRICTIONS:
+DIETARY PREFERENCES & USER PROFILE:
 - Dietary Restrictions: ${preferences.dietary_restrictions?.join(', ') || 'None'}
 - Favorite Cuisines: ${preferences.favorite_cuisines?.join(', ') || 'Any'}
 - Avoid / Allergies: ${preferences.allergies?.join(', ') || 'None'}
 - Cooking Skill Level: ${preferences.cooking_skill || 'Intermediate'}
 
-VARIETY & REGENERATION REQUIREMENTS:
-- PREFERRED DISH FORMAT FOR THIS VARIATION: ${randomDishFormat}
-- AVOID REPEAT RECIPES: Do NOT generate any of the following titles: ${avoidTitles.length > 0 ? avoidTitles.join(', ') : 'None'}.
-- NO REPETITIVE "SKILLET" DISHES: Be creative! Generate diverse recipes like salads, soups, bowls, bakes, wraps, stir-fries, stews, or pasta dishes.
-- Seed value for freshness: ${timestampSeed}
-
-STRICT INGREDIENT CONSTRAINTS:
-1. BASE DISH ON DETECTED INGREDIENTS: Use the provided ingredients (${ingredients.join(', ')}) as the core components.
-2. NO UNLISTED MAJOR INGREDIENTS: DO NOT add major unlisted meats (chicken, beef, pork, bacon), seafood (salmon, shrimp, tuna), breads, eggs, or large unique main vegetables if they are NOT in the detected list above.
-3. ALLOWED KITCHEN STAPLES: You may freely use basic condiments, cooking oil, butter, salt, pepper, garlic, water, soy sauce, and common household spices.
-4. INGREDIENT LIST: Only list the specific ingredients (with quantities) needed for this dish.
+RECIPE CREATION DIRECTIVES:
+1. STAR INGREDIENTS: Make the user's detected ingredients (${ingredients.join(', ')}) the central star elements of the recipe.
+2. AUTHENTIC COOKBOOK QUALITY: Draw inspiration from real, top-rated recipes in global cookbooks. Feel free to incorporate complementary food ingredients (grains, produce, proteins, dairy, broths, herbs, sauces, and seasonings) needed to create a complete, well-balanced, and delicious dish.
+3. DISH CATEGORY FOR THIS VARIATION: ${chosenCategory}
+4. REGENERATION FRESHNESS: Do NOT use any of these previous titles: ${avoidTitles.length > 0 ? avoidTitles.join(', ') : 'None'}. (Seed: ${seed}).
+5. DIVERSITY: Create a unique title and clear step-by-step instructions.
 
 Return ONLY a raw valid JSON object without markdown code fences. Schema:
 {
-  "title": "Unique Recipe Title",
-  "cuisine_type": "Cuisine Category (e.g. Mediterranean, Asian, Mexican, American)",
-  "prep_time": "15-20 mins",
-  "servings": "2",
+  "title": "Creative Cookbook Recipe Title",
+  "cuisine_type": "Cuisine Category (e.g. Italian, Asian, Mediterranean, Mexican, American)",
+  "prep_time": "20 mins",
+  "servings": "2-4",
   "difficulty": "Easy",
-  "ingredients": ["1 cup ingredient 1", "2 tbsp ingredient 2"],
-  "instructions": ["Step 1: ...", "Step 2: ..."],
+  "ingredients": ["1 cup ingredient 1", "2 tbsp ingredient 2", "1 tsp spice"],
+  "instructions": ["Step 1: ...", "Step 2: ...", "Step 3: ..."],
   "nutrition": {
-    "calories": 380,
-    "protein": 22,
-    "carbs": 35,
-    "fat": 12,
+    "calories": 420,
+    "protein": 24,
+    "carbs": 38,
+    "fat": 14,
     "fiber": 6
   },
   "youtube_search_query": "Recipe Title Cooking Tutorial"
@@ -82,7 +77,7 @@ Return ONLY a raw valid JSON object without markdown code fences. Schema:
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
-        temperature: 0.9,
+        temperature: 0.95,
         responseMimeType: 'application/json'
       }
     });
