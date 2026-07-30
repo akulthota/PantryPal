@@ -55,51 +55,74 @@ const setLocal = (key, value) => {
   }
 };
 
+const getUserId = async () => {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data } = await supabase.auth.getSession();
+      return data?.session?.user?.id || null;
+    } catch {
+      return null;
+    }
+  }
+  return null;
+};
+
 export const db = {
   recipes: {
     async list() {
       let remoteRecipes = [];
+      const userId = await getUserId();
+
       if (isSupabaseConfigured && supabase) {
         try {
-          const { data, error } = await supabase
-            .from('recipes')
-            .select('*')
-            .order('created_at', { ascending: false });
+          let query = supabase.from('recipes').select('*').order('created_at', { ascending: false });
+          if (userId) {
+            query = query.eq('user_id', userId);
+          }
+          const { data, error } = await query;
           if (!error && data) remoteRecipes = data;
-        } catch (e) {}
+        } catch (e) {
+          console.warn('Supabase recipe fetch error:', e);
+        }
       }
+
       const localRecipes = getLocal('recipes', DEFAULT_RECIPES);
       
-      // Combine and deduplicate by ID
+      // Combine remote cloud recipes + local recipes and deduplicate by ID or Title
       const map = new Map();
       [...remoteRecipes, ...localRecipes].forEach(r => {
-        if (r && r.id && !map.has(r.id)) map.set(r.id, r);
+        if (r && (r.id || r.title)) {
+          const key = r.id || r.title;
+          if (!map.has(key)) map.set(key, r);
+        }
       });
       return Array.from(map.values());
     },
 
     async create(recipe) {
+      const userId = await getUserId();
       const newRecipe = {
         ...recipe,
         id: recipe.id || `rec-${Date.now()}`,
+        user_id: userId || 'guest',
         created_at: new Date().toISOString()
       };
 
-      // Always save to LocalStorage immediately so guest/offline mode always works!
+      // 1. Immediately update LocalStorage
       const list = getLocal('recipes', DEFAULT_RECIPES);
       const updatedLocal = [newRecipe, ...list.filter(r => r.id !== newRecipe.id)];
       setLocal('recipes', updatedLocal);
 
-      // Attempt Supabase sync
+      // 2. Sync to Supabase Cloud Database for cross-device access
       if (isSupabaseConfigured && supabase) {
         try {
           const { data, error } = await supabase
             .from('recipes')
-            .insert([newRecipe])
+            .upsert([newRecipe])
             .select();
           if (!error && data?.[0]) return data[0];
         } catch (e) {
-          console.warn('Supabase sync warning, preserved locally:', e);
+          console.warn('Supabase recipe sync warning, saved locally:', e);
         }
       }
       return newRecipe;
@@ -121,15 +144,19 @@ export const db = {
   proteinLogs: {
     async list() {
       let remoteLogs = [];
+      const userId = await getUserId();
+
       if (isSupabaseConfigured && supabase) {
         try {
-          const { data, error } = await supabase
-            .from('protein_logs')
-            .select('*')
-            .order('created_at', { ascending: false });
+          let query = supabase.from('protein_logs').select('*').order('created_at', { ascending: false });
+          if (userId) {
+            query = query.eq('user_id', userId);
+          }
+          const { data, error } = await query;
           if (!error && data) remoteLogs = data;
         } catch (e) {}
       }
+
       const localLogs = getLocal('protein_logs', DEFAULT_PROTEIN_LOGS);
       const map = new Map();
       [...remoteLogs, ...localLogs].forEach(l => {
@@ -139,11 +166,14 @@ export const db = {
     },
 
     async create(entry) {
+      const userId = await getUserId();
       const newEntry = {
         ...entry,
         id: entry.id || `prot-${Date.now()}`,
+        user_id: userId || 'guest',
         created_at: new Date().toISOString()
       };
+
       const list = getLocal('protein_logs', DEFAULT_PROTEIN_LOGS);
       setLocal('protein_logs', [newEntry, ...list.filter(l => l.id !== newEntry.id)]);
 
@@ -151,7 +181,7 @@ export const db = {
         try {
           const { data, error } = await supabase
             .from('protein_logs')
-            .insert([newEntry])
+            .upsert([newEntry])
             .select();
           if (!error && data?.[0]) return data[0];
         } catch (e) {}
@@ -173,11 +203,13 @@ export const db = {
 
   preferences: {
     async get() {
-      if (isSupabaseConfigured && supabase) {
+      const userId = await getUserId();
+      if (isSupabaseConfigured && supabase && userId) {
         try {
           const { data, error } = await supabase
             .from('user_preferences')
             .select('*')
+            .eq('user_id', userId)
             .single();
           if (!error && data) return data;
         } catch (e) {}
@@ -186,12 +218,13 @@ export const db = {
     },
 
     async update(prefs) {
+      const userId = await getUserId();
       setLocal('user_preferences', prefs);
       if (isSupabaseConfigured && supabase) {
         try {
           const { data, error } = await supabase
             .from('user_preferences')
-            .upsert([{ user_id: 'guest', ...prefs, updated_at: new Date().toISOString() }])
+            .upsert([{ user_id: userId || 'guest', ...prefs, updated_at: new Date().toISOString() }])
             .select();
           if (!error && data?.[0]) return data[0];
         } catch (e) {}
@@ -203,15 +236,19 @@ export const db = {
   scanLogs: {
     async list() {
       let remoteScans = [];
+      const userId = await getUserId();
+
       if (isSupabaseConfigured && supabase) {
         try {
-          const { data, error } = await supabase
-            .from('scan_logs')
-            .select('*')
-            .order('created_at', { ascending: false });
+          let query = supabase.from('scan_logs').select('*').order('created_at', { ascending: false });
+          if (userId) {
+            query = query.eq('user_id', userId);
+          }
+          const { data, error } = await query;
           if (!error && data) remoteScans = data;
         } catch (e) {}
       }
+
       const localScans = getLocal('scan_logs', []);
       const map = new Map();
       [...remoteScans, ...localScans].forEach(s => {
@@ -221,9 +258,11 @@ export const db = {
     },
 
     async create(scan) {
+      const userId = await getUserId();
       const newScan = {
         ...scan,
         id: `scan-${Date.now()}`,
+        user_id: userId || 'guest',
         created_at: new Date().toISOString()
       };
       const list = getLocal('scan_logs', []);
