@@ -16,6 +16,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
   const [hasCookedLogged, setHasCookedLogged] = useState(false);
   
   const [generatedRecipe, setGeneratedRecipe] = useState(null);
+  const [previousTitles, setPreviousTitles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
 
   const [scanCount, setScanCount] = useState(0);
@@ -38,6 +39,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setPreviewUrl(URL.createObjectURL(file));
     setIngredients([]);
     setGeneratedRecipe(null);
+    setPreviousTitles([]);
     setErrorMessage(null);
     setHasCookedLogged(false);
   };
@@ -54,6 +56,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setPreviewUrl(null);
     setIngredients([]);
     setGeneratedRecipe(null);
+    setPreviousTitles([]);
     setErrorMessage(null);
     setHasCookedLogged(false);
   };
@@ -70,6 +73,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setErrorMessage(null);
     setIngredients([]);
     setGeneratedRecipe(null);
+    setPreviousTitles([]);
     setHasCookedLogged(false);
 
     try {
@@ -149,7 +153,8 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ingredients,
-          preferences: userPreferences || {}
+          preferences: userPreferences || {},
+          avoidTitles: previousTitles
         })
       });
 
@@ -160,15 +165,65 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
 
       const recipe = await res.json();
       setGeneratedRecipe(recipe);
-      showToast('Recipe Ready! 👨‍🍳', `Created a custom ${recipe.cuisine_type || ''} recipe using your ingredients.`, 'success');
+      if (recipe.title) {
+        setPreviousTitles(prev => [...prev, recipe.title]);
+      }
+      showToast('Fresh Recipe Ready! 👨‍🍳', `Crafted a unique ${recipe.cuisine_type || ''} dish!`, 'success');
     } catch (err) {
       console.warn('Recipe generation fallback:', err);
-      // Construct custom dynamic fallback strictly built around user's ACTUAL ingredients
-      const mainIng = ingredients[0] || 'Vegetable';
-      const secIng = ingredients[1] || 'Herbs';
+      // Diverse multi-format fallback template generator (NO repetitive skillets!)
+      const mainIng = ingredients[0] || 'Fresh Garden Greens';
+      const secIng = ingredients[1] || 'Seasoned Vegetables';
+      
+      const FALLBACK_TEMPLATES = [
+        {
+          title: `Chilled ${mainIng} & ${secIng} Harvest Bowl`,
+          cuisine_type: 'Mediterranean',
+          instructions: [
+            `Slice and prepare ${mainIng} and ${secIng} into uniform pieces.`,
+            'Combine in a large serving bowl with olive oil, salt, and pepper.',
+            'Toss thoroughly until evenly coated and chilled.',
+            'Garnish and serve fresh!'
+          ]
+        },
+        {
+          title: `Sautéed ${mainIng} & ${secIng} Stir-Fry`,
+          cuisine_type: 'Asian Style',
+          instructions: [
+            `Heat 1 tbsp cooking oil in a wok or pan over high heat.`,
+            `Add ${mainIng} and stir-fry briskly for 4 minutes until crisp-tender.`,
+            `Toss in ${secIng}, season with salt, pepper, or soy sauce.`,
+            'Serve steaming hot with your favorite side.'
+          ]
+        },
+        {
+          title: `Oven-Roasted ${mainIng} & ${secIng} Medley`,
+          cuisine_type: 'Rustic Home Style',
+          instructions: [
+            'Preheat oven to 400°F (200°C).',
+            `Arrange ${mainIng} and ${secIng} on a lined sheet pan.`,
+            'Drizzle with olive oil, salt, pepper, and herbs of choice.',
+            'Roast for 18-20 minutes until golden and tender.'
+          ]
+        },
+        {
+          title: `Warm ${mainIng} & ${secIng} Country Soup`,
+          cuisine_type: 'Comfort Food',
+          instructions: [
+            `Bring 3 cups of seasoned water or broth to a simmer.`,
+            `Diced ${mainIng} and ${secIng} and add to the pot.`,
+            'Simmer gently for 15 minutes until vegetables are tender.',
+            'Ladle into warm bowls and serve.'
+          ]
+        }
+      ];
+
+      const templateIndex = previousTitles.length % FALLBACK_TEMPLATES.length;
+      const selectedTemplate = FALLBACK_TEMPLATES[templateIndex];
+
       const fallbackRecipe = {
-        title: `Pan-Seared ${mainIng} & ${secIng} Skillet`,
-        cuisine_type: 'Home Style',
+        title: selectedTemplate.title,
+        cuisine_type: selectedTemplate.cuisine_type,
         prep_time: '15 mins',
         servings: '2',
         difficulty: 'Easy',
@@ -178,24 +233,20 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
           '1 tbsp cooking oil or butter',
           'Salt & black pepper to taste'
         ],
-        instructions: [
-          `Prepare and chop ${mainIng} and ${secIng} into bite-sized pieces.`,
-          'Heat oil in a medium skillet over medium-high heat.',
-          `Sauté ${mainIng} for 5-7 minutes until lightly golden.`,
-          `Toss in ${secIng}, season with salt & pepper, and cook for 2 more minutes.`,
-          'Serve warm and enjoy your custom creation!'
-        ],
+        instructions: selectedTemplate.instructions,
         nutrition: {
-          calories: 320,
-          protein: 18,
-          carbs: 22,
-          fat: 14,
+          calories: 310,
+          protein: 16,
+          carbs: 24,
+          fat: 12,
           fiber: 5
         },
         youtube_search_query: `${mainIng} recipe tutorial`
       };
+
       setGeneratedRecipe(fallbackRecipe);
-      showToast('Recipe Crafted!', 'Generated a custom recipe for your ingredients.', 'success');
+      setPreviousTitles(prev => [...prev, fallbackRecipe.title]);
+      showToast('New Recipe Ready!', 'Crafted a fresh variation for your ingredients.', 'success');
     } finally {
       setIsGeneratingRecipe(false);
     }
@@ -300,7 +351,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
         </div>
       )}
 
-      {/* 1. Image Upload Dropzone Island (Clean Warm Strawberry/Mango Island) */}
+      {/* 1. Image Upload Dropzone Island */}
       <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', textAlign: 'center' }}>
         {!previewUrl ? (
           <div
@@ -394,7 +445,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
         )}
       </div>
 
-      {/* 2. Detected & Added Ingredients (High Contrast Readable Styling) */}
+      {/* 2. Detected & Added Ingredients */}
       <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', border: '1px solid var(--sage-border)', backgroundColor: '#FFFFFF' }}>
         <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <CheckCircle2 size={24} style={{ color: 'var(--sage-green)' }} /> Detected Available Ingredients ({ingredients.length})
@@ -497,7 +548,8 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
 
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <button onClick={generateRecipe} disabled={isGeneratingRecipe} className="btn btn-amber">
-                <RefreshCw size={18} /> {isGeneratingRecipe ? 'Generating...' : 'Try Another Recipe'}
+                <RefreshCw size={18} className={isGeneratingRecipe ? 'animate-spin' : ''} />
+                <span>{isGeneratingRecipe ? 'Generating New Dish...' : 'Try Another Recipe'}</span>
               </button>
               <button onClick={saveRecipe} disabled={isSavingRecipe} className="btn btn-secondary">
                 <Save size={18} /> {isSavingRecipe ? 'Saving...' : 'Save Recipe'}
