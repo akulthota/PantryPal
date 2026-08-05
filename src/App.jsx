@@ -99,15 +99,17 @@ export default function App() {
       <Analytics />
       <SpeedInsights />
       
-      {/* Deep Midnight Navy Header Navbar */}
+      {/* Sticky Jubilant Light Header Navbar */}
       <header
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          backgroundColor: '#0B1340',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+          backgroundColor: '#031064',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
           transition: 'all 0.25s var(--ease-spring)'
         }}
       >
@@ -122,27 +124,27 @@ export default function App() {
             gap: '1.5rem'
           }}
         >
-          {/* 1. Left: Official Brand Logo — Chef Hat with Fork & Knife + PantryPal */}
+          {/* 1. Left: Official Brand Logo — PantryPal */}
           <div
             onClick={() => {
               setActiveTab('home');
               setHealthDashboardOpen(false);
               setMobileMenuOpen(false);
             }}
-            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flexShrink: 0 }}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', flexShrink: 0 }}
           >
             <img
-              src="/logo.svg"
-              alt="PantryPal Chef Hat Logo"
-              style={{ width: '38px', height: '38px', objectFit: 'contain' }}
+              src="/logo.png"
+              alt="PantryPal Logo"
+              style={{ height: '44px', width: 'auto', objectFit: 'contain' }}
             />
-            <span style={{ fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
-              PantryPal
+            <span style={{ fontSize: '1.65rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+              Pantry<span style={{ color: '#75c49b' }}>Pal</span>
             </span>
           </div>
 
           {/* 2. Center: Perfectly Centered Navigation Links + Health Dashboard Pill */}
-          <div className="desktop-nav" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.6rem' }}>
+          <div className="desktop-nav" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -158,18 +160,19 @@ export default function App() {
                     alignItems: 'center',
                     gap: '7px',
                     padding: '0.55rem 1.1rem',
-                    borderRadius: '20px',
-                    border: isActive ? '1px solid rgba(255, 82, 82, 0.4)' : '1px solid transparent',
-                    backgroundColor: isActive ? '#1C2768' : 'transparent',
-                    color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)',
+                    borderRadius: 'var(--radius-md)',
+                    border: isActive ? '1px solid #EF4444' : '1px solid transparent',
+                    backgroundColor: isActive ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
+                    color: '#FFFFFF',
                     fontWeight: isActive ? 700 : 500,
                     fontSize: '0.9rem',
                     cursor: 'pointer',
                     transition: 'all 0.2s var(--ease-spring)',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    boxShadow: isActive ? '0 0 14px rgba(239, 68, 68, 0.3)' : 'none'
                   }}
                 >
-                  <Icon size={17} style={{ color: isActive ? 'var(--coral-primary)' : 'rgba(255, 255, 255, 0.7)' }} />
+                  <Icon size={17} color={isActive ? '#EF4444' : '#FFFFFF'} />
                   <span>{item.label}</span>
                 </button>
               );
@@ -184,8 +187,8 @@ export default function App() {
                 gap: '7px',
                 padding: '0.55rem 1.15rem',
                 borderRadius: '20px',
-                backgroundColor: '#1C2768',
-                border: `1px solid ${healthDashboardOpen ? 'var(--coral-primary)' : 'rgba(255, 255, 255, 0.2)'}`,
+                backgroundColor: healthDashboardOpen ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
                 color: '#FFFFFF',
                 fontSize: '0.875rem',
                 fontWeight: 700,
@@ -193,46 +196,35 @@ export default function App() {
                 transition: 'all 0.2s var(--ease-spring)'
               }}
             >
-              <HeartPulse size={17} style={{ color: 'var(--coral-primary)' }} />
+              <HeartPulse size={17} color="#EF4444" />
               <span>Health Dashboard</span>
-              {healthDashboardOpen ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+              {healthDashboardOpen ? <ChevronUp size={15} color="#FFFFFF" /> : <ChevronDown size={15} color="#FFFFFF" />}
             </button>
           </div>
 
           {/* 3. Right: User Auth Stack & Mobile Menu Toggle */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0, justifyContent: 'flex-end' }}>
             {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#FFFFFF' }}>
                   {user.email?.split('@')[0] || 'User'}
                 </span>
                 <button
                   onClick={handleLogout}
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.35)',
-                    color: '#FFFFFF',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '0.4rem 0.85rem',
-                    fontSize: '0.825rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
+                  className="btn"
+                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.825rem', minHeight: '36px', border: '1px solid #FFFFFF', color: '#FFFFFF', backgroundColor: 'transparent' }}
                   title="Sign out"
                 >
-                  <LogOut size={14} /> Log Out
+                  <LogOut size={14} color="#EF4444" /> Log Out
                 </button>
               </div>
             ) : (
               <button
                 onClick={() => setAuthModalOpen(true)}
-                className="btn btn-primary"
-                style={{ padding: '0.55rem 1.25rem', fontSize: '0.875rem', minHeight: '38px' }}
+                className="btn"
+                style={{ padding: '0.5rem 1.15rem', fontSize: '0.875rem', minHeight: '38px', backgroundColor: '#EF4444', color: '#FFFFFF', border: 'none', fontWeight: 700, boxShadow: '0 4px 14px rgba(239, 68, 68, 0.4)' }}
               >
-                <User size={15} /> Log In / Sign Up
+                <User size={15} color="#FFFFFF" /> Log In / Sign Up
               </button>
             )}
 
@@ -247,7 +239,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* TOP HEALTH & NUTRITION DASHBOARD ANIMATED DROPDOWN BAR */}
+        {/* TOP HEALTH & NUTRITION DASHBOARD ANIMATED DROPDOWN BAR (WITH EXPLICIT MOBILE CLOSE BUTTON) */}
         {healthDashboardOpen && (
           <div
             className="animate-fade-in"
@@ -354,7 +346,7 @@ export default function App() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div style={{ backgroundColor: '#0A1138', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '0.85rem 1.25rem' }}>
+          <div style={{ backgroundColor: '#031064', borderTop: '1px solid rgba(255, 255, 255, 0.15)', padding: '0.85rem 1.25rem' }}>
             <button
               onClick={() => setHealthDashboardOpen(!healthDashboardOpen)}
               style={{
@@ -364,8 +356,8 @@ export default function App() {
                 justifyContent: 'space-between',
                 padding: '0.85rem 1rem',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: '#1C2768',
-                border: '1px solid rgba(255, 82, 82, 0.4)',
+                backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                border: '1px solid #EF4444',
                 color: '#FFFFFF',
                 fontWeight: 700,
                 fontSize: '1rem',
@@ -373,10 +365,10 @@ export default function App() {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <HeartPulse size={20} style={{ color: 'var(--coral-primary)' }} />
+                <HeartPulse size={20} color="#EF4444" />
                 <span>Toggle Health Dashboard</span>
               </div>
-              {healthDashboardOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              {healthDashboardOpen ? <ChevronUp size={18} color="#FFFFFF" /> : <ChevronDown size={18} color="#FFFFFF" />}
             </button>
 
             {navItems.map((item) => {
@@ -397,16 +389,16 @@ export default function App() {
                     gap: '12px',
                     padding: '0.85rem 1rem',
                     borderRadius: 'var(--radius-md)',
-                    border: isActive ? '1px solid rgba(255, 82, 82, 0.4)' : 'none',
-                    backgroundColor: isActive ? '#1C2768' : 'transparent',
-                    color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)',
+                    border: isActive ? '1px solid #EF4444' : '1px solid transparent',
+                    backgroundColor: isActive ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
+                    color: '#FFFFFF',
                     fontWeight: 600,
                     fontSize: '1rem',
                     marginBottom: '0.35rem',
                     textAlign: 'left'
                   }}
                 >
-                  <Icon size={20} style={{ color: isActive ? 'var(--coral-primary)' : 'rgba(255, 255, 255, 0.7)' }} />
+                  <Icon size={20} color={isActive ? '#EF4444' : '#FFFFFF'} />
                   <span>{item.label}</span>
                 </button>
               );
@@ -512,9 +504,12 @@ export default function App() {
         }}
       >
         <div style={{ maxWidth: '1350px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img src="/logo.svg" alt="PantryPal Logo" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
-            <strong style={{ color: 'var(--text-heading)' }}>PantryPal</strong> (pantry-pal.dev) © 2026 — Intelligent Kitchen Assistant.
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <img src="/logo.png" alt="PantryPal" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} />
+            <strong style={{ color: 'var(--text-heading)', fontFamily: 'var(--font-heading)', fontSize: '1.1rem' }}>
+              Pantry<span style={{ color: '#75c49b' }}>Pal</span>
+            </strong>
+            <span style={{ color: 'var(--text-body)' }}>(pantry-pal.dev) © 2026 — Intelligent Kitchen Assistant.</span>
             <div
               style={{
                 display: 'inline-flex',
