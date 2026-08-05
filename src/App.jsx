@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Utensils, Activity, Settings, Home, Menu, X, Database, CheckCircle2, AlertCircle, Info, User, LogIn, LogOut, Flame, HeartPulse, ChevronDown, ChevronUp, ArrowRight, Target } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
+
 import HomePage from './pages/HomePage';
 import AnalyzePantryPage from './pages/AnalyzePantryPage';
 import CalorieScannerPage from './pages/CalorieScannerPage';
@@ -92,6 +95,9 @@ export default function App() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-canvas)' }}>
+      {/* Vercel Web Analytics & Speed Insights */}
+      <Analytics />
+      <SpeedInsights />
       
       {/* Sticky Jubilant Light Header Navbar */}
       <header
