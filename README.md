@@ -1,4 +1,3 @@
-<img width="240" height="240" alt="image" src="https://github.com/user-attachments/assets/3ddc5c14-f0f2-45bb-b0e5-561f83f6c1e7"/><br/>
 # PantryPal
 Snap a photo of your fridge or pantry to automatically detect ingredients, discover delicious custom recipes tailored to your taste, and track your daily nutrition. Also check out our [website](https://pantry-pal.dev/).
 
