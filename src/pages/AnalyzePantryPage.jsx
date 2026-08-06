@@ -1,14 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare, Search } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
+import { autocompleteIngredient } from '../lib/spoonacular';
 
 export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeSuccess, showToast, onOpenAuthModal }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [ingredients, setIngredients] = useState([]);
-  const [manualInput, setManualInput] = useState('');
   
+  // Issue 6: hasScanned state
+  const [hasScanned, setHasScanned] = useState(false);
+  
+  // Issue 7: Spoonacular Autocomplete States
+  const [inputValue, setInputValue] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isSearchingIngredients, setIsSearchingIngredients] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const dropdownRef = useRef(null);
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isSavingRecipe, setIsSavingRecipe] = useState(false);
@@ -19,18 +30,62 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
   const [previousTitles, setPreviousTitles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const [scanCount, setScanCount] = useState(0);
-  const GUEST_SCAN_LIMIT = 3;
+  // Issue 2: Weekly Guest Limit
+  const [weeklyScanCount, setWeeklyScanCount] = useState(0);
+  const GUEST_WEEKLY_LIMIT = 3;
 
   useEffect(() => {
     loadScanHistory();
+
+    // Click outside listener for autocomplete dropdown
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Debounced ingredient search autocomplete (Issue 7)
+  useEffect(() => {
+    if (!inputValue || inputValue.trim().length === 0) {
+      setSuggestions([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearchingIngredients(true);
+      try {
+        const results = await autocompleteIngredient(inputValue, 10);
+        setSuggestions(results || []);
+        setHighlightedIndex(0);
+        setShowDropdown(true);
+      } catch (err) {
+        console.warn('Autocomplete search failed:', err);
+        setSuggestions([]);
+        setShowDropdown(true);
+      } finally {
+        setIsSearchingIngredients(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [inputValue]);
+
+  // Issue 2: Calculate Monday of current week for weekly limits
   const loadScanHistory = async () => {
     const logs = await db.scanLogs.list();
-    const todayStr = new Date().toISOString().split('T')[0];
-    const todayScans = logs.filter(l => l.local_date === todayStr && l.log_type === 'scan');
-    setScanCount(todayScans.length);
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon...
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + mondayOffset);
+    const mondayStr = monday.toISOString().split('T')[0];
+
+    const weeklyScans = logs.filter(l => l.local_date >= mondayStr && l.log_type === 'scan');
+    setWeeklyScanCount(weeklyScans.length);
   };
 
   const handleFileChange = (file) => {
@@ -42,6 +97,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setPreviousTitles([]);
     setErrorMessage(null);
     setHasCookedLogged(false);
+    setHasScanned(false);
   };
 
   const handleDrop = (e) => {
@@ -59,13 +115,14 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setPreviousTitles([]);
     setErrorMessage(null);
     setHasCookedLogged(false);
+    setHasScanned(false);
   };
 
   const analyzeImage = async () => {
     if (!selectedFile) return;
 
-    if (!user && scanCount >= GUEST_SCAN_LIMIT) {
-      setErrorMessage(`Daily guest limit reached (3/3). Log in or Sign up for free to unlock UNLIMITED scans!`);
+    if (!user && weeklyScanCount >= GUEST_WEEKLY_LIMIT) {
+      setErrorMessage(`Weekly guest limit reached (3/3). Log in or Sign up for free to unlock UNLIMITED scans!`);
       return;
     }
 
@@ -94,10 +151,12 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
 
           if (!res.ok) {
             const errJson = await res.json().catch(() => ({}));
-            throw new Error(errJson.error || `Server returned status ${res.status}`);
+            throw new Error(errJson.error || `Server status ${res.status}`);
           }
 
           const data = await res.json();
+          setHasScanned(true); // Issue 6: Mark scanned
+
           if (data.ingredients && data.ingredients.length > 0) {
             setIngredients(data.ingredients);
             showToast('Ingredients Extracted! 🍓', `Identified ${data.ingredients.length} items from your photo.`, 'success');
@@ -113,24 +172,47 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
           }
         } catch (apiErr) {
           console.warn('Vision API call error:', apiErr);
-          setErrorMessage('Vision API offline or missing key. You can add ingredients manually below to generate recipes!');
+          setHasScanned(true);
+          setErrorMessage('Vision API offline or missing key. You can select ingredients manually below to generate recipes!');
         } finally {
           setIsAnalyzing(false);
         }
       };
     } catch (err) {
+      setHasScanned(true);
       setErrorMessage(err.message || 'Failed to analyze image.');
       setIsAnalyzing(false);
     }
   };
 
-  const addManualIngredient = () => {
-    if (!manualInput.trim()) return;
-    const item = manualInput.trim();
-    if (!ingredients.includes(item)) {
-      setIngredients([...ingredients, item]);
+  const selectSuggestion = (name) => {
+    if (!name) return;
+    const formatted = name.trim();
+    if (!ingredients.includes(formatted)) {
+      setIngredients([...ingredients, formatted]);
     }
-    setManualInput('');
+    setInputValue('');
+    setSuggestions([]);
+    setShowDropdown(false);
+  };
+
+  const handleKeyDownInput = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex(prev => (prev > 0 ? prev - 1 : suggestions.length - 1));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (suggestions.length > 0 && showDropdown) {
+        selectSuggestion(suggestions[highlightedIndex]?.name || suggestions[0]?.name);
+      } else if (inputValue.trim()) {
+        // Fallback manual entry
+        selectSuggestion(inputValue);
+        showToast('Notice', 'Ingredient search unavailable. Typing manually.', 'info');
+      }
+    }
   };
 
   const removeIngredient = (index) => {
@@ -171,77 +253,36 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
       showToast('Fresh Recipe Ready! 👨‍🍳', `Crafted a unique ${recipe.cuisine_type || ''} dish!`, 'success');
     } catch (err) {
       console.warn('Recipe generation fallback:', err);
-      // Diverse multi-format fallback template generator (NO repetitive skillets!)
       const mainIng = ingredients[0] || 'Fresh Garden Greens';
       const secIng = ingredients[1] || 'Seasoned Vegetables';
       
-      const FALLBACK_TEMPLATES = [
-        {
-          title: `Chilled ${mainIng} & ${secIng} Harvest Bowl`,
-          cuisine_type: 'Mediterranean',
-          instructions: [
-            `Slice and prepare ${mainIng} and ${secIng} into uniform pieces.`,
-            'Combine in a large serving bowl with olive oil, salt, and pepper.',
-            'Toss thoroughly until evenly coated and chilled.',
-            'Garnish and serve fresh!'
-          ]
-        },
-        {
-          title: `Sautéed ${mainIng} & ${secIng} Stir-Fry`,
-          cuisine_type: 'Asian Style',
-          instructions: [
-            `Heat 1 tbsp cooking oil in a wok or pan over high heat.`,
-            `Add ${mainIng} and stir-fry briskly for 4 minutes until crisp-tender.`,
-            `Toss in ${secIng}, season with salt, pepper, or soy sauce.`,
-            'Serve steaming hot with your favorite side.'
-          ]
-        },
-        {
-          title: `Oven-Roasted ${mainIng} & ${secIng} Medley`,
-          cuisine_type: 'Rustic Home Style',
-          instructions: [
-            'Preheat oven to 400°F (200°C).',
-            `Arrange ${mainIng} and ${secIng} on a lined sheet pan.`,
-            'Drizzle with olive oil, salt, pepper, and herbs of choice.',
-            'Roast for 18-20 minutes until golden and tender.'
-          ]
-        },
-        {
-          title: `Warm ${mainIng} & ${secIng} Country Soup`,
-          cuisine_type: 'Comfort Food',
-          instructions: [
-            `Bring 3 cups of seasoned water or broth to a simmer.`,
-            `Diced ${mainIng} and ${secIng} and add to the pot.`,
-            'Simmer gently for 15 minutes until vegetables are tender.',
-            'Ladle into warm bowls and serve.'
-          ]
-        }
-      ];
-
-      const templateIndex = previousTitles.length % FALLBACK_TEMPLATES.length;
-      const selectedTemplate = FALLBACK_TEMPLATES[templateIndex];
-
       const fallbackRecipe = {
-        title: selectedTemplate.title,
-        cuisine_type: selectedTemplate.cuisine_type,
-        prep_time: '15 mins',
+        title: `Pan-Seared ${mainIng} & ${secIng} Bowl`,
+        cuisine_type: 'Home Style',
+        prep_time: '20 mins',
         servings: '2',
         difficulty: 'Easy',
         ingredients: [
-          `1 portion of ${mainIng}`,
-          `1 portion of ${secIng}`,
-          '1 tbsp cooking oil or butter',
-          'Salt & black pepper to taste'
+          `200g ${mainIng}`,
+          `150g ${secIng}`,
+          '15ml cooking oil or butter',
+          '2 tsp salt & black pepper to taste'
         ],
-        instructions: selectedTemplate.instructions,
+        instructions: [
+          `Prepare and chop ${mainIng} and ${secIng} into uniform pieces.`,
+          'Heat oil in a medium skillet over medium-high heat.',
+          `Sauté ${mainIng} for 5-7 minutes until lightly golden.`,
+          `Toss in ${secIng}, season with salt & pepper, and cook for 2 more minutes.`,
+          'Serve warm and enjoy your custom creation!'
+        ],
         nutrition: {
-          calories: 310,
-          protein: 16,
-          carbs: 24,
-          fat: 12,
+          calories: 380,
+          protein: 20,
+          carbs: 30,
+          fat: 14,
           fiber: 5
         },
-        youtube_search_query: `${mainIng} recipe tutorial`
+        youtube_search_query: `${mainIng} recipe`
       };
 
       setGeneratedRecipe(fallbackRecipe);
@@ -305,14 +346,14 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
 
   const getYoutubeUrl = () => {
     if (!generatedRecipe) return '#';
-    const query = generatedRecipe.youtube_search_query || `${generatedRecipe.title} recipe tutorial`;
+    const query = generatedRecipe.youtube_search_query || `${generatedRecipe.title} recipe`;
     return `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
   };
 
   return (
     <div style={{ maxWidth: '1100px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
       
-      {/* Page Heading — High Contrast & Fruity Palette */}
+      {/* Page Heading & Weekly Scan Badge */}
       <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem', background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)', border: '1px solid var(--coral-border)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
@@ -324,14 +365,14 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
             </p>
           </div>
 
-          {/* Daily Scan Limit Status Badge */}
+          {/* Issue 2: Weekly Scan Limit Status Badge */}
           {user ? (
             <div style={{ backgroundColor: 'var(--sage-soft)', border: '1px solid var(--sage-border)', color: 'var(--sage-green)', padding: '0.5rem 1rem', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.9rem' }}>
               <UserCheck size={18} /> Unlimited Scans Active
             </div>
           ) : (
-            <div style={{ backgroundColor: scanCount >= GUEST_SCAN_LIMIT ? 'var(--coral-soft)' : 'var(--honey-soft)', border: `1px solid ${scanCount >= GUEST_SCAN_LIMIT ? 'var(--coral-border)' : 'var(--honey-border)'}`, color: scanCount >= GUEST_SCAN_LIMIT ? 'var(--coral-primary)' : 'var(--honey-amber)', padding: '0.5rem 1rem', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.9rem' }}>
-              <Lock size={16} /> Guest Scans: {scanCount} / {GUEST_SCAN_LIMIT} Daily
+            <div style={{ backgroundColor: weeklyScanCount >= GUEST_WEEKLY_LIMIT ? 'var(--coral-soft)' : 'var(--honey-soft)', border: `1px solid ${weeklyScanCount >= GUEST_WEEKLY_LIMIT ? 'var(--coral-border)' : 'var(--honey-border)'}`, color: weeklyScanCount >= GUEST_WEEKLY_LIMIT ? 'var(--coral-primary)' : 'var(--honey-amber)', padding: '0.5rem 1rem', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.9rem' }}>
+              <Lock size={16} /> Guest Scans: {weeklyScanCount} / {GUEST_WEEKLY_LIMIT} This Week
             </div>
           )}
         </div>
@@ -445,7 +486,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
         )}
       </div>
 
-      {/* 2. Detected & Added Ingredients */}
+      {/* 2. Detected & Added Ingredients (with Spoonacular Autocomplete) */}
       <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', border: '1px solid var(--sage-border)', backgroundColor: '#FFFFFF' }}>
         <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <CheckCircle2 size={24} style={{ color: 'var(--sage-green)' }} /> Detected Available Ingredients ({ingredients.length})
@@ -482,29 +523,113 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
             ))}
           </div>
         ) : (
-          <p style={{ color: 'var(--text-body)', marginBottom: '1.5rem', fontStyle: 'italic' }}>
-            No ingredients detected yet. Upload a photo above or manually enter items below.
-          </p>
+          /* Issue 6: Empty State handling after scanning */
+          <div style={{ padding: '1.25rem 0', marginBottom: '1.5rem' }}>
+            {hasScanned ? (
+              <div style={{ color: 'var(--coral-primary)' }}>
+                <strong style={{ fontSize: '1.05rem', display: 'block', marginBottom: '0.35rem' }}>❌ No Ingredients detected</strong>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-body)' }}>Try a clearer photo or add ingredients manually below.</span>
+              </div>
+            ) : (
+              <p style={{ color: 'var(--text-body)', fontStyle: 'italic' }}>
+                No ingredients detected yet. Upload a photo above or manually enter items below.
+              </p>
+            )}
+          </div>
         )}
 
-        {/* Manual Add Input */}
-        <div>
+        {/* Issue 7: Manual Ingredient Autocomplete Dropdown */}
+        <div style={{ position: 'relative' }} ref={dropdownRef}>
           <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-heading)' }}>
-            Add Extra Ingredients Manually
+            Add Extra Ingredients Manually (Spoonacular Verified)
           </h4>
-          <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '600px' }}>
-            <input
-              type="text"
-              className="input-control"
-              placeholder="e.g. Cherry Tomatoes, Eggs, Spinach, Olive Oil..."
-              value={manualInput}
-              onChange={(e) => setManualInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addManualIngredient()}
-            />
-            <button onClick={addManualIngredient} disabled={!manualInput.trim()} className="btn btn-secondary" style={{ whiteSpace: 'nowrap' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '600px', position: 'relative' }}>
+            <div style={{ position: 'relative', flex: 1 }}>
+              <input
+                type="text"
+                className="input-control"
+                placeholder="Type to search real ingredients (e.g. Chicken breast, Garlic, Avocado)..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onFocus={() => inputValue.trim() && suggestions.length > 0 && setShowDropdown(true)}
+                onKeyDown={handleKeyDownInput}
+              />
+              {isSearchingIngredients && (
+                <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)' }}>
+                  <div className="animate-spin" style={{ width: '16px', height: '16px', border: '2px solid #8B5CF6', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => {
+                if (suggestions.length > 0) {
+                  selectSuggestion(suggestions[highlightedIndex]?.name || suggestions[0]?.name);
+                } else if (inputValue.trim()) {
+                  selectSuggestion(inputValue);
+                  showToast('Notice', 'Ingredient search unavailable. Typing manually.', 'info');
+                }
+              }}
+              disabled={!inputValue.trim()}
+              className="btn btn-secondary"
+              style={{ whiteSpace: 'nowrap' }}
+            >
               <Plus size={18} /> Add Item
             </button>
           </div>
+
+          {/* Autocomplete Dropdown Menu */}
+          {showDropdown && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                width: '100%',
+                maxWidth: '600px',
+                backgroundColor: 'rgba(26, 26, 70, 0.96)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '12px',
+                marginTop: '6px',
+                maxHeight: '200px',
+                overflowY: 'auto',
+                zIndex: 50,
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              {suggestions.length > 0 ? (
+                suggestions.map((sug, idx) => {
+                  const isHighlighted = idx === highlightedIndex;
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => selectSuggestion(sug.name)}
+                      onMouseEnter={() => setHighlightedIndex(idx)}
+                      style={{
+                        padding: '0.75rem 1rem',
+                        cursor: 'pointer',
+                        color: '#FFFFFF',
+                        fontWeight: isHighlighted ? 700 : 500,
+                        backgroundColor: isHighlighted ? '#8B5CF6' : 'transparent',
+                        transition: 'background-color 0.15s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <span>{sug.name}</span>
+                      <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>Select</span>
+                    </div>
+                  );
+                })
+              ) : (
+                <div style={{ padding: '0.75rem 1rem', color: '#94A3B8', fontSize: '0.9rem', fontStyle: 'italic' }}>
+                  No matching ingredients found
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Recipe Generation Trigger */}
@@ -672,7 +797,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
                 fontSize: '0.95rem'
               }}
             >
-              <Youtube size={20} style={{ color: '#FF0000' }} /> Watch Tutorial on YouTube
+              <Youtube size={20} style={{ color: '#FF0000' }} /> Watch Tutorial on YouTube 🎬
             </a>
 
           </div>

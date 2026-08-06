@@ -222,9 +222,9 @@ export default function App() {
               <button
                 onClick={() => setAuthModalOpen(true)}
                 className="btn"
-                style={{ padding: '0.5rem 1.15rem', fontSize: '0.875rem', minHeight: '38px', backgroundColor: '#EF4444', color: '#FFFFFF', border: 'none', fontWeight: 700, boxShadow: '0 4px 14px rgba(239, 68, 68, 0.4)' }}
+                style={{ padding: '8px 14px', fontSize: '13px', whiteSpace: 'nowrap', minHeight: '38px', backgroundColor: '#EF4444', color: '#FFFFFF', border: 'none', fontWeight: 700, boxShadow: '0 4px 14px rgba(239, 68, 68, 0.4)' }}
               >
-                <User size={15} color="#FFFFFF" /> Log In / Sign Up
+                <User size={15} color="#FFFFFF" /> Log In
               </button>
             )}
 
@@ -527,6 +527,23 @@ export default function App() {
               <Database size={12} />
               <span>{isSupabaseConfigured ? 'Supabase Connected' : 'Local Storage Mode'}</span>
             </div>
+            <a
+              href="https://github.com/akulthota/PantryPal"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: '#8B5CF6',
+                textDecoration: 'none',
+                fontSize: '13px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                marginTop: '6px',
+                opacity: 0.8
+              }}
+            >
+              ⭐ Open Source on GitHub
+            </a>
           </div>
 
           <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>

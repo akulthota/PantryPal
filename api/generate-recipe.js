@@ -53,6 +53,8 @@ RECIPE CREATION DIRECTIVES:
 3. DISH CATEGORY FOR THIS VARIATION: ${chosenCategory}
 4. REGENERATION FRESHNESS: Do NOT use any of these previous titles: ${avoidTitles.length > 0 ? avoidTitles.join(', ') : 'None'}. (Seed: ${seed}).
 5. DIVERSITY: Create a unique title and clear step-by-step instructions.
+6. REAL RECIPES ONLY: You MUST only suggest real recipes that exist in established cookbooks or well-known food cultures. Do NOT invent fictional recipes. Every ingredient MUST include a precise measurement (e.g., '200g chicken breast', '15ml olive oil', '2 tsp cumin'). Never list bare ingredient names without quantities.
+7. YOUTUBE QUERY: The youtube_search_query must be the exact, commonly-known name of the dish followed by 'recipe'. Example: 'Chicken Tikka Masala recipe'. Do NOT use generic queries like 'chicken and rice dish'.
 
 Return ONLY a raw valid JSON object without markdown code fences. Schema:
 {
@@ -70,7 +72,7 @@ Return ONLY a raw valid JSON object without markdown code fences. Schema:
     "fat": 14,
     "fiber": 6
   },
-  "youtube_search_query": "Recipe Title Cooking Tutorial"
+  "youtube_search_query": "Recipe Title recipe"
 }`;
 
     const response = await ai.models.generateContent({
