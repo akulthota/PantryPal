@@ -173,7 +173,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
         } catch (apiErr) {
           console.warn('Vision API call error:', apiErr);
           setHasScanned(true);
-          setErrorMessage('Vision API offline or missing key. You can select ingredients manually below to generate recipes!');
+          setErrorMessage(apiErr.message || 'Vision API call failed. You can select ingredients manually below.');
         } finally {
           setIsAnalyzing(false);
         }
