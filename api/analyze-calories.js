@@ -1,4 +1,4 @@
-// Vercel Serverless Function: Meal Photo Calorie & Nutrition Scanner via Gemini Vision
+// Vercel Serverless Function: Meal Photo Calorie & Nutrition Scanner via Gemini Vision (with 429 Fallback Chain)
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
     if (!apiKey) {
       return res.status(500).json({
         error: 'GEMINI_API_KEY environment variable is not configured on the server.'
@@ -33,8 +33,8 @@ export default async function handler(req, res) {
     }
 
     const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
-    const modelsToTry = [primaryModel, 'gemini-2.5-flash', 'gemini-1.5-flash'];
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const modelsToTry = [...new Set([primaryModel, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'])];
 
     const prompt = `Analyze this image of a prepared meal, dish, or food item. Identify the dish name, estimate the total calories, provide macronutrient breakdowns, breakdown individual food items on the plate, and provide a health score out of 10.
 Return ONLY a valid JSON object matching this structure:
@@ -94,6 +94,9 @@ Do not include markdown wrappers (like \`\`\`json). Return plain JSON only.`;
         } else {
           const errText = await response.text();
           lastError = `Model ${model} returned ${response.status}: ${errText}`;
+          if (response.status === 429) {
+            await new Promise(r => setTimeout(r, 500));
+          }
         }
       } catch (err) {
         lastError = err.message;

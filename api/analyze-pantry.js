@@ -1,7 +1,6 @@
-// Vercel Serverless Function: Pantry Image Analysis via Gemini 3.6 Flash Vision
+// Vercel Serverless Function: Pantry Image Analysis via Gemini Vision (with 429 Rate Limit Fallback Chain)
 
 export default async function handler(req, res) {
-  // CORS setup
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -26,18 +25,17 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
     if (!apiKey) {
       return res.status(500).json({
         error: 'GEMINI_API_KEY environment variable is not configured on the server.'
       });
     }
 
-    // Clean up base64 string
     const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
 
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
-    const modelsToTry = [primaryModel, 'gemini-2.5-flash', 'gemini-1.5-flash'];
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const modelsToTry = [...new Set([primaryModel, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'])];
 
     let responseData = null;
     let lastError = null;
@@ -84,6 +82,9 @@ Do not include markdown code block formatting (like \`\`\`json) or extra convers
         } else {
           const errText = await response.text();
           lastError = `Model ${model} returned ${response.status}: ${errText}`;
+          if (response.status === 429) {
+            await new Promise(r => setTimeout(r, 500));
+          }
         }
       } catch (err) {
         lastError = err.message;
@@ -94,7 +95,6 @@ Do not include markdown code block formatting (like \`\`\`json) or extra convers
       return res.status(500).json({ error: `Gemini API request failed: ${lastError}` });
     }
 
-    // Extract content text
     const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
@@ -105,7 +105,6 @@ Do not include markdown code block formatting (like \`\`\`json) or extra convers
         raw: rawText
       });
     } catch (parseErr) {
-      // Fallback regex extraction if model returned conversational JSON
       const matches = [...rawText.matchAll(/"([^"]+)"/g)].map(m => m[1]).filter(s => s.length > 2 && s !== 'ingredients');
       return res.status(200).json({
         ingredients: matches.length > 0 ? matches : ['Fresh Produce', 'Dairy', 'Condiments'],

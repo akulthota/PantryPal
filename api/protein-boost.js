@@ -1,4 +1,4 @@
-// Vercel Serverless Function: AI Protein Boost Recommendations via Gemini 3.6 Flash
+// Vercel Serverless Function: AI Protein Boost Recommendations via Gemini (with 429 Fallback Chain)
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -21,15 +21,15 @@ export default async function handler(req, res) {
   try {
     const { goal = 80, currentIntake = 0, preferences = {} } = req.body || {};
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
     if (!apiKey) {
       return res.status(500).json({
         error: 'GEMINI_API_KEY environment variable is not configured on the server.'
       });
     }
 
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
-    const modelsToTry = [primaryModel, 'gemini-2.5-flash', 'gemini-1.5-flash'];
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const modelsToTry = [...new Set([primaryModel, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'])];
 
     const prompt = `You are a nutrition specialist AI. The user has a daily protein goal of ${goal}g and has logged ${currentIntake}g today.
 User Dietary Restrictions: ${preferences.dietary_restrictions?.join(', ') || 'None'}
@@ -76,6 +76,9 @@ Do not include markdown wrappers. Return plain JSON only.`;
         } else {
           const errText = await response.text();
           lastError = `Model ${model} returned ${response.status}: ${errText}`;
+          if (response.status === 429) {
+            await new Promise(r => setTimeout(r, 500));
+          }
         }
       } catch (err) {
         lastError = err.message;

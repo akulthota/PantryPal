@@ -1,6 +1,16 @@
-import { GoogleGenAI } from '@google/genai';
-
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -17,9 +27,11 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is not set.' });
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const modelsToTry = [primaryModel, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+    // Deduplicate models
+    const uniqueModels = [...new Set(modelsToTry)];
 
-    // Wide array of real cookbook dish categories (inspired by Allrecipes, NYT Cooking, Serious Eats)
     const cookbookCategories = [
       'Gourmet Pasta / Noodle Dish',
       'Artisanal Grain & Warm Protein Bowl',
@@ -75,17 +87,48 @@ Return ONLY a raw valid JSON object without markdown code fences. Schema:
   "youtube_search_query": "Recipe Title recipe"
 }`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        temperature: 0.95,
-        responseMimeType: 'application/json'
-      }
-    });
+    let responseData = null;
+    let lastError = null;
 
-    const responseText = response.text?.trim() || '';
-    const cleanJsonText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+    for (const model of uniqueModels) {
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.9,
+                response_mime_type: 'application/json'
+              }
+            })
+          }
+        );
+
+        if (response.ok) {
+          responseData = await response.json();
+          break;
+        } else {
+          const errText = await response.text();
+          lastError = `Model ${model} returned ${response.status}: ${errText}`;
+          if (response.status === 429) {
+            // Wait 500ms before trying fallback model if rate limited
+            await new Promise(r => setTimeout(r, 500));
+          }
+        }
+      } catch (err) {
+        lastError = err.message;
+      }
+    }
+
+    if (!responseData) {
+      return res.status(500).json({ error: `Gemini API fallback exhausted: ${lastError}` });
+    }
+
+    const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const cleanJsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
     const recipe = JSON.parse(cleanJsonText);
     return res.status(200).json(recipe);
