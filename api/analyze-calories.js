@@ -1,4 +1,4 @@
-// Vercel Serverless Function: Meal Photo Calorie & Nutrition Scanner via Gemini Vision (with 429 Fallback Chain)
+// Vercel Serverless Function: Ultra-Fast Calorie Scanner via Gemini 2.5 Flash
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -33,8 +33,7 @@ export default async function handler(req, res) {
     }
 
     const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-    const modelsToTry = [...new Set([primaryModel, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'])];
+    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
 
     const prompt = `Analyze this image of a prepared meal, dish, or food item. Identify the dish name, estimate the total calories, provide macronutrient breakdowns, breakdown individual food items on the plate, and provide a health score out of 10.
 Return ONLY a valid JSON object matching this structure:
@@ -95,7 +94,7 @@ Do not include markdown wrappers (like \`\`\`json). Return plain JSON only.`;
           const errText = await response.text();
           lastError = `Model ${model} returned ${response.status}: ${errText}`;
           if (response.status === 429) {
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 200));
           }
         }
       } catch (err) {

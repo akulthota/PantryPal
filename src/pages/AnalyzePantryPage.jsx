@@ -134,50 +134,83 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setHasCookedLogged(false);
 
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(selectedFile);
-      reader.onloadend = async () => {
-        const base64Data = reader.result;
+      const compressImage = (file) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = URL.createObjectURL(file);
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_SIZE = 1024;
+            let width = img.width;
+            let height = img.height;
 
-        try {
-          const res = await fetch('/api/analyze-pantry', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              image: base64Data,
-              mimeType: selectedFile.type || 'image/jpeg'
-            })
-          });
+            if (width > height) {
+              if (width > MAX_SIZE) {
+                height *= MAX_SIZE / width;
+                width = MAX_SIZE;
+              }
+            } else {
+              if (height > MAX_SIZE) {
+                width *= MAX_SIZE / height;
+                height = MAX_SIZE;
+              }
+            }
 
-          if (!res.ok) {
-            const errJson = await res.json().catch(() => ({}));
-            throw new Error(errJson.error || `Server status ${res.status}`);
-          }
-
-          const data = await res.json();
-          setHasScanned(true); // Issue 6: Mark scanned
-
-          if (data.ingredients && data.ingredients.length > 0) {
-            setIngredients(data.ingredients);
-            showToast('Ingredients Extracted! 🍓', `Identified ${data.ingredients.length} items from your photo.`, 'success');
-            
-            await db.scanLogs.create({
-              ingredients: data.ingredients,
-              local_date: new Date().toISOString().split('T')[0],
-              log_type: 'scan'
-            });
-            loadScanHistory();
-          } else {
-            setErrorMessage('No clear food items detected. Try adding ingredients manually or uploading a clearer photo.');
-          }
-        } catch (apiErr) {
-          console.warn('Vision API call error:', apiErr);
-          setHasScanned(true);
-          setErrorMessage(apiErr.message || 'Vision API call failed. You can select ingredients manually below.');
-        } finally {
-          setIsAnalyzing(false);
-        }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            resolve(dataUrl);
+          };
+          img.onerror = () => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+          };
+        });
       };
+
+      const base64Data = await compressImage(selectedFile);
+
+      try {
+        const res = await fetch('/api/analyze-pantry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image: base64Data,
+            mimeType: 'image/jpeg'
+          })
+        });
+
+        if (!res.ok) {
+          const errJson = await res.json().catch(() => ({}));
+          throw new Error(errJson.error || `Server status ${res.status}`);
+        }
+
+        const data = await res.json();
+        setHasScanned(true);
+
+        if (data.ingredients && data.ingredients.length > 0) {
+          setIngredients(data.ingredients);
+          showToast('Ingredients Extracted! 🍓', `Identified ${data.ingredients.length} items from your photo.`, 'success');
+          
+          await db.scanLogs.create({
+            ingredients: data.ingredients,
+            local_date: new Date().toISOString().split('T')[0],
+            log_type: 'scan'
+          });
+          loadScanHistory();
+        } else {
+          setErrorMessage('No clear food items detected. Try adding ingredients manually or uploading a clearer photo.');
+        }
+      } catch (apiErr) {
+        console.warn('Vision API call error:', apiErr);
+        setHasScanned(true);
+        setErrorMessage(apiErr.message || 'Vision API call failed. You can select ingredients manually below.');
+      } finally {
+        setIsAnalyzing(false);
+      }
     } catch (err) {
       setHasScanned(true);
       setErrorMessage(err.message || 'Failed to analyze image.');

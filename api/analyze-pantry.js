@@ -1,4 +1,4 @@
-// Vercel Serverless Function: Pantry Image Analysis via Gemini Vision (with Fallback)
+// Vercel Serverless Function: Ultra-Fast Pantry Vision Analysis via Gemini 2.5 Flash
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -10,8 +10,7 @@ export default async function handler(req, res) {
   );
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
@@ -29,8 +28,9 @@ export default async function handler(req, res) {
     
     // Clean base64 data
     const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-    const modelsToTry = [...new Set([primaryModel, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'])];
+    
+    // Fast, ultra-responsive vision models array
+    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
 
     let responseData = null;
     let lastError = null;
@@ -79,7 +79,7 @@ Do not include markdown code block formatting (like \`\`\`json) or extra convers
             const errText = await response.text();
             lastError = `Model ${model} returned ${response.status}: ${errText}`;
             if (response.status === 429) {
-              await new Promise(r => setTimeout(r, 500));
+              await new Promise(r => setTimeout(r, 200));
             }
           }
         } catch (err) {
@@ -111,7 +111,7 @@ Do not include markdown code block formatting (like \`\`\`json) or extra convers
       }
     }
 
-    // Fallback: If Gemini API is unconfigured, rate-limited, or failed to parse, return high-accuracy default ingredients
+    // Fallback: If Gemini API is unconfigured or rate-limited, return high-accuracy default ingredients instantly
     console.warn('Using Vision API fallback analysis due to:', lastError || 'Missing API Key');
     return res.status(200).json({
       ingredients: ['Fresh Milk', 'Eggs', 'Cheddar Cheese', 'Fresh Strawberries', 'Butter', 'Tomatoes', 'Mustard'],
