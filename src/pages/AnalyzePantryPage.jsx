@@ -819,11 +819,14 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
                 Preparation Instructions
               </h3>
               <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                {generatedRecipe.instructions?.map((step, i) => (
-                  <li key={i} style={{ fontSize: '0.975rem', lineHeight: 1.6, color: 'var(--text-body)', fontWeight: 500 }}>
-                    {step}
-                  </li>
-                ))}
+                {generatedRecipe.instructions?.map((step, i) => {
+                  const cleanStep = typeof step === 'string' ? step.replace(/^(Step\s*\d+:?\s*|\d+[\.\)]\s*)/i, '').trim() : step;
+                  return (
+                    <li key={i} style={{ fontSize: '0.975rem', lineHeight: 1.6, color: 'var(--text-body)', fontWeight: 500 }}>
+                      {cleanStep}
+                    </li>
+                  );
+                })}
               </ol>
             </div>
           </div>

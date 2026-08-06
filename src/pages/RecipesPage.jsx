@@ -689,13 +689,15 @@ export default function RecipesPage({ showToast }) {
               </h3>
               <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', color: 'var(--text-body)', fontWeight: 500 }}>
                 {Array.isArray(activeDetailRecipe.analyzedInstructions?.[0]?.steps) ? (
-                  activeDetailRecipe.analyzedInstructions[0].steps.map((s, i) => (
-                    <li key={i} style={{ lineHeight: 1.6 }}>{s.step}</li>
-                  ))
+                  activeDetailRecipe.analyzedInstructions[0].steps.map((s, i) => {
+                    const cleanText = typeof s.step === 'string' ? s.step.replace(/^(Step\s*\d+:?\s*|\d+[\.\)]\s*)/i, '').trim() : s.step;
+                    return <li key={i} style={{ lineHeight: 1.6 }}>{cleanText}</li>;
+                  })
                 ) : Array.isArray(activeDetailRecipe.instructions) ? (
-                  activeDetailRecipe.instructions.map((step, i) => (
-                    <li key={i} style={{ lineHeight: 1.6 }}>{step}</li>
-                  ))
+                  activeDetailRecipe.instructions.map((step, i) => {
+                    const cleanText = typeof step === 'string' ? step.replace(/^(Step\s*\d+:?\s*|\d+[\.\)]\s*)/i, '').trim() : step;
+                    return <li key={i} style={{ lineHeight: 1.6 }}>{cleanText}</li>;
+                  })
                 ) : (
                   <li style={{ lineHeight: 1.6 }}>{activeDetailRecipe.instructions || 'Follow standard preparation steps.'}</li>
                 )}

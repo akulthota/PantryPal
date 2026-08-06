@@ -32,7 +32,7 @@ export default function App() {
   useEffect(() => {
     loadInitialData();
     checkAuthSession();
-  }, []);
+  }, [user, activeTab]);
 
   const checkAuthSession = async () => {
     if (isSupabaseConfigured && supabase) {
