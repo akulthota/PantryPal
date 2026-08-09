@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare, Search } from 'lucide-react';
+import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare, Search, AlertTriangle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
 import { autocompleteIngredient } from '../lib/spoonacular';
@@ -478,6 +478,46 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
   return (
     <div style={{ maxWidth: '1100px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
       
+      {/* Temporarily Down Notice Banner */}
+      <div
+        className="animate-fade-in"
+        style={{
+          backgroundColor: '#FFFBEB',
+          border: '1px solid #FCD34D',
+          borderRadius: '16px',
+          padding: '1rem 1.25rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          boxShadow: '0 4px 16px rgba(245, 158, 11, 0.12)'
+        }}
+      >
+        <div
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '12px',
+            backgroundColor: '#FEF3C7',
+            border: '1px solid #F59E0B',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}
+        >
+          <AlertTriangle size={22} style={{ color: '#D97706' }} />
+        </div>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#92400E', marginBottom: '2px' }}>
+            System Notice
+          </div>
+          <div style={{ fontSize: '0.9rem', color: '#B45309', fontWeight: 500 }}>
+            The pantry scanner is temporarily down and will be functional by 12/8/2026.
+          </div>
+        </div>
+      </div>
+
       {/* Page Heading & Weekly Scan Badge */}
       <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem', background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)', border: '1px solid var(--coral-border)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
