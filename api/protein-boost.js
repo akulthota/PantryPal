@@ -33,10 +33,9 @@ export default async function handler(req, res) {
       });
     }
 
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
-    const rawModels = [primaryModel, 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
-    const modelsToTry = [...new Set(rawModels.filter(m => m && !m.includes('2.5') && !m.includes('3.6')))];
-    if (modelsToTry.length === 0) modelsToTry.push('gemini-2.0-flash', 'gemini-1.5-flash');
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+    const rawModels = [primaryModel, 'gemini-3.6-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+    const modelsToTry = [...new Set(rawModels.filter(Boolean))];
 
     const prompt = `You are a nutrition specialist AI. The user has a daily protein goal of ${goal}g and has logged ${currentIntake}g today.
 User Dietary Restrictions: ${preferences.dietary_restrictions?.join(', ') || 'None'}

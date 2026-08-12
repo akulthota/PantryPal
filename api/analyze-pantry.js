@@ -34,11 +34,10 @@ export default async function handler(req, res) {
     // Clean base64 data
     const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
     
-    // Fast, ultra-responsive vision models array
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
-    const rawModels = [primaryModel, 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
-    const modelsToTry = [...new Set(rawModels.filter(m => m && !m.includes('2.5') && !m.includes('3.6')))];
-    if (modelsToTry.length === 0) modelsToTry.push('gemini-2.0-flash', 'gemini-1.5-flash');
+    // Ultra-responsive vision models array with gemini-3.6-flash as primary
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+    const rawModels = [primaryModel, 'gemini-3.6-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+    const modelsToTry = [...new Set(rawModels.filter(Boolean))];
 
     let responseData = null;
     let lastError = null;
