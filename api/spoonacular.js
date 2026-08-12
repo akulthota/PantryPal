@@ -1,7 +1,13 @@
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '*';
+  if (origin !== '*') {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -233,10 +239,14 @@ function handleMockFallback(action, params, res) {
       let filtered = [...MOCK_RECIPES];
       if (params.query) {
         const q = params.query.toLowerCase();
-        filtered = filtered.filter(r => r.title.toLowerCase().includes(q));
+        filtered = filtered.filter(r =>
+          r.title.toLowerCase().includes(q) ||
+          (r.cuisines && r.cuisines.some(c => c.toLowerCase().includes(q))) ||
+          (r.extendedIngredients && r.extendedIngredients.some(ing => ing.name.toLowerCase().includes(q)))
+        );
       }
       if (params.cuisine && params.cuisine !== 'All') {
-        filtered = filtered.filter(r => r.cuisines?.includes(params.cuisine));
+        filtered = filtered.filter(r => r.cuisines?.some(c => c.toLowerCase() === params.cuisine.toLowerCase()));
       }
       return res.status(200).json({ results: filtered, totalResults: filtered.length });
     }
@@ -274,3 +284,4 @@ function handleMockFallback(action, params, res) {
       return res.status(200).json({ results: MOCK_RECIPES, totalResults: MOCK_RECIPES.length });
   }
 }
+

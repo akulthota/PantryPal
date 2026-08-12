@@ -72,3 +72,10 @@ CREATE POLICY "Allow public insert/update access to user_preferences" ON public.
 
 CREATE POLICY "Allow public read access to scan_logs" ON public.scan_logs FOR SELECT USING (true);
 CREATE POLICY "Allow public insert access to scan_logs" ON public.scan_logs FOR INSERT WITH CHECK (true);
+
+-- 5. PERFORMANCE INDEXES
+CREATE INDEX IF NOT EXISTS idx_recipes_user_id ON public.recipes(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_protein_logs_user_date ON public.protein_logs(user_id, logged_date);
+CREATE INDEX IF NOT EXISTS idx_user_preferences_user_id ON public.user_preferences(user_id);
+CREATE INDEX IF NOT EXISTS idx_scan_logs_user_date ON public.scan_logs(user_id, local_date);
+

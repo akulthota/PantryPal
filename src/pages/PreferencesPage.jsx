@@ -51,15 +51,17 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
   };
 
   const addCustomCuisine = () => {
-    if (newCuisine.trim() && !cuisines.includes(newCuisine.trim())) {
-      setCuisines([...cuisines, newCuisine.trim()]);
+    const val = newCuisine.trim();
+    if (val && !cuisines.some(c => c.toLowerCase() === val.toLowerCase())) {
+      setCuisines([...cuisines, val]);
       setNewCuisine('');
     }
   };
 
   const addAllergy = () => {
-    if (newAllergy.trim() && !allergies.includes(newAllergy.trim())) {
-      setAllergies([...allergies, newAllergy.trim()]);
+    const val = newAllergy.trim();
+    if (val && !allergies.some(a => a.toLowerCase() === val.toLowerCase())) {
+      setAllergies([...allergies, val]);
       setNewAllergy('');
     }
   };

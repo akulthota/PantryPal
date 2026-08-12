@@ -1,6 +1,11 @@
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '*';
+  if (origin !== '*') {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -16,7 +21,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { ingredients = [], preferences = {}, avoidTitles = [] } = req.body;
+    const { ingredients = [], preferences = {}, avoidTitles = [] } = req.body || {};
 
     if (!Array.isArray(ingredients) || ingredients.length === 0) {
       return res.status(400).json({ error: 'No ingredients provided' });
@@ -27,8 +32,11 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is not set.' });
     }
 
-    // Fast, responsive model array (gemini-2.5-flash is ultra-fast ~1s response)
-    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+    // Fast, responsive model array
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+    const rawModels = [primaryModel, 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+    const modelsToTry = [...new Set(rawModels.filter(m => m && !m.includes('2.5') && !m.includes('3.6')))];
+    if (modelsToTry.length === 0) modelsToTry.push('gemini-2.0-flash', 'gemini-1.5-flash');
 
     const seed = Date.now();
 
@@ -108,19 +116,23 @@ Return ONLY a raw valid JSON object:
     if (responseData) {
       const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
       const cleanJsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-      const recipe = JSON.parse(cleanJsonText);
+      try {
+        const recipe = JSON.parse(cleanJsonText);
 
-      // Clean instructions of any unwanted "Step 1:" prefixes
-      if (Array.isArray(recipe.instructions)) {
-        recipe.instructions = recipe.instructions.map(step =>
-          typeof step === 'string' ? step.replace(/^(Step\s*\d+:?\s*|\d+[\.\)]\s*)/i, '').trim() : step
-        );
-      }
+        // Clean instructions of any unwanted "Step 1:" prefixes
+        if (Array.isArray(recipe.instructions)) {
+          recipe.instructions = recipe.instructions.map(step =>
+            typeof step === 'string' ? step.replace(/^(Step\s*\d+:?\s*|\d+[\.\)]\s*)/i, '').trim() : step
+          );
+        }
 
-      if (!recipe.youtube_search_query || recipe.youtube_search_query.length < 5) {
-        recipe.youtube_search_query = `${recipe.title} recipe`;
+        if (!recipe.youtube_search_query || recipe.youtube_search_query.length < 5) {
+          recipe.youtube_search_query = `${recipe.title} recipe`;
+        }
+        return res.status(200).json(recipe);
+      } catch (jsonErr) {
+        console.warn('Failed to parse Gemini JSON output, falling back:', jsonErr);
       }
-      return res.status(200).json(recipe);
     }
 
     // Fast fallback recipe generated strictly from ingredients
@@ -165,3 +177,4 @@ Return ONLY a raw valid JSON object:
     });
   }
 }
+

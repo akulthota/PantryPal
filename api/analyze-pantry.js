@@ -1,8 +1,13 @@
-// Vercel Serverless Function: Ultra-Fast Pantry Vision Analysis via Gemini 2.5 Flash
+// Vercel Serverless Function: Ultra-Fast Pantry Vision Analysis via Gemini API
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '*';
+  if (origin !== '*') {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -30,7 +35,10 @@ export default async function handler(req, res) {
     const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
     
     // Fast, ultra-responsive vision models array
-    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+    const rawModels = [primaryModel, 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+    const modelsToTry = [...new Set(rawModels.filter(m => m && !m.includes('2.5') && !m.includes('3.6')))];
+    if (modelsToTry.length === 0) modelsToTry.push('gemini-2.0-flash', 'gemini-1.5-flash');
 
     let responseData = null;
     let lastError = null;
@@ -101,7 +109,10 @@ Do not include markdown code block formatting (like \`\`\`json) or extra convers
           });
         }
       } catch (parseErr) {
-        const matches = [...rawText.matchAll(/"([^"]+)"/g)].map(m => m[1]).filter(s => s.length > 2 && s !== 'ingredients');
+        const EXCLUDED_KEYS = ['ingredients', 'raw', 'status', 'error', 'item', 'food', 'type'];
+        const matches = [...rawText.matchAll(/"([^"]+)"/g)]
+          .map(m => m[1])
+          .filter(s => s.length > 2 && !EXCLUDED_KEYS.includes(s.toLowerCase()));
         if (matches.length > 0) {
           return res.status(200).json({
             ingredients: matches,
@@ -126,3 +137,4 @@ Do not include markdown code block formatting (like \`\`\`json) or extra convers
     });
   }
 }
+

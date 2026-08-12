@@ -117,7 +117,7 @@ export default function RecipesPage({ showToast }) {
       if (!recipeSummary.extendedIngredients || !recipeSummary.analyzedInstructions) {
         const fullDetails = await getRecipeDetails(recipeSummary.id);
         if (fullDetails) {
-          setActiveDetailRecipe(fullDetails);
+          setActiveDetailRecipe(prev => (prev?.id === recipeSummary.id ? fullDetails : prev));
         }
       }
     } catch (err) {
@@ -134,7 +134,10 @@ export default function RecipesPage({ showToast }) {
       // Map Spoonacular recipe to app's standardized recipe format
       const formattedIngredients = Array.isArray(recipe.extendedIngredients)
         ? recipe.extendedIngredients.map(ing => {
-            const amount = ing.measures?.metric?.amount || ing.amount || '';
+            const metricAmt = ing.measures?.metric?.amount;
+            const amount = (metricAmt !== undefined && metricAmt !== null)
+              ? Math.round(metricAmt * 100) / 100
+              : (ing.amount !== undefined && ing.amount !== null ? ing.amount : '');
             const unit = ing.measures?.metric?.unitShort || ing.unit || '';
             const name = ing.name || ing.originalName || '';
             return `${amount} ${unit} ${name}`.trim();
@@ -548,7 +551,7 @@ export default function RecipesPage({ showToast }) {
                     </div>
 
                     <p style={{ color: 'var(--text-body)', fontSize: '0.9rem', marginBottom: '1.25rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      <strong style={{ color: 'var(--text-heading)' }}>Ingredients:</strong> {Array.isArray(recipe.ingredients) ? recipe.ingredients.join(', ') : ''}
+                      <strong style={{ color: 'var(--text-heading)' }}>Ingredients:</strong> {Array.isArray(recipe.ingredients) ? recipe.ingredients.map(ing => typeof ing === 'string' ? ing : (ing.name || ing.originalName || '')).filter(Boolean).join(', ') : ''}
                     </p>
                   </div>
 
@@ -669,13 +672,16 @@ export default function RecipesPage({ showToast }) {
               <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-heading)', fontWeight: 600 }}>
                 {Array.isArray(activeDetailRecipe.extendedIngredients) ? (
                   activeDetailRecipe.extendedIngredients.map((ing, i) => {
-                    const amount = ing.measures?.metric?.amount ? Math.round(ing.measures.metric.amount * 100) / 100 : ing.amount || '';
+                    const metricAmt = ing.measures?.metric?.amount;
+                    const amount = (metricAmt !== undefined && metricAmt !== null)
+                      ? Math.round(metricAmt * 100) / 100
+                      : (ing.amount !== undefined && ing.amount !== null ? ing.amount : '');
                     const unit = ing.measures?.metric?.unitShort || ing.unit || '';
                     const name = ing.name || ing.originalName || '';
                     return <li key={i}>{`${amount} ${unit} ${name}`.trim()}</li>;
                   })
                 ) : Array.isArray(activeDetailRecipe.ingredients) ? (
-                  activeDetailRecipe.ingredients.map((ing, i) => <li key={i}>{ing}</li>)
+                  activeDetailRecipe.ingredients.map((ing, i) => <li key={i}>{typeof ing === 'string' ? ing : (ing.name || ing.originalName || '')}</li>)
                 ) : (
                   <li>Standard recipe ingredients</li>
                 )}

@@ -11,8 +11,19 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isLogging, setIsLogging] = useState(false);
 
+  React.useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+      }
+    };
+  }, [previewUrl]);
+
   const handleFileChange = (file) => {
     if (!file) return;
+    if (previewUrl) {
+      try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+    }
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
     setNutritionResult(null);
@@ -27,6 +38,9 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
   };
 
   const clearImage = () => {
+    if (previewUrl) {
+      try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+    }
     setSelectedFile(null);
     setPreviewUrl(null);
     setNutritionResult(null);
@@ -43,6 +57,10 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
     try {
       const reader = new FileReader();
       reader.readAsDataURL(selectedFile);
+      reader.onerror = () => {
+        setIsScanning(false);
+        setErrorMessage('Failed to read image file.');
+      };
       reader.onloadend = async () => {
         const base64Data = reader.result;
 
@@ -97,7 +115,8 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
     if (!nutritionResult) return;
     setIsLogging(true);
     try {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       await db.proteinLogs.create({
         item: nutritionResult.dish_name || 'Scanned Meal',
         total_protein: nutritionResult.protein_g || 0,

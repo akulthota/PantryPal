@@ -1,8 +1,13 @@
 // Vercel Serverless Function: AI Protein Boost Recommendations via Gemini (with 429 Fallback Chain)
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '*';
+  if (origin !== '*') {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -28,8 +33,10 @@ export default async function handler(req, res) {
       });
     }
 
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-    const modelsToTry = [...new Set([primaryModel, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'])];
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+    const rawModels = [primaryModel, 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+    const modelsToTry = [...new Set(rawModels.filter(m => m && !m.includes('2.5') && !m.includes('3.6')))];
+    if (modelsToTry.length === 0) modelsToTry.push('gemini-2.0-flash', 'gemini-1.5-flash');
 
     const prompt = `You are a nutrition specialist AI. The user has a daily protein goal of ${goal}g and has logged ${currentIntake}g today.
 User Dietary Restrictions: ${preferences.dietary_restrictions?.join(', ') || 'None'}
@@ -92,9 +99,20 @@ Do not include markdown wrappers. Return plain JSON only.`;
     const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
-    const result = JSON.parse(cleanJson);
-    return res.status(200).json(result);
+    try {
+      const result = JSON.parse(cleanJson);
+      return res.status(200).json(result);
+    } catch (parseErr) {
+      return res.status(200).json({
+        suggestions: [
+          { title: 'Greek Yogurt Parfait', protein_g: 22, category: 'Dairy', description: 'Plain Greek yogurt topped with chia seeds and sliced almonds.' },
+          { title: 'Edamame Snack Bowl', protein_g: 17, category: 'Plant', description: 'Steamed edamame pods dusted with sea salt and garlic.' },
+          { title: 'Hard-Boiled Eggs (x2)', protein_g: 13, category: 'Animal', description: 'Simple, quick protein boost on the go.' }
+        ]
+      });
+    }
   } catch (err) {
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }
 }
+

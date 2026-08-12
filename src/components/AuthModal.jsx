@@ -314,7 +314,7 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
 
                 <button
                   type="button"
-                  disabled={!email || !password}
+                  disabled={!email || !password || password.length < 6}
                   onClick={() => setStep(2)}
                   className="btn btn-primary"
                   style={{ width: '100%', padding: '0.8rem', marginTop: '0.35rem', justifyContent: 'space-between', fontSize: '0.95rem' }}

@@ -88,9 +88,9 @@ export const db = {
 
       const localRecipes = getLocal('recipes', DEFAULT_RECIPES);
       
-      // Combine remote cloud recipes + local recipes and deduplicate by ID or Title
+      // Combine local recipes (newer/edited) first, then remote recipes
       const map = new Map();
-      [...remoteRecipes, ...localRecipes].forEach(r => {
+      [...localRecipes, ...remoteRecipes].forEach(r => {
         if (r && (r.id || r.title)) {
           const key = r.id || r.title;
           if (!map.has(key)) map.set(key, r);
@@ -159,7 +159,7 @@ export const db = {
 
       const localLogs = getLocal('protein_logs', DEFAULT_PROTEIN_LOGS);
       const map = new Map();
-      [...remoteLogs, ...localLogs].forEach(l => {
+      [...localLogs, ...remoteLogs].forEach(l => {
         if (l && l.id && !map.has(l.id)) map.set(l.id, l);
       });
       return Array.from(map.values());
@@ -204,17 +204,22 @@ export const db = {
   preferences: {
     async get() {
       const userId = await getUserId();
+      const localPrefs = getLocal('user_preferences', DEFAULT_PREFERENCES);
       if (isSupabaseConfigured && supabase && userId) {
         try {
           const { data, error } = await supabase
             .from('user_preferences')
             .select('*')
             .eq('user_id', userId)
-            .single();
-          if (!error && data) return data;
+            .maybeSingle();
+          if (!error && data) {
+            const merged = { ...DEFAULT_PREFERENCES, ...localPrefs, ...data };
+            setLocal('user_preferences', merged);
+            return merged;
+          }
         } catch (e) {}
       }
-      return getLocal('user_preferences', DEFAULT_PREFERENCES);
+      return localPrefs;
     },
 
     async update(prefs) {
@@ -251,7 +256,7 @@ export const db = {
 
       const localScans = getLocal('scan_logs', []);
       const map = new Map();
-      [...remoteScans, ...localScans].forEach(s => {
+      [...localScans, ...remoteScans].forEach(s => {
         if (s && s.id && !map.has(s.id)) map.set(s.id, s);
       });
       return Array.from(map.values());
@@ -277,3 +282,4 @@ export const db = {
     }
   }
 };
+
