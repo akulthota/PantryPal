@@ -210,7 +210,11 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
 
         if (data.ingredients && data.ingredients.length > 0) {
           setIngredients(data.ingredients);
-          showToast('Ingredients Extracted! 🍓', `Identified ${data.ingredients.length} items from your photo.`, 'success');
+          if (data.isFallback) {
+            showToast('Sample Ingredients Loaded 📷', 'Set GEMINI_API_KEY in environment for live AI vision photo scanning!', 'info');
+          } else {
+            showToast('Ingredients Extracted! 🍓', `Identified ${data.ingredients.length} items from your photo.`, 'success');
+          }
           
           await db.scanLogs.create({
             ingredients: data.ingredients,
