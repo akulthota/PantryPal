@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare, Search } from 'lucide-react';
+import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare, Search, RotateCcw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
 import { autocompleteIngredient } from '../lib/spoonacular';
@@ -88,6 +88,13 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setWeeklyScanCount(weeklyScans.length);
   };
 
+  const handleResetScans = async () => {
+    await db.scanLogs.clear();
+    setWeeklyScanCount(0);
+    setErrorMessage(null);
+    if (showToast) showToast('Usage Reset', 'Your guest scan count has been reset to 0/3.', 'info');
+  };
+
   const handleFileChange = (file) => {
     if (!file) return;
     setSelectedFile(file);
@@ -140,7 +147,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
           img.src = URL.createObjectURL(file);
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_SIZE = 1024;
+            const MAX_SIZE = 640;
             let width = img.width;
             let height = img.height;
 
@@ -160,7 +167,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
             resolve(dataUrl);
           };
           img.onerror = () => {
@@ -476,60 +483,88 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
   };
 
   return (
-    <div style={{ maxWidth: '1100px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
+    <div style={{ maxWidth: '1100px', margin: '2rem auto', padding: '0 1.5rem 4rem 1.5rem' }}>
       
       {/* Page Heading & Weekly Scan Badge */}
-      <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem', background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)', border: '1px solid var(--coral-border)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="ledger-card animate-fade-in" style={{ padding: '2.25rem 2rem', marginBottom: '2.25rem', backgroundColor: 'var(--card)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
           <div>
-            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--coral-primary)' }}>
-              Fridge & Pantry <span style={{ color: 'var(--text-heading)' }}>Scanner</span>
+            <div className="mono" style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--pine)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.35rem' }}>
+              Kitchen Vision Engine
+            </div>
+            <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, color: 'var(--ink)' }}>
+              Fridge & Pantry <span className="highlight-gold">Scanner</span>
             </h1>
-            <p style={{ color: 'var(--text-body)', fontSize: '1rem', marginTop: '0.25rem' }}>
-              Snap or upload a photo of your fridge to extract available ingredients and craft tailored recipes.
+            <p style={{ color: 'var(--ink-soft)', fontSize: '1.05rem', marginTop: '0.35rem' }}>
+              Snap or upload a photo of your shelves to extract available ingredients and craft tailored recipes.
             </p>
           </div>
 
-          {/* Issue 2: Weekly Scan Limit Status Badge */}
+          {/* Weekly Scan Limit Status Badge */}
           {user ? (
-            <div style={{ backgroundColor: 'var(--sage-soft)', border: '1px solid var(--sage-border)', color: 'var(--sage-green)', padding: '0.5rem 1rem', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.9rem' }}>
-              <UserCheck size={18} /> Unlimited Scans Active
+            <div className="tag-badge" style={{ backgroundColor: 'var(--sage-soft)', color: 'var(--pine)', padding: '0.5rem 1rem' }}>
+              <UserCheck size={18} color="var(--sage)" />
+              <span>Unlimited Scans Active</span>
             </div>
           ) : (
-            <div style={{ backgroundColor: weeklyScanCount >= GUEST_WEEKLY_LIMIT ? 'var(--coral-soft)' : 'var(--honey-soft)', border: `1px solid ${weeklyScanCount >= GUEST_WEEKLY_LIMIT ? 'var(--coral-border)' : 'var(--honey-border)'}`, color: weeklyScanCount >= GUEST_WEEKLY_LIMIT ? 'var(--coral-primary)' : 'var(--honey-amber)', padding: '0.5rem 1rem', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.9rem' }}>
-              <Lock size={16} /> Guest Scans: {weeklyScanCount} / {GUEST_WEEKLY_LIMIT} This Week
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div
+                className="tag-badge"
+                style={{
+                  backgroundColor: weeklyScanCount >= GUEST_WEEKLY_LIMIT ? 'var(--rust-soft)' : 'var(--gold-soft)',
+                  color: weeklyScanCount >= GUEST_WEEKLY_LIMIT ? 'var(--rust-dark)' : 'var(--ink)',
+                  padding: '0.5rem 1rem'
+                }}
+              >
+                <Lock size={16} />
+                <span>Guest Scans: {weeklyScanCount} / {GUEST_WEEKLY_LIMIT} This Week</span>
+              </div>
+              {weeklyScanCount > 0 && (
+                <button
+                  onClick={handleResetScans}
+                  title="Reset weekly usage"
+                  className="btn btn-sm btn-outline"
+                >
+                  <RotateCcw size={14} /> Reset
+                </button>
+              )}
             </div>
           )}
         </div>
       </div>
 
       {errorMessage && (
-        <div style={{ backgroundColor: 'var(--coral-soft)', border: '1px solid var(--coral-border)', color: 'var(--coral-primary)', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ backgroundColor: 'var(--rust-soft)', border: '2px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)', color: 'var(--rust-dark)', padding: '1.1rem 1.25rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <AlertCircle size={20} style={{ color: 'var(--coral-primary)' }} />
-            <span style={{ fontWeight: 600 }}>{errorMessage}</span>
+            <AlertCircle size={22} color="var(--rust)" />
+            <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{errorMessage}</span>
           </div>
           {!user && (
-            <button onClick={onOpenAuthModal} className="btn btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', minHeight: '36px' }}>
-              Log In for Unlimited Scans
-            </button>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button onClick={handleResetScans} className="btn btn-sm btn-outline">
+                <RotateCcw size={14} /> Reset Usage
+              </button>
+              <button onClick={onOpenAuthModal} className="btn btn-sm btn-gold">
+                Log In for Unlimited Scans
+              </button>
+            </div>
           )}
         </div>
       )}
 
       {/* 1. Image Upload Dropzone Island */}
-      <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', textAlign: 'center' }}>
+      <div className="ledger-card" style={{ padding: '2.5rem 2rem', marginBottom: '2.5rem', textAlign: 'center' }}>
         {!previewUrl ? (
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
             style={{
-              border: '2px dashed var(--coral-border)',
-              borderRadius: 'var(--radius-lg)',
+              border: '2.5px dashed var(--ink)',
+              borderRadius: 'var(--radius-md)',
               padding: '3.5rem 2rem',
-              backgroundColor: '#FFF9F9',
+              backgroundColor: 'var(--paper)',
               cursor: 'pointer',
-              transition: 'all 0.25s var(--ease-spring)'
+              transition: 'transform 0.15s ease, background-color 0.15s ease'
             }}
             onClick={() => document.getElementById('pantry-image-input').click()}
           >
@@ -540,45 +575,46 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
               style={{ display: 'none' }}
               onChange={(e) => e.target.files?.[0] && handleFileChange(e.target.files[0])}
             />
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#FFFFFF', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', border: '1px solid var(--coral-border)', boxShadow: '0 4px 14px rgba(255, 82, 82, 0.15)' }}>
+            <div style={{ width: '68px', height: '68px', borderRadius: '50%', backgroundColor: 'var(--gold)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', border: '2.5px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)' }}>
               <Camera size={32} />
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-heading)' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--ink)' }}>
               Drag & Drop your fridge or pantry photo here
             </h3>
-            <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.25rem' }}>
-              Supports JPG, PNG, WEBP (Take a photo with your smartphone or camera)
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.975rem', marginBottom: '1.5rem', maxWidth: '420px', margin: '0 auto 1.5rem' }}>
+              Snap your produce drawer, pantry dry shelf or grocery bag haul to auto-extract ingredients.
             </p>
-            <button type="button" className="btn btn-primary">
-              <Upload size={18} /> Select Photo
+            <button type="button" className="btn btn-primary btn-lg">
+              <Upload size={18} /> Select Photo from Device
             </button>
           </div>
         ) : (
           <div>
-            <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', marginBottom: '1.5rem' }}>
+            <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', marginBottom: '1.75rem' }}>
               <img
                 src={previewUrl}
                 alt="Pantry preview"
-                style={{ maxHeight: '350px', borderRadius: 'var(--radius-md)', objectFit: 'contain', boxShadow: 'var(--shadow-card)', border: '1px solid var(--border-subtle)' }}
+                style={{ maxHeight: '380px', borderRadius: 'var(--radius-sm)', objectFit: 'contain', border: '2.5px solid var(--ink)', boxShadow: 'var(--shadow-hard)' }}
               />
               <button
                 onClick={clearImage}
                 style={{
                   position: 'absolute',
-                  top: '10px',
-                  right: '10px',
-                  backgroundColor: '#FFFFFF',
-                  color: 'var(--text-heading)',
-                  border: '1px solid var(--border-subtle)',
+                  top: '12px',
+                  right: '12px',
+                  backgroundColor: 'var(--card)',
+                  color: 'var(--ink)',
+                  border: '2px solid var(--ink)',
+                  boxShadow: '2px 2px 0px var(--ink)',
                   borderRadius: '50%',
                   width: '36px',
                   height: '36px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  cursor: 'pointer',
-                  boxShadow: 'var(--shadow-sm)'
+                  cursor: 'pointer'
                 }}
+                title="Remove photo"
               >
                 <X size={18} />
               </button>
@@ -588,13 +624,12 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
               <button
                 onClick={analyzeImage}
                 disabled={isAnalyzing}
-                className="btn btn-primary"
-                style={{ padding: '0.85rem 2rem', fontSize: '1.05rem' }}
+                className="btn btn-gold btn-lg"
               >
                 {isAnalyzing ? (
                   <>
-                    <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid white', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
-                    <span>Analyzing Photo...</span>
+                    <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid var(--ink)', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
+                    <span>Analyzing Shelf Items...</span>
                   </>
                 ) : (
                   <>
@@ -603,7 +638,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
                 )}
               </button>
 
-              <button onClick={clearImage} className="btn btn-outline">
+              <button onClick={clearImage} className="btn btn-outline btn-lg">
                 Clear Photo
               </button>
             </div>
@@ -611,35 +646,31 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
         )}
       </div>
 
-      {/* 2. Detected & Added Ingredients (with Spoonacular Autocomplete) */}
-      <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', border: '1px solid var(--sage-border)', backgroundColor: '#FFFFFF' }}>
-        <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <CheckCircle2 size={24} style={{ color: 'var(--sage-green)' }} /> Detected Available Ingredients ({ingredients.length})
-        </h3>
+      {/* 2. INGREDIENT DETECTION & LISTING (PINNED STICKY NOTE STYLE) */}
+      <div className="sticky-note" style={{ marginBottom: '2.5rem' }}>
+        {/* Physical pushpin atop sticky note */}
+        <div className="sticky-pin"></div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem', borderBottom: '2px dashed rgba(20, 32, 21, 0.25)', paddingBottom: '0.85rem' }}>
+          <h3 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span>📌</span> Detected Kitchen Ingredients ({ingredients.length})
+          </h3>
+          <span className="mono" style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--ink-soft)' }}>
+            Shelf Inventory Memo
+          </span>
+        </div>
 
         {ingredients.length > 0 ? (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.75rem' }}>
             {ingredients.map((item, idx) => (
               <div
                 key={idx}
-                style={{
-                  backgroundColor: 'var(--sage-soft)',
-                  border: '1px solid var(--sage-border)',
-                  color: 'var(--text-heading)',
-                  padding: '0.5rem 0.95rem',
-                  borderRadius: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  fontWeight: 600,
-                  fontSize: '0.95rem'
-                }}
+                className="pinned-tag"
               >
-                <span style={{ color: 'var(--sage-green)' }}>✓</span>
                 <span>{item}</span>
                 <button
                   onClick={() => removeIngredient(idx)}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
+                  style={{ background: 'none', border: 'none', color: 'var(--ink)', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center', opacity: 0.7 }}
                   title="Remove ingredient"
                 >
                   <X size={14} />
@@ -648,32 +679,33 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
             ))}
           </div>
         ) : (
-          /* Issue 6: Empty State handling after scanning */
-          <div style={{ padding: '1.25rem 0', marginBottom: '1.5rem' }}>
+          /* Empty State handling after scanning */
+          <div style={{ padding: '1rem 0 1.5rem', borderBottom: '1.5px dashed rgba(20,32,21,0.2)', marginBottom: '1.5rem' }}>
             {hasScanned ? (
-              <div style={{ color: 'var(--coral-primary)' }}>
-                <strong style={{ fontSize: '1.05rem', display: 'block', marginBottom: '0.35rem' }}>❌ No Ingredients detected</strong>
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-body)' }}>Try a clearer photo or add ingredients manually below.</span>
+              <div style={{ color: 'var(--rust-dark)' }}>
+                <strong style={{ fontSize: '1.1rem', display: 'block', marginBottom: '0.35rem' }}>❌ No Ingredients Detected from Photo</strong>
+                <span style={{ fontSize: '0.95rem', color: 'var(--ink-soft)' }}>Try snapping closer with good lighting, or add items to this note below.</span>
               </div>
             ) : (
-              <p style={{ color: 'var(--text-body)', fontStyle: 'italic' }}>
-                No ingredients detected yet. Upload a photo above or manually enter items below.
+              <p style={{ color: 'var(--ink-soft)', fontStyle: 'italic', fontSize: '0.95rem' }}>
+                No items on this shelf memo yet. Upload a fridge photo above or jot down ingredients below.
               </p>
             )}
           </div>
         )}
 
-        {/* Issue 7: Manual Ingredient Autocomplete Dropdown */}
+        {/* Manual Ingredient Autocomplete Entry (Ruled Sticky Note Style) */}
         <div style={{ position: 'relative' }} ref={dropdownRef}>
-          <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-heading)' }}>
-            Add Extra Ingredients Manually (Spoonacular Verified)
+          <h4 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--ink)', textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>
+            + Jot Down Additional Ingredients
           </h4>
-          <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '600px', position: 'relative' }}>
+          <div style={{ display: 'flex', gap: '0.65rem', maxWidth: '640px', position: 'relative' }}>
             <div style={{ position: 'relative', flex: 1 }}>
               <input
                 type="text"
                 className="input-control"
-                placeholder="Type to search real ingredients (e.g. Chicken breast, Garlic, Avocado)..."
+                style={{ backgroundColor: '#FFFFFF' }}
+                placeholder="Type ingredient (e.g. Chicken breast, Garlic, Avocado)..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onFocus={() => inputValue.trim() && suggestions.length > 0 && setShowDropdown(true)}
@@ -681,7 +713,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
               />
               {isSearchingIngredients && (
                 <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)' }}>
-                  <div className="animate-spin" style={{ width: '16px', height: '16px', border: '2px solid #8B5CF6', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
+                  <div className="animate-spin" style={{ width: '16px', height: '16px', border: '2px solid var(--pine)', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
                 </div>
               )}
             </div>
@@ -696,10 +728,10 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
                 }
               }}
               disabled={!inputValue.trim()}
-              className="btn btn-secondary"
+              className="btn btn-primary"
               style={{ whiteSpace: 'nowrap' }}
             >
-              <Plus size={18} /> Add Item
+              <Plus size={18} /> Pin Item
             </button>
           </div>
 
@@ -711,16 +743,15 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
                 top: '100%',
                 left: 0,
                 width: '100%',
-                maxWidth: '600px',
-                backgroundColor: 'rgba(26, 26, 70, 0.96)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: '12px',
+                maxWidth: '640px',
+                backgroundColor: 'var(--card)',
+                border: '2px solid var(--ink)',
+                boxShadow: '4px 4px 0px var(--ink)',
+                borderRadius: '8px',
                 marginTop: '6px',
-                maxHeight: '200px',
+                maxHeight: '220px',
                 overflowY: 'auto',
-                zIndex: 50,
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
+                zIndex: 50
               }}
             >
               {suggestions.length > 0 ? (
@@ -734,41 +765,55 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
                       style={{
                         padding: '0.75rem 1rem',
                         cursor: 'pointer',
-                        color: '#FFFFFF',
+                        color: 'var(--ink)',
                         fontWeight: isHighlighted ? 700 : 500,
-                        backgroundColor: isHighlighted ? '#8B5CF6' : 'transparent',
-                        transition: 'background-color 0.15s ease',
+                        backgroundColor: isHighlighted ? 'var(--gold-soft)' : 'transparent',
+                        borderBottom: '1px solid rgba(20, 32, 21, 0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between'
                       }}
                     >
                       <span>{sug.name}</span>
-                      <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>Select</span>
+                      <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>Select ↵</span>
                     </div>
                   );
                 })
               ) : (
-                <div style={{ padding: '0.75rem 1rem', color: '#94A3B8', fontSize: '0.9rem', fontStyle: 'italic' }}>
+                <div style={{ padding: '0.75rem 1rem', color: 'var(--ink-faint)', fontSize: '0.9rem', fontStyle: 'italic' }}>
                   No matching ingredients found
                 </div>
               )}
             </div>
           )}
         </div>
+      </div>
 
-        {/* Recipe Generation Trigger */}
-        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end' }}>
+      {/* 3. RECIPE GENERATION TRIGGER (PINNED STICKY NOTE STYLE) */}
+      <div className="sticky-note sticky-note-sage" style={{ marginBottom: '3rem' }}>
+        <div className="sticky-pin sticky-pin-gold"></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
+          <div>
+            <div className="mono" style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--pine)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Kitchen Chef Engine
+            </div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ink)', marginTop: '0.25rem' }}>
+              Ready to cook with your {ingredients.length} logged ingredients?
+            </h3>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.95rem', marginTop: '0.25rem' }}>
+              Our AI evaluates ingredient expiration and crafts an appetizing zero-waste recipe instantly.
+            </p>
+          </div>
+
           <button
             onClick={generateRecipe}
             disabled={isGeneratingRecipe || ingredients.length === 0}
-            className="btn btn-primary"
-            style={{ fontSize: '1.1rem', padding: '0.85rem 2.25rem' }}
+            className="btn btn-gold btn-lg"
           >
             {isGeneratingRecipe ? (
               <>
-                <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid white', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
-                <span>Crafting custom recipe...</span>
+                <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid var(--ink)', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
+                <span>Crafting Custom Recipe...</span>
               </>
             ) : (
               <>
@@ -779,67 +824,70 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
         </div>
       </div>
 
-      {/* 3. Generated Recipe Result Card */}
+      {/* 4. GENERATED RECIPE RESULT CARD (EDITORIAL LEDGER STYLE — NOT A STICKY NOTE) */}
       {generatedRecipe && (
-        <div className="glass-card animate-scale-in" style={{ padding: '2.5rem', border: '1px solid var(--coral-border)', backgroundColor: '#FFFFFF' }}>
+        <div className="ledger-card animate-scale-in" style={{ padding: '3rem 2.25rem', backgroundColor: 'var(--card)', border: 'var(--border-thicker)', boxShadow: 'var(--shadow-hard-xl)' }}>
           
           {/* Header & Actions */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.25rem', marginBottom: '1.75rem', borderBottom: '2px solid var(--ink)', paddingBottom: '1.5rem' }}>
             <div>
-              <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '0.5rem' }}>
+              <div className="mono" style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--pine)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.35rem' }}>
+                Freshly Crafted Dish
+              </div>
+              <h2 style={{ fontSize: 'clamp(2rem, 3.8vw, 2.75rem)', fontWeight: 800, color: 'var(--ink)', marginBottom: '0.75rem', lineHeight: 1.15 }}>
                 {generatedRecipe.title}
               </h2>
               {generatedRecipe.cuisine_type && (
-                <span style={{ backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid var(--coral-border)', padding: '0.3rem 0.85rem', borderRadius: '12px', fontSize: '0.875rem', fontWeight: 700 }}>
-                  {generatedRecipe.cuisine_type}
+                <span className="tag-badge" style={{ backgroundColor: 'var(--gold)', color: 'var(--ink)' }}>
+                  {generatedRecipe.cuisine_type} Style
                 </span>
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap' }}>
               <button onClick={generateRecipe} disabled={isGeneratingRecipe} className="btn btn-amber">
                 <RefreshCw size={18} className={isGeneratingRecipe ? 'animate-spin' : ''} />
-                <span>{isGeneratingRecipe ? 'Generating New Dish...' : 'Try Another Recipe'}</span>
+                <span>{isGeneratingRecipe ? 'Generating...' : 'Try Another Recipe'}</span>
               </button>
               <button onClick={saveRecipe} disabled={isSavingRecipe} className="btn btn-secondary">
-                <Save size={18} /> {isSavingRecipe ? 'Saving...' : 'Save Recipe'}
+                <Save size={18} /> {isSavingRecipe ? 'Saving...' : 'Save to Pantry'}
               </button>
             </div>
           </div>
 
           {/* Quick Metrics Badges */}
-          <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap', color: 'var(--text-body)', fontSize: '0.95rem' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2.25rem', flexWrap: 'wrap', color: 'var(--ink)', fontSize: '0.95rem' }}>
             {generatedRecipe.prep_time && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: 'var(--text-heading)' }}>
-                <Clock size={18} style={{ color: 'var(--coral-primary)' }} />
+              <div className="tag-badge">
+                <Clock size={16} color="var(--rust)" />
                 <span>{generatedRecipe.prep_time}</span>
               </div>
             )}
             {generatedRecipe.servings && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: 'var(--text-heading)' }}>
-                <Users size={18} style={{ color: 'var(--coral-primary)' }} />
-                <span>{generatedRecipe.servings} servings</span>
+              <div className="tag-badge">
+                <Users size={16} color="var(--sage)" />
+                <span>{generatedRecipe.servings} Servings</span>
               </div>
             )}
             {generatedRecipe.difficulty && (
-              <div style={{ backgroundColor: '#F1F5F9', border: '1px solid #CBD5E1', padding: '0.25rem 0.75rem', borderRadius: '6px', fontWeight: 700, color: 'var(--text-heading)' }}>
-                {generatedRecipe.difficulty}
+              <div className="tag-badge" style={{ backgroundColor: 'var(--paper-deep)' }}>
+                <span>Difficulty: {generatedRecipe.difficulty}</span>
               </div>
             )}
           </div>
 
-          {/* Ingredients & Instructions Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
+          {/* Ingredients & Instructions Grid (Clean Structured Editorial Ledger) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', marginBottom: '2.25rem' }}>
             
-            {/* Required Ingredients List */}
-            <div style={{ backgroundColor: 'var(--sage-soft)', padding: '1.5rem', borderRadius: '14px', border: '1px solid var(--sage-border)' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--sage-green)', marginBottom: '1rem' }}>
-                Required Ingredients
+            {/* Required Ingredients List (Structured Ledger Card) */}
+            <div style={{ backgroundColor: 'var(--paper)', padding: '1.75rem', borderRadius: 'var(--radius-sm)', border: '2px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: 'var(--sage)' }}>✓</span> Required Ingredients
               </h3>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {generatedRecipe.ingredients?.map((ing, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.95rem', color: 'var(--text-heading)', fontWeight: 600 }}>
-                    <span style={{ color: 'var(--sage-green)', fontWeight: 'bold' }}>•</span>
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.95rem', color: 'var(--ink)', fontWeight: 600, borderBottom: '1px dashed rgba(20, 32, 21, 0.15)', paddingBottom: '0.4rem' }}>
+                    <span style={{ color: 'var(--gold-dark)', fontWeight: 'bold' }}>•</span>
                     <span>{ing}</span>
                   </li>
                 ))}
@@ -847,15 +895,15 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
             </div>
 
             {/* Step-by-Step Instructions */}
-            <div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--honey-amber)', marginBottom: '1rem' }}>
-                Preparation Instructions
+            <div style={{ backgroundColor: 'var(--card)', padding: '1.75rem', borderRadius: 'var(--radius-sm)', border: '2px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)', marginBottom: '1.25rem' }}>
+                Step-by-Step Cooking Guide
               </h3>
-              <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.95rem' }}>
                 {generatedRecipe.instructions?.map((step, i) => {
                   const cleanStep = typeof step === 'string' ? step.replace(/^(Step\s*\d+:?\s*|\d+[\.\)]\s*)/i, '').trim() : step;
                   return (
-                    <li key={i} style={{ fontSize: '0.975rem', lineHeight: 1.6, color: 'var(--text-body)', fontWeight: 500 }}>
+                    <li key={i} style={{ fontSize: '0.975rem', lineHeight: 1.6, color: 'var(--ink-soft)', fontWeight: 500 }}>
                       {cleanStep}
                     </li>
                   );
@@ -866,44 +914,38 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
 
           {/* Nutrition Info Bar */}
           {generatedRecipe.nutrition && (
-            <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1.25rem 1.5rem', borderRadius: '14px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem', textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{ backgroundColor: 'var(--paper-deep)', border: '2px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)', padding: '1.5rem', borderRadius: 'var(--radius-sm)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem', textAlign: 'center', marginBottom: '2.25rem' }}>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--text-heading)' }}>{generatedRecipe.nutrition.calories || 0}</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Calories</div>
+                <div className="mono" style={{ fontWeight: 800, fontSize: '1.6rem', color: 'var(--ink)' }}>{generatedRecipe.nutrition.calories || 0}</div>
+                <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', fontWeight: 700, textTransform: 'uppercase' }}>Calories</div>
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--coral-primary)' }}>{generatedRecipe.nutrition.protein || 0}g</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Protein</div>
+                <div className="mono" style={{ fontWeight: 800, fontSize: '1.6rem', color: 'var(--rust)' }}>{generatedRecipe.nutrition.protein || 0}g</div>
+                <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', fontWeight: 700, textTransform: 'uppercase' }}>Protein</div>
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--honey-amber)' }}>{generatedRecipe.nutrition.carbs || 0}g</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Carbs</div>
+                <div className="mono" style={{ fontWeight: 800, fontSize: '1.6rem', color: 'var(--gold-dark)' }}>{generatedRecipe.nutrition.carbs || 0}g</div>
+                <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', fontWeight: 700, textTransform: 'uppercase' }}>Carbs</div>
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--sage-green)' }}>{generatedRecipe.nutrition.fat || 0}g</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Fat</div>
+                <div className="mono" style={{ fontWeight: 800, fontSize: '1.6rem', color: 'var(--sage)' }}>{generatedRecipe.nutrition.fat || 0}g</div>
+                <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', fontWeight: 700, textTransform: 'uppercase' }}>Fat</div>
               </div>
             </div>
           )}
 
           {/* Cooked Meal & YouTube Actions */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingTop: '1.5rem', borderTop: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingTop: '1.5rem', borderTop: '2px solid var(--ink)' }}>
             
             <button
               onClick={handleLogCookedDish}
               disabled={isLoggingCooked || hasCookedLogged}
-              className="btn btn-primary"
-              style={{
-                backgroundColor: hasCookedLogged ? 'var(--sage-soft)' : 'var(--coral-primary)',
-                border: hasCookedLogged ? '1px solid var(--sage-border)' : 'none',
-                color: hasCookedLogged ? 'var(--sage-green)' : '#FFFFFF',
-                fontSize: '1rem',
-                padding: '0.85rem 1.65rem'
-              }}
+              className={`btn ${hasCookedLogged ? 'btn-outline' : 'btn-primary'}`}
+              style={{ fontSize: '1rem', padding: '0.85rem 1.75rem' }}
             >
               {hasCookedLogged ? (
                 <>
-                  <CheckSquare size={20} style={{ color: 'var(--sage-green)' }} /> Meal Logged to Nutrition Tracker!
+                  <CheckSquare size={20} color="var(--sage)" /> Meal Logged to Nutrition Tracker!
                 </>
               ) : (
                 <>
@@ -917,15 +959,9 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-outline"
-              style={{
-                borderColor: '#FF0000',
-                color: '#CC0000',
-                backgroundColor: '#FFF5F5',
-                textDecoration: 'none',
-                fontSize: '0.95rem'
-              }}
+              style={{ fontSize: '0.95rem' }}
             >
-              <Youtube size={20} style={{ color: '#FF0000' }} /> Watch Tutorial on YouTube 🎬
+              <Youtube size={20} color="#FF0000" /> Watch Tutorial on YouTube 🎬
             </a>
 
           </div>

@@ -22,41 +22,32 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No ingredients provided' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+    const apiKey = process.env.DEEPSEEK_API_KEY || process.env.VITE_DEEPSEEK_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is not set.' });
+      return res.status(500).json({ error: 'DEEPSEEK_API_KEY environment variable is not set.' });
     }
 
-    // Fast, responsive model array (gemini-2.5-flash is ultra-fast ~1s response)
-    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+    const model = process.env.DEEPSEEK_MODEL || 'deepseek-flash';
 
-    const seed = Date.now();
+    const systemPrompt = `You are a professional chef. Create a simple, realistic, delicious recipe.
+STRICT CONSTRAINTS:
+1. STRICT INGREDIENT MATCHING: You MUST ONLY use the ingredients provided by the user.
+2. DO NOT ADD UNLISTED FOODS: Do NOT add unlisted meats, vegetables, cheeses, broths, creams, or extra groceries.
+3. BASIC STAPLES ONLY: You may only assume: salt, black pepper, water, cooking oil/butter, and basic garlic/onion powder.
+4. REAL RECIPES ONLY: The dish MUST be an authentic, recognized dish.
+5. INSTRUCTIONS FORMAT: Each instruction step MUST be a clean sentence without step numbering.
 
-    const prompt = `You are a professional chef. Create a simple, realistic, delicious recipe.
-
-USER'S EXACT AVAILABLE INGREDIENTS:
-${ingredients.join(', ')}
-
-STRICT INGREDIENT CONSTRAINTS:
-1. STRICT INGREDIENT MATCHING: You MUST ONLY use the ingredients listed in the user's available list above (${ingredients.join(', ')}).
-2. DO NOT ADD UNLISTED FOODS: Do NOT add unlisted meats, vegetables, cheeses, broths, creams, pie crusts, or extra groceries that the user does NOT have!
-3. BASIC STAPLES ONLY: You may only assume standard kitchen basics: salt, black pepper, water, cooking oil/butter, and basic garlic/onion powder.
-4. REAL RECIPES ONLY: The dish MUST be an authentic, recognized dish (e.g., 'Philly Cheesesteak Skillet', 'Steak & Cheese Melt', 'Classic Omelette', 'Garlic Herb Chicken Sauté'). No fictional dishes like 'Pan Seared Milk'.
-5. INSTRUCTIONS FORMAT: Each instruction step MUST be a clean sentence. Do NOT include prefixes like 'Step 1:' or numbers inside the instruction strings.
-6. AVOID REPEATING TITLES: Do NOT use any of these previous titles: ${avoidTitles.length > 0 ? avoidTitles.join(', ') : 'None'}. (Seed: ${seed}).
-
-Return ONLY a raw valid JSON object:
+Return ONLY a valid JSON object matching:
 {
   "title": "Authentic Recipe Title",
   "cuisine_type": "American / Italian / Mediterranean / Asian / Home Style",
   "prep_time": "15 mins",
   "servings": "2",
   "difficulty": "Easy",
-  "ingredients": ["450g sirloin steak", "200g cheese", "1 pie crust", "15ml olive oil", "1/2 tsp salt & black pepper"],
+  "ingredients": ["item with quantity"],
   "instructions": [
-    "Slice the steak thinly across the grain and season with salt and black pepper.",
-    "Heat olive oil in a skillet over high heat and sear the steak for 3-4 minutes until browned.",
-    "Top with cheese and pie crust crisps, melt until bubbly, and serve hot."
+    "Step 1 sentence",
+    "Step 2 sentence"
   ],
   "nutrition": {
     "calories": 450,
@@ -68,45 +59,51 @@ Return ONLY a raw valid JSON object:
   "youtube_search_query": "Authentic Recipe Title recipe"
 }`;
 
+    const userPrompt = `Available ingredients: ${ingredients.join(', ')}.${avoidTitles && avoidTitles.length > 0 ? ` Do not use these titles: ${avoidTitles.join(', ')}.` : ''}`;
+
     let responseData = null;
     let lastError = null;
 
-    if (apiKey && apiKey !== 'your_gemini_api_key_here') {
-      for (const model of modelsToTry) {
-        try {
-          const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: {
-                  temperature: 0.7,
-                  response_mime_type: 'application/json'
-                }
-              })
-            }
-          );
+    if (apiKey && apiKey !== 'your_deepseek_api_key_here') {
+      try {
+        const response = await fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              {
+                role: 'system',
+                content: systemPrompt
+              },
+              {
+                role: 'user',
+                content: userPrompt
+              }
+            ],
+            response_format: { type: 'json_object' },
+            thinking: { type: 'disabled' },
+            max_tokens: 1000,
+            temperature: 0.35
+          })
+        });
 
-          if (response.ok) {
-            responseData = await response.json();
-            break;
-          } else {
-            const errText = await response.text();
-            lastError = `Model ${model} returned ${response.status}: ${errText}`;
-            if (response.status === 429) {
-              await new Promise(r => setTimeout(r, 300));
-            }
-          }
-        } catch (err) {
-          lastError = err.message;
+        if (response.ok) {
+          responseData = await response.json();
+        } else {
+          const errText = await response.text();
+          lastError = `DeepSeek API returned ${response.status}: ${errText}`;
         }
+      } catch (err) {
+        lastError = err.message;
       }
     }
 
     if (responseData) {
-      const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const rawText = responseData.choices?.[0]?.message?.content || '';
       const cleanJsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
       const recipe = JSON.parse(cleanJsonText);
 

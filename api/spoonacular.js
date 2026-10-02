@@ -96,7 +96,7 @@ function handleMockFallback(action, params, res) {
     {
       id: 716429,
       title: 'Pasta with Garlic, Tomatoes and Whole Wheat Spaghettini',
-      image: 'https://spoonacular.com/recipeImages/716429-556x370.jpg',
+      image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=600&q=80',
       readyInMinutes: 45,
       servings: 2,
       cuisines: ['Italian'],
@@ -130,7 +130,7 @@ function handleMockFallback(action, params, res) {
     {
       id: 715538,
       title: 'What to make for dinner tonight? Bruschetta Style Chicken Bowl',
-      image: 'https://spoonacular.com/recipeImages/715538-556x370.jpg',
+      image: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=600&q=80',
       readyInMinutes: 35,
       servings: 4,
       cuisines: ['Italian', 'Mediterranean'],
@@ -163,7 +163,7 @@ function handleMockFallback(action, params, res) {
     {
       id: 644387,
       title: 'Garlic Butter Herb Salmon with Steamed Asparagus',
-      image: 'https://spoonacular.com/recipeImages/644387-556x370.jpg',
+      image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=600&q=80',
       readyInMinutes: 20,
       servings: 2,
       cuisines: ['American'],
@@ -196,7 +196,7 @@ function handleMockFallback(action, params, res) {
     {
       id: 716268,
       title: 'African Chicken Peanut Stew',
-      image: 'https://spoonacular.com/recipeImages/716268-556x370.jpg',
+      image: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80',
       readyInMinutes: 45,
       servings: 4,
       cuisines: ['African'],

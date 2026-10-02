@@ -1,4 +1,4 @@
-// Vercel Serverless Function: AI Protein Boost Recommendations via Gemini (with 429 Fallback Chain)
+// Vercel Serverless Function: AI Protein Boost Recommendations via DeepSeek
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -21,15 +21,14 @@ export default async function handler(req, res) {
   try {
     const { goal = 80, currentIntake = 0, preferences = {} } = req.body || {};
 
-    const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+    const apiKey = process.env.DEEPSEEK_API_KEY || process.env.VITE_DEEPSEEK_API_KEY;
     if (!apiKey) {
       return res.status(500).json({
-        error: 'GEMINI_API_KEY environment variable is not configured on the server.'
+        error: 'DEEPSEEK_API_KEY environment variable is not configured on the server.'
       });
     }
 
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-    const modelsToTry = [...new Set([primaryModel, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'])];
+    const model = process.env.DEEPSEEK_MODEL || 'deepseek-flash';
 
     const prompt = `You are a nutrition specialist AI. The user has a daily protein goal of ${goal}g and has logged ${currentIntake}g today.
 User Dietary Restrictions: ${preferences.dietary_restrictions?.join(', ') || 'None'}
@@ -53,43 +52,43 @@ Do not include markdown wrappers. Return plain JSON only.`;
     let responseData = null;
     let lastError = null;
 
-    for (const model of modelsToTry) {
-      try {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: {
-                temperature: 0.5,
-                response_mime_type: 'application/json'
-              }
-            })
-          }
-        );
+    try {
+      const response = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          response_format: { type: 'json_object' },
+          thinking: { type: 'disabled' },
+          max_tokens: 500,
+          temperature: 0.25
+        })
+      });
 
-        if (response.ok) {
-          responseData = await response.json();
-          break;
-        } else {
-          const errText = await response.text();
-          lastError = `Model ${model} returned ${response.status}: ${errText}`;
-          if (response.status === 429) {
-            await new Promise(r => setTimeout(r, 500));
-          }
-        }
-      } catch (err) {
-        lastError = err.message;
+      if (response.ok) {
+        responseData = await response.json();
+      } else {
+        const errText = await response.text();
+        lastError = `DeepSeek API returned ${response.status}: ${errText}`;
       }
+    } catch (err) {
+      lastError = err.message;
     }
 
     if (!responseData) {
-      return res.status(500).json({ error: `Gemini API request failed: ${lastError}` });
+      return res.status(500).json({ error: `DeepSeek API request failed: ${lastError}` });
     }
 
-    const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const rawText = responseData.choices?.[0]?.message?.content || '';
     const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
     const result = JSON.parse(cleanJson);

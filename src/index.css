@@ -1,54 +1,66 @@
-/* PantryPal — Jubilant Light & Fruity Design System */
+/* PantryPal — Vibrant Kitchen Ledger & Neubrutalism Design System */
 
 :root {
-  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  
-  /* Creamy Ivory Light Canvas */
-  --bg-canvas: #FFFDF9;
-  --bg-card: #FFFFFF;
-  
-  /* Vibrant Fruit Palette */
-  --coral-primary: #FF5252; /* Strawberry / Watermelon Red */
-  --coral-hover: #E03E3E;
-  --coral-soft: #FFF0F0;
-  --coral-border: #FFCDCD;
-  
-  --honey-amber: #F59E0B; /* Bright Mango / Pineapple Gold */
-  --honey-hover: #D97706;
-  --honey-soft: #FFFBEB;
-  --honey-border: #FDE68A;
-  
-  --sage-green: #10B981; /* Fresh Kiwi / Green Apple */
-  --sage-hover: #059669;
-  --sage-soft: #F0FDF4;
-  --sage-border: #A7F3D0;
-  
-  --berry-purple: #8B5CF6; /* Blueberry / Plum */
-  --berry-soft: #F5F3FF;
-  --berry-border: #DDD6FE;
-  
-  /* Typography Colors (High Contrast AAA Readability) */
-  --text-heading: #111827;
-  --text-subheading: #1F2937;
-  --text-body: #475569;
-  --text-muted: #64748B;
-  
-  /* Soft Micro Borders */
-  --border-subtle: #F1F5F9;
-  --border-active: rgba(255, 82, 82, 0.4);
-  
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-full: 9999px;
-  
-  /* Vibrant & Tactile Shadows */
-  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.04);
-  --shadow-card: 0 6px 24px rgba(0, 0, 0, 0.05);
-  --shadow-button: 0 4px 14px rgba(255, 82, 82, 0.25);
-  
-  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Sora', sans-serif;
+
+  /* Vibrant Kitchen Ledger Palette */
+  --paper: #FAF6E9;          /* Rich warm cream parchment */
+  --paper-deep: #EFE4C4;     /* Darker aged paper for bands/sections */
+  --card: #FFFDF8;           /* Crisp pristine warm ledger card */
+  --card-warm: #FFF9ED;      /* Soft buttery card tint */
+  --card-dark: #163320;      /* Deep pine card for hero art/accent */
+
+  /* High Contrast Deep Ink (The Neubrutalist Outline) */
+  --ink: #142015;            /* Ultra-deep forest charcoal/ink */
+  --ink-soft: #485442;       /* Editorial secondary body text */
+  --ink-faint: #76826E;      /* Muted captions & mono labels */
+
+  /* Pine Accents (Kitchen Freshness & Structure) */
+  --pine: #163320;           /* Vibrant deep pine green */
+  --pine-light: #254E30;     /* Rich medium pine */
+  --pine-lighter: #396744;   /* Forest highlight */
+  --pine-soft: #E8F2EA;      /* Pale pine tint */
+
+  /* Vibrant Gold (Primary Energy & Highlights) */
+  --gold: #F59E0B;           /* Vibrant warm amber gold */
+  --gold-hover: #D97706;     /* Deep honey amber */
+  --gold-dark: #B45309;      /* Roasted gold shadow */
+  --gold-soft: #FEF3C7;      /* Pale sticky butter */
+
+  /* Vibrant Terracotta Rust (Urgent / Warning / Punch) */
+  --rust: #E04B28;           /* Vibrant terracotta rust */
+  --rust-hover: #C53818;     /* Deep brick */
+  --rust-soft: #FEE2E2;      /* Pale tomato tint */
+  --rust-dark: #8E250E;
+
+  /* Vibrant Sage (Botanical Freshness & Healthy Goals) */
+  --sage: #438550;           /* Vibrant botanical garden sage */
+  --sage-hover: #2F693A;     /* Deep herb */
+  --sage-soft: #DCFCE7;      /* Pale kiwi tint */
+  --sage-border: #86EFAC;
+
+  /* Neubrutalist Borders & Hard Shadows */
+  --border-thick: 2.5px solid var(--ink);
+  --border-thicker: 3.5px solid var(--ink);
+  --border-subtle: 1.5px solid #D5CBAA;
+
+  --shadow-hard: 4px 4px 0px var(--ink);
+  --shadow-hard-sm: 2px 2px 0px var(--ink);
+  --shadow-hard-lg: 6px 6px 0px var(--ink);
+  --shadow-hard-xl: 8px 8px 0px var(--ink);
+  --shadow-hard-hover: 2px 2px 0px var(--ink);
+  --shadow-hard-active: 0px 0px 0px var(--ink);
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+
+  --ease-snappy: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
@@ -59,9 +71,9 @@
 }
 
 body {
-  font-family: var(--font-primary);
-  background-color: var(--bg-canvas);
-  color: var(--text-body);
+  font-family: var(--font-sans);
+  background-color: var(--paper);
+  color: var(--ink);
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -69,9 +81,491 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  color: var(--text-heading);
-  letter-spacing: -0.025em;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.display {
+  font-family: var(--font-display);
+}
+
+/* ==========================================================================
+   BUTTONS — Neubrutalist Press-Down (Translate + Shadow Squash)
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.4rem;
+  min-height: 44px;
+  border: var(--border-thick);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-hard);
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.12s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+/* Iconic Neubrutalist Press-Down Effect:
+   On hover: presses down 2px, shadow shrinks from 4px to 2px.
+   On active/press: presses all the way into canvas (translate 4px, 4px), shadow vanishes! */
+.btn:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: var(--shadow-hard-active);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: var(--shadow-hard) !important;
+}
+
+/* Button Color Variants */
+.btn-gold {
+  background-color: var(--gold);
+  color: var(--ink);
+}
+.btn-gold:hover:not(:disabled) {
+  background-color: #FBBF24;
+}
+
+.btn-primary {
+  background-color: var(--pine);
+  color: #FFFDF8;
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--pine-light);
+}
+
+.btn-rust {
+  background-color: var(--rust);
+  color: #FFFFFF;
+}
+.btn-rust:hover:not(:disabled) {
+  background-color: var(--rust-hover);
+}
+
+.btn-secondary,
+.btn-sage {
+  background-color: var(--sage);
+  color: #FFFFFF;
+}
+.btn-secondary:hover:not(:disabled),
+.btn-sage:hover:not(:disabled) {
+  background-color: var(--sage-hover);
+}
+
+.btn-amber {
+  background-color: var(--gold);
+  color: var(--ink);
+}
+.btn-amber:hover:not(:disabled) {
+  background-color: var(--gold-hover);
+  color: #FFFFFF;
+}
+
+.btn-outline {
+  background-color: var(--card);
+  color: var(--ink);
+}
+.btn-outline:hover:not(:disabled) {
+  background-color: #FFFFFF;
+}
+
+.btn-pill {
+  border-radius: var(--radius-pill);
+}
+
+.btn-lg {
+  padding: 0.95rem 2rem;
+  font-size: 1.1rem;
+  min-height: 52px;
+}
+
+.btn-sm {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.825rem;
+  min-height: 34px;
+  border-width: 2px;
+  box-shadow: 2px 2px 0px var(--ink);
+}
+.btn-sm:hover:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--ink);
+}
+.btn-sm:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--ink);
+}
+
+/* ==========================================================================
+   NEUBRUTALIST TITLES, HIGHLIGHTERS & ROTATED BADGES
+   ========================================================================== */
+.highlight-gold {
+  background-color: var(--gold);
+  color: var(--ink);
+  padding: 0.1em 0.35em;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0px var(--ink);
+  display: inline-block;
+  transform: rotate(-1.5deg);
+  border-radius: 4px;
+}
+
+.highlight-sage {
+  background-color: var(--sage-soft);
+  color: var(--pine);
+  padding: 0.1em 0.35em;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0px var(--ink);
+  display: inline-block;
+  transform: rotate(1.5deg);
+  border-radius: 4px;
+}
+
+.highlight-rust {
+  background-color: var(--rust-soft);
+  color: var(--rust-dark);
+  padding: 0.1em 0.35em;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0px var(--ink);
+  display: inline-block;
+  transform: rotate(-1deg);
+  border-radius: 4px;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: var(--border-thick);
+  border-radius: 6px;
+  box-shadow: 2px 2px 0px var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  background-color: var(--card);
+}
+
+/* ==========================================================================
+   PINNED STICKY NOTE STYLE
+   (For ingredient detection, recipe generation prompt & listing stuff)
+   ========================================================================== */
+.sticky-note {
+  position: relative;
+  background-color: #FEF9C3; /* Warm canary sticky note */
+  border: var(--border-thick);
+  box-shadow: var(--shadow-hard-lg);
+  border-radius: 4px 4px 8px 8px;
+  padding: 2.25rem 1.75rem 1.75rem 1.75rem;
+  transform: rotate(-1.2deg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sticky-note:hover {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: 8px 8px 0px var(--ink);
+}
+
+/* Physical pushpin atop sticky notes */
+.sticky-pin {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle at 35% 35%, #FF7676, #DC2626 55%, #7F1D1D);
+  border: 2.5px solid var(--ink);
+  border-radius: 50%;
+  box-shadow: 2px 3px 5px rgba(20, 32, 21, 0.4);
+  z-index: 10;
+}
+
+.sticky-pin::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+}
+
+.sticky-pin-gold {
+  background: radial-gradient(circle at 35% 35%, #FDE68A, #F59E0B 55%, #92400E);
+}
+
+.sticky-pin-sage {
+  background: radial-gradient(circle at 35% 35%, #86EFAC, #22C55E 55%, #14532D);
+}
+
+/* Sticky note color variations */
+.sticky-note-sage {
+  background-color: #DCFCE7;
+  transform: rotate(1.2deg);
+}
+
+.sticky-note-parchment {
+  background-color: #FFFDF4;
+  transform: rotate(-0.8deg);
+}
+
+.sticky-note-rust {
+  background-color: #FEE2E2;
+  transform: rotate(1deg);
+}
+
+/* Ruled lines inside sticky notes for listing items */
+.sticky-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sticky-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0;
+  border-bottom: 1.5px dashed rgba(20, 32, 21, 0.2);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.sticky-list-item:last-child {
+  border-bottom: none;
+}
+
+/* Pinned mini-tag for individual detected ingredients */
+.pinned-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.45rem 0.9rem;
+  background-color: #FFFBEB;
+  border: var(--border-thick);
+  border-radius: 6px;
+  box-shadow: 3px 3px 0px var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink);
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pinned-tag:hover {
+  transform: translate(-1px, -2px);
+  box-shadow: 4px 4px 0px var(--ink);
+}
+
+.pinned-tag::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--rust);
+  border: 1.5px solid var(--ink);
+}
+
+/* ==========================================================================
+   EDITORIAL LEDGER CARDS
+   (Structured, appetizing, crisp — for RECIPES, feature displays, metrics)
+   ========================================================================== */
+.ledger-card {
+  background-color: var(--card);
+  border: var(--border-thick);
+  box-shadow: var(--shadow-hard);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+
+.ledger-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hard-lg);
+}
+
+.ledger-card-pine {
+  background: linear-gradient(180deg, var(--pine-light), var(--pine));
+  color: #FFFDF8;
+  border: var(--border-thick);
+  box-shadow: var(--shadow-hard);
+}
+
+/* Keep backward compatibility with existing class names */
+.glass-card {
+  background-color: var(--card);
+  border: var(--border-thick);
+  box-shadow: var(--shadow-hard);
+  border-radius: var(--radius-md);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-hard-lg);
+}
+
+/* ==========================================================================
+   INPUTS & FORM CONTROLS
+   ========================================================================== */
+.input-control {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.65rem 1rem;
+  background-color: #FFFFFF;
+  border: var(--border-thick);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  outline: none;
+  box-shadow: 3px 3px 0px var(--ink);
+  transition: box-shadow 0.12s ease, transform 0.12s ease;
+}
+
+.input-control::placeholder {
+  color: var(--ink-faint);
+}
+
+.input-control:focus {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px var(--gold-dark);
+}
+
+/* ==========================================================================
+   ANIMATED MARQUEE TICKER (Neubrutalism Kitchen Ribbon)
+   ========================================================================== */
+.marquee-ribbon {
+  background-color: var(--pine);
+  color: var(--paper);
+  border-top: var(--border-thick);
+  border-bottom: var(--border-thick);
+  padding: 18px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  box-shadow: 0 4px 0 var(--ink);
+}
+
+.marquee-ribbon-gold {
+  background-color: var(--gold);
+  color: var(--ink);
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marquee-scroll 22s linear infinite;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.marquee-content span {
+  display: inline-block;
+  padding: 0 20px;
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ==========================================================================
+   SHELF ROW & HERO ART (From Ledger Prototype)
+   ========================================================================== */
+.shelf-row {
+  position: relative;
+  margin-bottom: 28px;
+}
+.shelf-row:last-child {
+  margin-bottom: 0;
+}
+.shelf-rule {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #4D6244, #1B291A);
+  border: 1.5px solid var(--ink);
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.shelf-tags {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.shelf-tag {
+  background-color: var(--card);
+  border: 2px solid var(--ink);
+  border-radius: 0 0 6px 6px;
+  padding: 8px 12px 7px;
+  font-size: 12px;
+  min-width: 78px;
+  position: relative;
+  box-shadow: 2px 2px 0px var(--ink);
+}
+.shelf-tag::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 12px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--gold);
+  border: 2px solid var(--ink);
+}
+.shelf-tag .tag-name {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.shelf-tag .tag-qty {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  font-weight: 600;
 }
 
 /* Animations */
@@ -90,190 +584,41 @@ h1, h2, h3, h4, h5, h6 {
   100% { transform: rotate(360deg); }
 }
 
-.animate-fade-in { animation: slideDownSmooth 0.35s var(--ease-spring) forwards; }
-.animate-scale-in { animation: scaleInSpring 0.3s var(--ease-spring) forwards; }
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+.animate-fade-in { animation: slideDownSmooth 0.3s var(--ease-snappy) forwards; }
+.animate-scale-in { animation: scaleInSpring 0.25s var(--ease-snappy) forwards; }
 .animate-spin { animation: spin 0.8s linear infinite; }
+.animate-pulse-glow { animation: pulseGlow 1.6s ease-in-out infinite; }
 
-/* Base Card & Alternating Fruit Card Styling */
-.glass-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid #E2E8F0;
-  box-shadow: var(--shadow-card);
-  transition: all 0.25s var(--ease-spring);
-}
-
-.glass-card:hover {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-}
-
-/* Fruit Card 1: Watermelon / Strawberry Tint */
-.card-fruit-red {
-  background: linear-gradient(135deg, #FFF0F0 0%, #FFFFFF 100%);
-  border: 1px solid var(--coral-border) !important;
-}
-
-.card-fruit-red:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(255, 82, 82, 0.15);
-}
-
-/* Fruit Card 2: Mango / Pineapple Gold Tint */
-.card-fruit-yellow {
-  background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 100%);
-  border: 1px solid var(--honey-border) !important;
-}
-
-.card-fruit-yellow:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(245, 158, 11, 0.15);
-}
-
-/* Fruit Card 3: Fresh Kiwi / Apple Green Tint */
-.card-fruit-green {
-  background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
-  border: 1px solid var(--sage-border) !important;
-}
-
-.card-fruit-green:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.15);
-}
-
-/* Fruit Card 4: Berry Purple Tint */
-.card-fruit-purple {
-  background: linear-gradient(135deg, #F5F3FF 0%, #FFFFFF 100%);
-  border: 1px solid var(--berry-border) !important;
-}
-
-.card-fruit-purple:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.15);
-}
-
-.text-coral {
-  color: var(--coral-primary);
-}
-
-/* Buttons */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0.65rem 1.35rem;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 0.925rem;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s var(--ease-spring);
-  text-decoration: none;
-  user-select: none;
-}
-
-.btn-primary {
-  background: var(--coral-primary);
-  color: #FFFFFF;
-  box-shadow: var(--shadow-button);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--coral-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(255, 82, 82, 0.35);
-}
-
-.btn-amber {
-  background: var(--honey-amber);
-  color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
-}
-
-.btn-amber:hover:not(:disabled) {
-  background: var(--honey-hover);
-  transform: translateY(-2px);
-}
-
-.btn-secondary {
-  background: var(--sage-green);
-  color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: var(--sage-hover);
-  transform: translateY(-2px);
-}
-
-.btn-outline {
-  background: #FFFFFF;
-  border: 1px solid #CBD5E1;
-  color: var(--text-heading);
-}
-
-.btn-outline:hover:not(:disabled) {
-  background: #F8FAFC;
-  border-color: #94A3B8;
-  color: #0F172A;
-  transform: translateY(-1px);
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Inputs */
-.input-control {
-  width: 100%;
-  min-height: 44px;
-  padding: 0.65rem 1rem;
-  background: #FFFFFF;
-  border: 1px solid #CBD5E1;
-  border-radius: var(--radius-md);
-  font-size: 0.925rem;
-  font-family: inherit;
-  color: var(--text-heading);
-  outline: none;
-  transition: all 0.2s var(--ease-spring);
-}
-
-.input-control::placeholder {
-  color: var(--text-muted);
-}
-
-.input-control:focus {
-  border-color: var(--coral-primary);
-  box-shadow: 0 0 0 3px rgba(255, 82, 82, 0.15);
-}
-
-/* Scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #FFFDF9;
+  background: var(--paper-deep);
+  border-left: 1.5px solid var(--ink);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: var(--pine-light);
+  border: 1.5px solid var(--ink);
   border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--coral-primary);
+  background: var(--gold);
 }
 
-/* Mobile Responsiveness */
+/* Responsive */
 @media (max-width: 768px) {
   .desktop-nav { display: none !important; }
-  .mobile-menu-btn { display: block !important; }
-  .glass-card { border-radius: 14px; padding: 1.25rem !important; }
-  .btn { width: 100%; }
+  .mobile-menu-btn { display: flex !important; }
+  .btn { width: 100%; justify-content: center; }
+  .ledger-card { padding: 1.25rem !important; }
+  .sticky-note { padding: 1.75rem 1.25rem 1.25rem 1.25rem; }
 }
 
 @media (min-width: 769px) {

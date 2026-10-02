@@ -99,18 +99,18 @@ export default function App() {
       <Analytics />
       <SpeedInsights />
       
-      {/* Sticky Jubilant Light Header Navbar */}
+      {/* Sticky Vibrant Ledger & Neubrutalist Header Navbar */}
       <header
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          backgroundColor: '#031064',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-          transition: 'all 0.25s var(--ease-spring)'
+          backgroundColor: 'rgba(250, 246, 233, 0.96)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          borderBottom: 'var(--border-thick)',
+          boxShadow: '0 4px 0px var(--ink)',
+          transition: 'all 0.2s var(--ease-snappy)'
         }}
       >
         <div
@@ -124,7 +124,7 @@ export default function App() {
             gap: '1.5rem'
           }}
         >
-          {/* 1. Left: Official Brand Logo — PantryPal */}
+          {/* 1. Left: Official Brand Logo — PantryPal (Editorial Fraunces Serif) */}
           <div
             onClick={() => {
               setActiveTab('home');
@@ -133,18 +133,33 @@ export default function App() {
             }}
             style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', flexShrink: 0 }}
           >
-            <img
-              src="/logo.png"
-              alt="PantryPal Logo"
-              style={{ height: '44px', width: 'auto', objectFit: 'contain' }}
-            />
-            <span style={{ fontSize: '1.65rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
-              Pantry<span style={{ color: '#75c49b' }}>Pal</span>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                backgroundColor: 'var(--gold)',
+                border: '2px solid var(--ink)',
+                boxShadow: '2px 2px 0px var(--ink)',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }}
+            >
+              <img
+                src="/logo.png"
+                alt="PantryPal"
+                style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+              />
+            </div>
+            <span style={{ fontSize: '1.65rem', fontWeight: 800, fontFamily: 'var(--font-serif)', color: 'var(--ink)', letterSpacing: '-0.02em' }}>
+              Pantry<span style={{ color: 'var(--rust)', fontStyle: 'italic' }}>Pal</span>
             </span>
           </div>
 
-          {/* 2. Center: Perfectly Centered Navigation Links + Health Dashboard Pill */}
-          <div className="desktop-nav" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
+          {/* 2. Center: Navigation Links + Tactile Health Dashboard Pill */}
+          <div className="desktop-nav" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.65rem' }}>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -155,50 +170,38 @@ export default function App() {
                     setActiveTab(item.id);
                     setHealthDashboardOpen(false);
                   }}
+                  className="btn btn-sm"
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '7px',
-                    padding: '0.55rem 1.1rem',
-                    borderRadius: 'var(--radius-md)',
-                    border: isActive ? '1px solid #EF4444' : '1px solid transparent',
-                    backgroundColor: isActive ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
-                    color: '#FFFFFF',
-                    fontWeight: isActive ? 700 : 500,
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s var(--ease-spring)',
-                    whiteSpace: 'nowrap',
-                    boxShadow: isActive ? '0 0 14px rgba(239, 68, 68, 0.3)' : 'none'
+                    backgroundColor: isActive ? 'var(--gold)' : 'transparent',
+                    color: 'var(--ink)',
+                    border: isActive ? '2px solid var(--ink)' : '2px solid transparent',
+                    boxShadow: isActive ? '2px 2px 0px var(--ink)' : 'none',
+                    fontWeight: 700,
+                    fontSize: '0.875rem'
                   }}
                 >
-                  <Icon size={17} color={isActive ? '#EF4444' : '#FFFFFF'} />
+                  <Icon size={16} color="var(--ink)" />
                   <span>{item.label}</span>
                 </button>
               );
             })}
 
-            {/* Health Dashboard Centered Pill Toggle Button */}
+            {/* Health Dashboard Centered Tactile Pill Button */}
             <button
               onClick={() => setHealthDashboardOpen(!healthDashboardOpen)}
+              className="btn btn-sm btn-pill"
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '7px',
-                padding: '0.55rem 1.15rem',
-                borderRadius: '20px',
-                backgroundColor: healthDashboardOpen ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                color: '#FFFFFF',
-                fontSize: '0.875rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                transition: 'all 0.2s var(--ease-spring)'
+                backgroundColor: healthDashboardOpen ? 'var(--pine)' : 'var(--card)',
+                color: healthDashboardOpen ? '#FFFDF8' : 'var(--ink)',
+                border: '2px solid var(--ink)',
+                boxShadow: '2px 2px 0px var(--ink)',
+                fontSize: '0.85rem',
+                fontWeight: 700
               }}
             >
-              <HeartPulse size={17} color="#EF4444" />
-              <span>Health Dashboard</span>
-              {healthDashboardOpen ? <ChevronUp size={15} color="#FFFFFF" /> : <ChevronDown size={15} color="#FFFFFF" />}
+              <HeartPulse size={16} color={healthDashboardOpen ? 'var(--gold)' : 'var(--rust)'} />
+              <span>Health Log</span>
+              {healthDashboardOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
           </div>
 
@@ -206,25 +209,23 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0, justifyContent: 'flex-end' }}>
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#FFFFFF' }}>
+                <span className="mono" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--ink)', backgroundColor: 'var(--paper-deep)', padding: '4px 10px', border: '1.5px solid var(--ink)', borderRadius: '6px' }}>
                   {user.email?.split('@')[0] || 'User'}
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="btn"
-                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.825rem', minHeight: '36px', border: '1px solid #FFFFFF', color: '#FFFFFF', backgroundColor: 'transparent' }}
+                  className="btn btn-sm btn-outline"
                   title="Sign out"
                 >
-                  <LogOut size={14} color="#EF4444" /> Log Out
+                  <LogOut size={14} color="var(--rust)" /> Log Out
                 </button>
               </div>
             ) : (
               <button
                 onClick={() => setAuthModalOpen(true)}
-                className="btn"
-                style={{ padding: '8px 14px', fontSize: '13px', whiteSpace: 'nowrap', minHeight: '38px', backgroundColor: '#EF4444', color: '#FFFFFF', border: 'none', fontWeight: 700, boxShadow: '0 4px 14px rgba(239, 68, 68, 0.4)' }}
+                className="btn btn-gold btn-sm"
               >
-                <User size={15} color="#FFFFFF" /> Log In
+                <User size={15} /> Log In
               </button>
             )}
 
@@ -232,48 +233,58 @@ export default function App() {
             <button
               className="mobile-menu-btn"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FFFFFF', padding: '6px' }}
+              style={{
+                backgroundColor: 'var(--card)',
+                border: '2px solid var(--ink)',
+                boxShadow: '2px 2px 0px var(--ink)',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                color: 'var(--ink)',
+                padding: '6px',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
 
-        {/* TOP HEALTH & NUTRITION DASHBOARD ANIMATED DROPDOWN BAR (WITH EXPLICIT MOBILE CLOSE BUTTON) */}
+        {/* TOP HEALTH & NUTRITION DASHBOARD ANIMATED DROPDOWN BAR */}
         {healthDashboardOpen && (
           <div
             className="animate-fade-in"
             style={{
-              background: 'linear-gradient(135deg, #FFF0EC 0%, #FFFBEB 100%)',
-              borderBottom: '1px solid #FFCDCD',
+              backgroundColor: 'var(--paper-deep)',
+              borderBottom: 'var(--border-thick)',
               padding: '1.25rem 1.5rem',
-              boxShadow: '0 8px 24px rgba(255,82,82,0.08)',
+              boxShadow: '0 6px 0px var(--ink)',
               position: 'relative',
               zIndex: 90
             }}
           >
-            {/* Dedicated Explicit Close Button for Mobile & Desktop */}
+            {/* Close Button */}
             <button
               onClick={() => setHealthDashboardOpen(false)}
               style={{
                 position: 'absolute',
                 top: '12px',
                 right: '16px',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid var(--coral-border)',
-                color: 'var(--coral-primary)',
+                backgroundColor: 'var(--card)',
+                border: '2px solid var(--ink)',
+                boxShadow: '2px 2px 0px var(--ink)',
+                color: 'var(--ink)',
                 borderRadius: '50%',
                 width: '32px',
                 height: '32px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+                cursor: 'pointer'
               }}
               title="Close Health Dashboard"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
 
             <div
@@ -281,7 +292,7 @@ export default function App() {
                 maxWidth: '1150px',
                 margin: '0 auto',
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
                 gap: '1.25rem',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -290,27 +301,27 @@ export default function App() {
             >
               
               {/* Metric 1: Today's Calories */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--coral-border)', boxShadow: 'var(--shadow-sm)' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--coral-border)' }}>
-                  <Flame size={22} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: 'var(--card)', padding: '0.85rem 1.1rem', borderRadius: 'var(--radius-sm)', border: '2px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '8px', backgroundColor: 'var(--gold-soft)', color: 'var(--gold-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid var(--ink)' }}>
+                  <Flame size={22} color="var(--rust)" />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Calories Logged Today</div>
-                  <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-heading)' }}>{todayCalories} <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>kcal</span></div>
+                  <div className="mono" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Calories Logged Today</div>
+                  <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--ink)', fontFamily: 'var(--font-mono)' }}>{todayCalories} <span style={{ fontSize: '0.825rem', color: 'var(--ink-soft)' }}>kcal</span></div>
                 </div>
               </div>
 
               {/* Metric 2: Today's Protein */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: '#FFFFFF', padding: '0.85rem 1.1rem', borderRadius: '14px', border: '1px solid var(--honey-border)', boxShadow: 'var(--shadow-sm)' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'var(--honey-soft)', color: 'var(--honey-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--honey-border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', backgroundColor: 'var(--card)', padding: '0.85rem 1.1rem', borderRadius: 'var(--radius-sm)', border: '2px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '8px', backgroundColor: 'var(--sage-soft)', color: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid var(--ink)' }}>
                   <Target size={22} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    <span>Protein Target</span>
-                    <span style={{ color: 'var(--coral-primary)', fontWeight: 800 }}>{proteinPercent}%</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span className="mono">Daily Protein Goal</span>
+                    <span style={{ color: 'var(--sage)', fontWeight: 800 }}>{proteinPercent}%</span>
                   </div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)' }}>{todayProtein}g / {proteinGoal}g</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)', fontFamily: 'var(--font-mono)' }}>{todayProtein}g / {proteinGoal}g</div>
                 </div>
               </div>
 
@@ -322,10 +333,10 @@ export default function App() {
                     setHealthDashboardOpen(false);
                     setMobileMenuOpen(false);
                   }}
-                  className="btn btn-amber"
-                  style={{ padding: '0.65rem 1.1rem', fontSize: '0.875rem', flex: 1, minWidth: '150px', justifyContent: 'center' }}
+                  className="btn btn-gold btn-sm"
+                  style={{ flex: 1, minWidth: '150px' }}
                 >
-                  <Flame size={17} /> Scan Meal Calories
+                  <Flame size={16} /> Scan Meal Calories
                 </button>
                 <button
                   onClick={() => {
@@ -333,10 +344,10 @@ export default function App() {
                     setHealthDashboardOpen(false);
                     setMobileMenuOpen(false);
                   }}
-                  className="btn btn-secondary"
-                  style={{ padding: '0.65rem 1.1rem', fontSize: '0.875rem', flex: 1, minWidth: '150px', justifyContent: 'center' }}
+                  className="btn btn-secondary btn-sm"
+                  style={{ flex: 1, minWidth: '150px' }}
                 >
-                  <Activity size={17} /> Protein Tracker
+                  <Activity size={16} /> Protein Tracker
                 </button>
               </div>
 
@@ -346,29 +357,17 @@ export default function App() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div style={{ backgroundColor: '#031064', borderTop: '1px solid rgba(255, 255, 255, 0.15)', padding: '0.85rem 1.25rem' }}>
+          <div style={{ backgroundColor: 'var(--paper-deep)', borderTop: '2px solid var(--ink)', padding: '1rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <button
               onClick={() => setHealthDashboardOpen(!healthDashboardOpen)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0.85rem 1rem',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                border: '1px solid #EF4444',
-                color: '#FFFFFF',
-                fontWeight: 700,
-                fontSize: '1rem',
-                marginBottom: '0.75rem'
-              }}
+              className="btn btn-outline"
+              style={{ width: '100%', justifyContent: 'space-between' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <HeartPulse size={20} color="#EF4444" />
-                <span>Toggle Health Dashboard</span>
+                <HeartPulse size={18} color="var(--rust)" />
+                <span>Toggle Health Log</span>
               </div>
-              {healthDashboardOpen ? <ChevronUp size={18} color="#FFFFFF" /> : <ChevronDown size={18} color="#FFFFFF" />}
+              {healthDashboardOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
 
             {navItems.map((item) => {
@@ -382,23 +381,10 @@ export default function App() {
                     setHealthDashboardOpen(false);
                     setMobileMenuOpen(false);
                   }}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '0.85rem 1rem',
-                    borderRadius: 'var(--radius-md)',
-                    border: isActive ? '1px solid #EF4444' : '1px solid transparent',
-                    backgroundColor: isActive ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
-                    color: '#FFFFFF',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    marginBottom: '0.35rem',
-                    textAlign: 'left'
-                  }}
+                  className={`btn ${isActive ? 'btn-gold' : 'btn-outline'}`}
+                  style={{ width: '100%', justifyContent: 'flex-start' }}
                 >
-                  <Icon size={20} color={isActive ? '#EF4444' : '#FFFFFF'} />
+                  <Icon size={18} />
                   <span>{item.label}</span>
                 </button>
               );
@@ -431,7 +417,7 @@ export default function App() {
           />
         )}
         {activeTab === 'recipes' && (
-          <RecipesPage showToast={showToast} />
+          <RecipesPage showToast={showToast} initialTab="saved" />
         )}
         {activeTab === 'protein' && (
           <ProteinTrackerPage
@@ -490,67 +476,102 @@ export default function App() {
         </div>
       )}
 
-      {/* Footer */}
+      {/* Rich Pine Ledger Footer */}
       <footer
         style={{
-          backgroundColor: '#FFFFFF',
-          borderTop: '1px solid #E2E8F0',
-          padding: '2rem 1.5rem',
-          textAlign: 'center',
-          color: 'var(--text-body)',
-          fontSize: '0.875rem',
+          backgroundColor: 'var(--pine)',
+          borderTop: 'var(--border-thicker)',
+          color: '#DCE4D0',
+          padding: '3rem 1.5rem 2rem',
           position: 'relative',
           zIndex: 10
         }}
       >
-        <div style={{ maxWidth: '1350px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img src="/logo.png" alt="PantryPal" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} />
-            <strong style={{ color: 'var(--text-heading)', fontFamily: 'var(--font-heading)', fontSize: '1.1rem' }}>
-              Pantry<span style={{ color: '#75c49b' }}>Pal</span>
-            </strong>
-            <span style={{ color: 'var(--text-body)' }}>(pantry-pal.dev) © 2026 — Intelligent Kitchen Assistant.</span>
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '0.2rem 0.65rem',
-                borderRadius: '16px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                backgroundColor: '#F8FAFC',
-                color: 'var(--text-muted)',
-                border: '1px solid #E2E8F0'
-              }}
-            >
-              <Database size={12} />
-              <span>{isSupabaseConfigured ? 'Supabase Connected' : 'Local Storage Mode'}</span>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem', marginBottom: '2.5rem' }}>
+            {/* Brand column */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.85rem' }}>
+                <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--gold)', border: '2px solid #FFFDF8', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img src="/logo.png" alt="PantryPal" style={{ height: '22px', width: 'auto' }} />
+                </div>
+                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 800, color: '#FFFDF8' }}>
+                  Pantry<span style={{ color: 'var(--gold)' }}>Pal</span>
+                </span>
+              </div>
+              <p style={{ fontSize: '0.9rem', color: '#B6C4A8', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+                Know what's in your kitchen before you open the fridge. Intelligent shelf vision scanning, zero-waste recipe crafting, and automated nutrition logging.
+              </p>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '0.3rem 0.75rem',
+                  borderRadius: '6px',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  color: 'var(--gold)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  fontFamily: 'var(--font-mono)'
+                }}
+              >
+                <Database size={13} />
+                <span>{isSupabaseConfigured ? 'Supabase Connected' : 'Local Storage Mode'}</span>
+              </div>
             </div>
-            <a
-              href="https://github.com/akulthota/PantryPal"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: '#8B5CF6',
-                textDecoration: 'none',
-                fontSize: '13px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                marginTop: '6px',
-                opacity: 0.8
-              }}
-            >
-              ⭐ Open Source on GitHub
-            </a>
+
+            {/* Product Column */}
+            <div>
+              <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--gold)', marginBottom: '1rem', fontWeight: 800 }}>
+                Kitchen Tools
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.9rem' }}>
+                <span style={{ cursor: 'pointer', color: '#C5D2BA' }} onClick={() => setActiveTab('analyze')}>Pantry Vision Scanner</span>
+                <span style={{ cursor: 'pointer', color: '#C5D2BA' }} onClick={() => setActiveTab('analyze')}>Custom Recipe Generator</span>
+                <span style={{ cursor: 'pointer', color: '#C5D2BA' }} onClick={() => setActiveTab('calories')}>Calorie & Macro Scanner</span>
+                <span style={{ cursor: 'pointer', color: '#C5D2BA' }} onClick={() => setActiveTab('protein')}>Daily Protein Tracker</span>
+              </div>
+            </div>
+
+            {/* Quick Links Column */}
+            <div>
+              <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--gold)', marginBottom: '1rem', fontWeight: 800 }}>
+                Navigation
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.9rem' }}>
+                <span style={{ cursor: 'pointer', color: '#C5D2BA' }} onClick={() => setActiveTab('home')}>Home Overview</span>
+                <span style={{ cursor: 'pointer', color: '#C5D2BA' }} onClick={() => setActiveTab('recipes')}>Saved Recipes ({recipeCount})</span>
+                <span style={{ cursor: 'pointer', color: '#C5D2BA' }} onClick={() => setActiveTab('preferences')}>Dietary & Cuisines</span>
+                <a
+                  href="https://github.com/akulthota/PantryPal"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'var(--gold)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                >
+                  ⭐ Open Source on GitHub
+                </a>
+              </div>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-            <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('home')}>Home</span>
-            <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('analyze')}>Pantry Scanner</span>
-            <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('recipes')}>Saved Recipes</span>
-            <span style={{ cursor: 'pointer', color: 'var(--text-body)' }} onClick={() => setActiveTab('preferences')}>Preferences</span>
+          <div
+            style={{
+              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+              paddingTop: '1.5rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1rem',
+              fontSize: '0.8rem',
+              color: '#8D9B7F',
+              fontFamily: 'var(--font-mono)'
+            }}
+          >
+            <span>© 2026 PantryPal · Made for real kitchens</span>
+            <span>Zero Food Waste · Cook from what you have</span>
           </div>
         </div>
       </footer>

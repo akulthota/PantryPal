@@ -94,17 +94,25 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
   return (
     <div style={{ maxWidth: '950px', margin: '2rem auto', padding: '0 1.5rem 4rem 1.5rem' }}>
       
-      {/* Page Header Banner */}
-      <div className="glass-card animate-fade-in" style={{ padding: '2.25rem 2rem', marginBottom: '2rem', background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)', border: '1px solid var(--coral-border)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '0.5rem' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--coral-border)' }}>
-            <Settings size={26} />
+      {/* Page Header Banner — Vibrant Ledger Card */}
+      <div className="ledger-card animate-fade-in" style={{ padding: '2.25rem 2rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ width: '54px', height: '54px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--gold)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'var(--border-thick)', boxShadow: 'var(--shadow-hard-sm)' }}>
+            <Settings size={28} />
           </div>
           <div>
-            <h1 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-heading)' }}>
-              Culinary Preferences & <span className="text-coral">Profile</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.35rem' }}>
+              <span className="tag-badge" style={{ backgroundColor: 'var(--pine)', color: '#FFF' }}>
+                <ChefHat size={14} /> TASTE & HEALTH PROFILE
+              </span>
+              <span className="mono" style={{ fontSize: '0.8rem', color: 'var(--ink-faint)' }}>
+                GLOBAL RECIPE ENGINE
+              </span>
+            </div>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', fontWeight: 800, color: 'var(--ink)', lineHeight: 1.15 }}>
+              Culinary Preferences & <span className="highlight-gold">Profile</span>
             </h1>
-            <p style={{ color: 'var(--text-body)', fontSize: '0.975rem', marginTop: '0.2rem' }}>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '1rem', marginTop: '0.3rem' }}>
               Customize your dietary restrictions, favorite cuisines, and skill level. PantryPal tailors every recipe to these settings.
             </p>
           </div>
@@ -114,13 +122,13 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
       <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         
         {/* 1. Dietary Restrictions */}
-        <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Heart size={22} style={{ color: 'var(--coral-primary)' }} /> Dietary Restrictions & Diets
+        <div className="ledger-card" style={{ padding: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 800, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Heart size={22} style={{ color: 'var(--rust)' }} /> Dietary Restrictions & Diets
             </h3>
             {dietary.length > 0 && (
-              <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--coral-primary)', backgroundColor: 'var(--coral-soft)', padding: '0.2rem 0.65rem', borderRadius: '12px' }}>
+              <span className="tag-badge" style={{ backgroundColor: 'var(--rust-soft)', color: 'var(--rust-dark)' }}>
                 {dietary.length} selected
               </span>
             )}
@@ -134,23 +142,15 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                   type="button"
                   key={opt}
                   onClick={() => toggleTag(dietary, setDietary, opt)}
+                  className={`btn btn-sm btn-pill ${selected ? 'btn-rust' : 'btn-outline'}`}
                   style={{
-                    padding: '0.65rem 1.25rem',
-                    borderRadius: '20px',
-                    border: selected ? '2px solid var(--coral-primary)' : '1px solid #CBD5E1',
-                    backgroundColor: selected ? 'var(--coral-soft)' : '#F8FAFC',
-                    color: selected ? 'var(--coral-primary)' : '#334155',
-                    fontWeight: selected ? 700 : 500,
                     fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.2s var(--ease-spring)',
-                    boxShadow: selected ? '0 4px 12px rgba(255, 82, 82, 0.15)' : 'none'
+                    padding: '0.5rem 1.15rem',
+                    boxShadow: selected ? 'var(--shadow-hard-sm)' : 'none',
+                    transform: selected ? 'translate(-1px, -1px)' : 'none'
                   }}
                 >
-                  {selected && <Check size={16} style={{ color: 'var(--coral-primary)' }} />} {opt}
+                  {selected && <Check size={16} />} {opt}
                 </button>
               );
             })}
@@ -158,18 +158,18 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
         </div>
 
         {/* 2. Favorite Cuisines */}
-        <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Award size={22} style={{ color: 'var(--honey-amber)' }} /> Favorite Regional Cuisines
+        <div className="ledger-card" style={{ padding: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 800, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Award size={22} style={{ color: 'var(--gold)' }} /> Favorite Regional Cuisines
             </h3>
             {cuisines.length > 0 && (
-              <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--honey-amber)', backgroundColor: 'var(--honey-soft)', padding: '0.2rem 0.65rem', borderRadius: '12px' }}>
+              <span className="tag-badge" style={{ backgroundColor: 'var(--gold)', color: 'var(--ink)' }}>
                 {cuisines.length} selected
               </span>
             )}
           </div>
-          <p style={{ color: 'var(--text-body)', fontSize: '0.875rem', marginBottom: '1.25rem' }}>
+          <p style={{ color: 'var(--ink-soft)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
             Select your preferred regional flavors or add a custom cuisine below.
           </p>
 
@@ -181,23 +181,15 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                   type="button"
                   key={opt}
                   onClick={() => toggleTag(cuisines, setCuisines, opt)}
+                  className={`btn btn-sm btn-pill ${selected ? 'btn-gold' : 'btn-outline'}`}
                   style={{
-                    padding: '0.6rem 1.15rem',
-                    borderRadius: '20px',
-                    border: selected ? '2px solid var(--honey-amber)' : '1px solid #CBD5E1',
-                    backgroundColor: selected ? 'var(--honey-soft)' : '#F8FAFC',
-                    color: selected ? 'var(--honey-amber)' : '#334155',
-                    fontWeight: selected ? 700 : 500,
                     fontSize: '0.875rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.2s var(--ease-spring)',
-                    boxShadow: selected ? '0 4px 12px rgba(245, 158, 11, 0.15)' : 'none'
+                    padding: '0.45rem 1rem',
+                    boxShadow: selected ? 'var(--shadow-hard-sm)' : 'none',
+                    transform: selected ? 'translate(-1px, -1px)' : 'none'
                   }}
                 >
-                  {selected && <Check size={15} style={{ color: 'var(--honey-amber)' }} />} {opt}
+                  {selected && <Check size={15} />} {opt}
                 </button>
               );
             })}
@@ -208,27 +200,20 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                 type="button"
                 key={custom}
                 onClick={() => toggleTag(cuisines, setCuisines, custom)}
+                className="btn btn-sm btn-pill btn-sage"
                 style={{
-                  padding: '0.6rem 1.15rem',
-                  borderRadius: '20px',
-                  border: '2px solid var(--sage-green)',
-                  backgroundColor: 'var(--sage-soft)',
-                  color: 'var(--sage-green)',
-                  fontWeight: 700,
                   fontSize: '0.875rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
+                  padding: '0.45rem 1rem',
+                  boxShadow: 'var(--shadow-hard-sm)'
                 }}
               >
-                <Check size={15} style={{ color: 'var(--sage-green)' }} /> {custom}
+                <Check size={15} /> {custom}
               </button>
             ))}
           </div>
 
           {/* Add Custom Cuisine Input */}
-          <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '500px' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', maxWidth: '500px' }}>
             <input
               type="text"
               className="input-control"
@@ -244,37 +229,33 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
         </div>
 
         {/* 3. Allergies & Intolerances */}
-        <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Shield size={22} style={{ color: 'var(--sage-green)' }} /> Allergies & Avoided Ingredients
+        <div className="ledger-card" style={{ padding: '2rem' }}>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 800, color: 'var(--ink)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Shield size={22} style={{ color: 'var(--rust)' }} /> Allergies & Avoided Ingredients
           </h3>
+          <p style={{ color: 'var(--ink-soft)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
+            These ingredients will be strictly flagged or substituted in all generated recipes.
+          </p>
           
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.5rem' }}>
             {allergies.map((all, idx) => (
               <span
                 key={idx}
+                className="pinned-tag"
                 style={{
-                  backgroundColor: 'var(--coral-soft)',
-                  border: '1px solid var(--coral-border)',
-                  color: 'var(--coral-primary)',
-                  padding: '0.45rem 0.9rem',
-                  borderRadius: '16px',
-                  fontWeight: 700,
-                  fontSize: '0.875rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
+                  backgroundColor: 'var(--rust-soft)',
+                  color: 'var(--rust-dark)'
                 }}
               >
                 {all}
-                <button type="button" onClick={() => removeAllergy(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center' }}>
-                  <X size={14} />
+                <button type="button" onClick={() => removeAllergy(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rust-dark)', display: 'flex', alignItems: 'center', padding: '0 2px' }}>
+                  <X size={15} />
                 </button>
               </span>
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '500px' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', maxWidth: '500px' }}>
             <input
               type="text"
               className="input-control"
@@ -290,12 +271,12 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
         </div>
 
         {/* 4. Skill Level & Protein Goal */}
-        <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem' }}>
+        <div className="ledger-card" style={{ padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem' }}>
           
           {/* Skill Level Selection Cards */}
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <ChefHat size={20} style={{ color: 'var(--coral-primary)' }} /> Cooking Skill Level
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <ChefHat size={20} style={{ color: 'var(--gold)' }} /> Cooking Skill Level
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {SKILL_LEVELS.map((lvl) => {
@@ -305,26 +286,32 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
                     key={lvl.id}
                     onClick={() => setSkill(lvl.id)}
                     style={{
-                      padding: '0.9rem 1.1rem',
-                      borderRadius: '12px',
-                      border: selected ? '2px solid var(--coral-primary)' : '1px solid #E2E8F0',
-                      backgroundColor: selected ? 'var(--coral-soft)' : '#F8FAFC',
+                      padding: '1rem 1.25rem',
+                      borderRadius: 'var(--radius-sm)',
+                      border: 'var(--border-thick)',
+                      backgroundColor: selected ? 'var(--gold-soft)' : 'var(--card-warm)',
+                      boxShadow: selected ? 'var(--shadow-hard)' : 'var(--shadow-hard-sm)',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'all 0.15s ease',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between'
+                      justifyContent: 'space-between',
+                      transform: selected ? 'translate(-2px, -2px)' : 'none'
                     }}
                   >
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: '0.95rem', color: selected ? 'var(--coral-primary)' : 'var(--text-heading)' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.975rem', color: 'var(--ink)' }}>
                         {lvl.title}
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--ink-soft)' }}>
                         {lvl.desc}
                       </div>
                     </div>
-                    {selected && <Check size={18} style={{ color: 'var(--coral-primary)' }} />}
+                    {selected && (
+                      <span style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'var(--pine)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Check size={16} />
+                      </span>
+                    )}
                   </div>
                 );
               })}
@@ -333,15 +320,15 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
 
           {/* Protein Target Goal */}
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Target size={20} style={{ color: 'var(--honey-amber)' }} /> Daily Protein Target (grams)
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Target size={20} style={{ color: 'var(--pine)' }} /> Daily Protein Target (grams)
             </h3>
             
-            <div style={{ backgroundColor: '#F8FAFC', padding: '1.5rem', borderRadius: '14px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '1rem' }}>
-              <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--coral-primary)', lineHeight: 1 }}>
+            <div style={{ backgroundColor: 'var(--card-warm)', padding: '1.5rem', borderRadius: 'var(--radius-sm)', border: 'var(--border-thick)', boxShadow: 'var(--shadow-hard-sm)', textAlign: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '2.75rem', fontWeight: 800, color: 'var(--pine)', lineHeight: 1 }}>
                 {proteinGoal}g
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.35rem', fontWeight: 600 }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--ink-faint)', marginTop: '0.5rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Daily Target Protein Intake
               </div>
             </div>
@@ -353,9 +340,9 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
               step="5"
               value={proteinGoal}
               onChange={(e) => setProteinGoal(e.target.value)}
-              style={{ width: '100%', accentColor: 'var(--coral-primary)', cursor: 'pointer', marginBottom: '0.75rem' }}
+              style={{ width: '100%', accentColor: 'var(--pine)', cursor: 'pointer', marginBottom: '0.75rem', height: '8px' }}
             />
-            <p style={{ color: 'var(--text-body)', fontSize: '0.85rem' }}>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.85rem' }}>
               Slide to adjust your daily protein target for the Health & Nutrition dashboard.
             </p>
           </div>
@@ -363,8 +350,8 @@ export default function PreferencesPage({ userPreferences, onUpdatePreferences, 
         </div>
 
         {/* Submit Save Button */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
-          <button type="submit" disabled={isSaving} className="btn btn-primary" style={{ padding: '0.85rem 2.75rem', fontSize: '1.1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+          <button type="submit" disabled={isSaving} className="btn btn-primary btn-lg" style={{ padding: '0.95rem 3rem' }}>
             <Save size={20} /> {isSaving ? 'Saving...' : 'Save Preferences'}
           </button>
         </div>

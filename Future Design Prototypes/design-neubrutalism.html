@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PantryPal - Neubrutalism Design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFFEF5;
+            --card-bg: #FFFFFF;
+            --primary: #FF6B00;
+            --secondary: #2563EB;
+            --tertiary: #FACC15;
+            --danger: #DC2626;
+            --text-main: #000000;
+            --text-muted: #404040;
+            --border-thick: 3px solid #000000;
+            --shadow-hard: 6px 6px 0px #000000;
+            --shadow-hard-hover: 0px 0px 0px #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Sora', sans-serif;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        code, .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Utility classes */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .highlight-yellow {
+            background-color: var(--tertiary);
+            padding: 0 8px;
+            border: var(--border-thick);
+            display: inline-block;
+            transform: rotate(-2deg);
+        }
+
+        /* Buttons & Interactions */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            border: var(--border-thick);
+            box-shadow: var(--shadow-hard);
+            transition: all 0.1s ease;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .btn:hover {
+            transform: translate(6px, 6px);
+            box-shadow: var(--shadow-hard-hover);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+        }
+
+        .btn-blue {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 0;
+            border-bottom: var(--border-thick);
+            background-color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            background-color: var(--tertiary);
+            width: 36px;
+            height: 36px;
+            border: var(--border-thick);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        nav a {
+            font-weight: 700;
+            font-family: 'Sora', sans-serif;
+            border: 3px solid transparent;
+            padding: 4px 12px;
+            transition: all 0.2s ease;
+            border-radius: 50px;
+        }
+
+        nav a:hover {
+            border: 3px solid #000;
+            background-color: #fff;
+            transform: rotate(2deg);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .pill {
+            border-radius: 50px;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 4.5rem;
+            margin-bottom: 24px;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            max-width: 500px;
+            font-weight: 500;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .hero-note {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            font-weight: 700;
+            background-color: #E2E8F0;
+            display: inline-block;
+            padding: 4px 8px;
+            border: 2px solid #000;
+            transform: rotate(-1deg);
+        }
+
+        .hero-art {
+            position: relative;
+        }
+
+        .art-card {
+            background-color: var(--card-bg);
+            border: var(--border-thick);
+            box-shadow: var(--shadow-hard);
+            padding: 32px;
+            border-radius: 0;
+            transform: rotate(3deg);
+            transition: transform 0.3s ease;
+        }
+
+        .art-card:hover {
+            transform: rotate(0deg) translate(-4px, -4px);
+        }
+
+        .art-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #000;
+        }
+
+        .art-card-title {
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tag {
+            padding: 8px 16px;
+            border: var(--border-thick);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            box-shadow: 3px 3px 0px #000;
+            font-size: 0.9rem;
+        }
+
+        .tag.bg-yellow { background-color: var(--tertiary); }
+        .tag.bg-blue { background-color: var(--secondary); color: white; }
+        .tag.bg-orange { background-color: var(--primary); color: white; }
+        .tag.bg-red { background-color: var(--danger); color: white; }
+
+        /* Marquee */
+        .marquee {
+            background-color: var(--primary);
+            color: white;
+            border-top: var(--border-thick);
+            border-bottom: var(--border-thick);
+            padding: 24px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            transform: rotate(-2deg);
+            margin: 40px -20px;
+            width: calc(100% + 40px);
+            box-shadow: 0 8px 0 rgba(0,0,0,1);
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: scroll 20s linear infinite;
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            font-size: 2rem;
+        }
+
+        .marquee-content span {
+            display: inline-block;
+            padding: 0 20px;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 80px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border: var(--border-thick);
+            box-shadow: var(--shadow-hard);
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .stat-card:nth-child(1) { transform: rotate(-2deg); background-color: #EFF6FF; }
+        .stat-card:nth-child(2) { transform: rotate(2deg); background-color: #FEF9C3; }
+        .stat-card:nth-child(3) { transform: rotate(-1deg); background-color: #FFEDD5; }
+
+        .stat-number {
+            font-size: 4rem;
+            font-weight: 800;
+            font-family: 'Sora', sans-serif;
+            margin-bottom: 8px;
+            color: #000;
+        }
+
+        .stat-label {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 80px;
+            font-weight: 800;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            border: var(--border-thick);
+            box-shadow: var(--shadow-hard);
+            padding: 40px 32px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:nth-child(1) { transform: rotate(-1deg); }
+        .feature-card:nth-child(2) { transform: rotate(1deg); }
+        .feature-card:nth-child(3) { transform: rotate(-2deg); }
+
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 12px 12px 0px #000;
+            z-index: 10;
+        }
+
+        .feature-icon {
+            width: 72px;
+            height: 72px;
+            border: var(--border-thick);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 32px;
+            box-shadow: 4px 4px 0px #000;
+        }
+        
+        .feature-card:nth-child(1) .feature-icon { background-color: var(--tertiary); }
+        .feature-card:nth-child(2) .feature-icon { background-color: var(--secondary); color: white; }
+        .feature-card:nth-child(3) .feature-icon { background-color: var(--danger); color: white; }
+
+        .feature-title {
+            font-size: 1.75rem;
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* How it Works */
+        .how-it-works {
+            padding: 100px 0;
+            background-color: #E2E8F0;
+            border-top: var(--border-thick);
+            border-bottom: var(--border-thick);
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            background-color: var(--card-bg);
+            border: var(--border-thick);
+            box-shadow: var(--shadow-hard);
+            padding: 40px;
+        }
+
+        .step:nth-child(even) {
+            flex-direction: row-reverse;
+            transform: rotate(1.5deg);
+        }
+        
+        .step:nth-child(odd) {
+            transform: rotate(-1.5deg);
+        }
+
+        .step-number {
+            width: 96px;
+            height: 96px;
+            flex-shrink: 0;
+            border: var(--border-thick);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Sora', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            box-shadow: 6px 6px 0px #000;
+        }
+
+        .step-content h3 {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .step-content p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* CTA Section */
+        .cta-band {
+            background-color: var(--tertiary);
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .cta-band h2 {
+            font-size: 4rem;
+            margin-bottom: 40px;
+            font-weight: 800;
+        }
+
+        .cta-band .btn {
+            font-size: 1.5rem;
+            padding: 24px 48px;
+            border-width: 4px;
+            box-shadow: 8px 8px 0 #000;
+        }
+
+        .cta-band .btn:hover {
+            transform: translate(8px, 8px);
+            box-shadow: 0px 0px 0px #000;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #000;
+            color: #fff;
+            padding: 80px 0 40px;
+            border-top: var(--border-thick);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            margin-bottom: 80px;
+        }
+
+        .footer-logo {
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .footer-column h4 {
+            color: #fff;
+            margin-bottom: 24px;
+            font-size: 1.25rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-column a {
+            color: #A3A3A3;
+            transition: color 0.2s;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .footer-column a:hover {
+            color: var(--tertiary);
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+        }
+
+        .copyright {
+            text-align: center;
+            border-top: 2px solid #333;
+            padding-top: 40px;
+            color: #737373;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-text h1 { font-size: 3.5rem; }
+            .cta-band h2 { font-size: 3rem; }
+        }
+
+        @media (max-width: 992px) {
+            .hero, .footer-content {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid, .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid, .features-grid, .footer-links {
+                grid-template-columns: 1fr;
+            }
+            nav, .header-actions {
+                display: none;
+            }
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+            .step {
+                flex-direction: column !important;
+                align-items: center;
+                text-align: center;
+            }
+            .cta-band h2 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">🍲</div>
+                PantryPal
+            </a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it Works</a>
+                <a href="#pricing">Pricing</a>
+            </nav>
+            <div class="header-actions">
+                <a href="#" class="btn btn-secondary pill">Log in</a>
+                <a href="#" class="btn btn-primary pill">Get started ↗</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero container">
+        <div class="hero-text">
+            <h1>Stop <span class="highlight-yellow">wasting</span> food. Start cooking smart.</h1>
+            <p>Your ultimate kitchen companion. Track ingredients, discover recipes, and save money with the most powerful pantry app ever built.</p>
+            <div class="hero-actions">
+                <a href="#" class="btn btn-primary pill" style="font-size: 1.125rem; padding: 16px 32px;">Start for free</a>
+                <a href="#" class="btn btn-secondary pill" style="font-size: 1.125rem; padding: 16px 32px;">See demo</a>
+            </div>
+            <div class="hero-note">⚡ No credit card required.</div>
+        </div>
+        <div class="hero-art">
+            <div class="art-card">
+                <div class="art-card-header">
+                    <div class="art-card-title">Pantry Scan Result</div>
+                    <div class="mono" style="font-weight: bold; background: #000; color: #fff; padding: 4px 8px; border-radius: 0;">SCAN_091</div>
+                </div>
+                <div class="tag-container">
+                    <div class="tag bg-yellow">🍅 Tomatoes (3)</div>
+                    <div class="tag bg-blue">🍝 Pasta (1 box)</div>
+                    <div class="tag bg-orange">🧅 Onion (2)</div>
+                    <div class="tag bg-red">🥛 Milk (Exp. Today!)</div>
+                    <div class="tag">🧄 Garlic</div>
+                    <div class="tag">🧀 Parmesan</div>
+                </div>
+                <div style="margin-top: 32px; border: var(--border-thick); padding: 16px; background: #f3f4f6; box-shadow: 4px 4px 0 #000;">
+                    <div style="font-family: 'Sora'; font-weight: 800; margin-bottom: 8px;">✨ Magic Recipe Generated</div>
+                    <div style="font-family: 'JetBrains Mono'; font-weight: 700; font-size: 1.1rem;">Tomato Basil Pasta</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="marquee">
+        <div class="marquee-content">
+            <span>SCAN · COOK · TRACK · REPEAT ·</span>
+            <span>SCAN · COOK · TRACK · REPEAT ·</span>
+            <span>SCAN · COOK · TRACK · REPEAT ·</span>
+            <span>SCAN · COOK · TRACK · REPEAT ·</span>
+            <span>SCAN · COOK · TRACK · REPEAT ·</span>
+        </div>
+    </div>
+
+    <section class="stats container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">40%</div>
+                <div class="stat-label">Less Food Waste</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">$120</div>
+                <div class="stat-label">Saved Monthly</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">10k+</div>
+                <div class="stat-label">Recipes Cooked</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features container">
+        <h2 class="section-title">Powerful features. <br><span style="text-decoration: underline; text-decoration-thickness: 6px; text-underline-offset: 8px; text-decoration-color: var(--primary);">Zero fluff.</span></h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path><path d="M12 12v9"></path><path d="m8 17 4 4 4-4"></path></svg>
+                </div>
+                <h3 class="feature-title">Pantry Vision Scanner</h3>
+                <p>Point your camera at your fridge. Our AI instantly logs every ingredient and its expiration date with crazy accuracy.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <h3 class="feature-title">Recipe Generator</h3>
+                <p>Never ask "what's for dinner?" again. Get personalized recipes based exactly on what's hiding in your pantry right now.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
+                </div>
+                <h3 class="feature-title">Calorie Tracker</h3>
+                <p>Hit your goals effortlessly. Nutritional info is automatically calculated and tracked for every generated recipe you cook.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How it works</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number" style="background-color: var(--tertiary);">1</div>
+                    <div class="step-content">
+                        <h3>Scan your groceries</h3>
+                        <p>Take a quick photo of your grocery haul or fridge. PantryPal instantly logs items, categorizes them, and estimates expiration dates.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number" style="background-color: var(--secondary); color: white;">2</div>
+                    <div class="step-content">
+                        <h3>Get custom recipes</h3>
+                        <p>Based on your available ingredients and dietary preferences, our AI suggests delicious, healthy meals you can cook right now.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number" style="background-color: var(--primary); color: white;">3</div>
+                    <div class="step-content">
+                        <h3>Track and save</h3>
+                        <p>Log what you eat, track your nutrition, and watch your grocery bills shrink as food waste becomes a thing of the past.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-band">
+        <div class="container">
+            <h2>Ready to transform your kitchen?</h2>
+            <a href="#" class="btn btn-primary pill">Get started for free</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-logo">
+                        <div style="background-color: var(--tertiary); width: 48px; height: 48px; border: var(--border-thick); display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #000; font-size: 1.5rem;">🍲</div>
+                        PantryPal
+                    </div>
+                    <p style="color: #A3A3A3; max-width: 320px; font-size: 1.1rem; font-weight: 500;">Stop wasting food. Start cooking smart. The ultimate AI-powered kitchen assistant built for modern foodies.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="#">Features</a></li>
+                            <li><a href="#">Pricing</a></li>
+                            <li><a href="#">Changelog</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#">About</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2026 PantryPal. All rights reserved. Built with ❤️ and brutalism.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

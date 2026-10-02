@@ -123,19 +123,19 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
       onClick={onClose}
     >
       <div
-        className="glass-card animate-scale-in"
+        className="animate-scale-in"
         style={{
-          maxWidth: mode === 'signup' ? '500px' : '420px',
+          maxWidth: mode === 'signup' ? '520px' : '440px',
           width: '100%',
           maxHeight: '90vh',
           overflowY: 'auto',
-          padding: '1.75rem 1.25rem',
+          padding: '2rem 1.75rem',
           position: 'relative',
-          borderRadius: 'var(--radius-lg)',
-          backgroundColor: '#FFFFFF',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
-          transition: 'all 0.3s ease'
+          borderRadius: 'var(--radius-md)',
+          backgroundColor: 'var(--card)',
+          border: 'var(--border-thicker)',
+          boxShadow: 'var(--shadow-hard-xl)',
+          transition: 'all 0.2s var(--ease-snappy)'
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -146,8 +146,9 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
             position: 'absolute',
             top: '16px',
             right: '16px',
-            background: '#F1F5F9',
-            border: '1px solid #E2E8F0',
+            background: 'var(--paper)',
+            border: '2px solid var(--ink)',
+            boxShadow: '2px 2px 0px var(--ink)',
             borderRadius: '50%',
             width: '32px',
             height: '32px',
@@ -155,43 +156,43 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            color: '#64748B'
+            color: 'var(--ink)'
           }}
           title="Close"
         >
-          <X size={18} />
+          <X size={16} />
         </button>
 
         {/* Header Title */}
         <div style={{ textAlign: 'center', marginBottom: '1.5rem', paddingRight: '1rem', paddingLeft: '1rem' }}>
-          <div style={{ width: '46px', height: '46px', borderRadius: '50%', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid var(--coral-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem', boxShadow: '0 4px 12px rgba(255, 82, 82, 0.15)' }}>
-            <Sparkles size={22} />
+          <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--gold-soft)', color: 'var(--pine)', border: '2px solid var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem', boxShadow: '2px 2px 0px var(--ink)' }}>
+            <Sparkles size={22} color="var(--gold-dark)" />
           </div>
-          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '0.25rem', lineHeight: 1.2 }}>
-            {mode === 'login' ? 'Welcome Back to PantryPal' : 'Create Your Account'}
+          <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--ink)', marginBottom: '0.35rem', lineHeight: 1.2, fontFamily: 'var(--font-serif)' }}>
+            {mode === 'login' ? 'Welcome Back to PantryPal' : 'Create Your Kitchen Ledger'}
           </h2>
-          <p style={{ color: 'var(--text-body)', fontSize: '0.85rem', fontWeight: 500 }}>
-            {mode === 'login' ? 'Sign in for unlimited scans & saved recipes.' : `Step ${step} of 4: Setup your personal profile`}
+          <p style={{ color: 'var(--ink-soft)', fontSize: '0.9rem', fontWeight: 500 }}>
+            {mode === 'login' ? 'Sign in for unlimited scans & saved recipes.' : `Step ${step} of 4: Setup your personal culinary profile`}
           </p>
         </div>
 
-        {/* Mode Switcher Tabs (High Contrast Mobile Friendly) */}
-        <div style={{ display: 'flex', backgroundColor: '#F1F5F9', padding: '4px', borderRadius: '12px', marginBottom: '1.5rem', border: '1px solid #E2E8F0' }}>
+        {/* Mode Switcher Tabs (Neubrutalist Tabs) */}
+        <div style={{ display: 'flex', backgroundColor: 'var(--paper-deep)', padding: '4px', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', border: '2px solid var(--ink)' }}>
           <button
             type="button"
             onClick={() => { setMode('login'); setStep(1); }}
             style={{
               flex: 1,
-              padding: '0.55rem',
-              borderRadius: '8px',
-              border: 'none',
+              padding: '0.6rem',
+              borderRadius: '6px',
+              border: mode === 'login' ? '2px solid var(--ink)' : '2px solid transparent',
               fontWeight: 700,
-              fontSize: '0.875rem',
+              fontSize: '0.9rem',
               cursor: 'pointer',
-              backgroundColor: mode === 'login' ? 'var(--coral-primary)' : 'transparent',
-              color: mode === 'login' ? '#FFFFFF' : '#64748B',
-              boxShadow: mode === 'login' ? '0 2px 8px rgba(255, 82, 82, 0.25)' : 'none',
-              transition: 'all 0.2s'
+              backgroundColor: mode === 'login' ? 'var(--gold)' : 'transparent',
+              color: 'var(--ink)',
+              boxShadow: mode === 'login' ? '2px 2px 0px var(--ink)' : 'none',
+              transition: 'all 0.15s ease'
             }}
           >
             Log In
@@ -201,16 +202,16 @@ export default function AuthModal({ isOpen, onClose, user, onLoginSuccess, showT
             onClick={() => { setMode('signup'); setStep(1); }}
             style={{
               flex: 1,
-              padding: '0.55rem',
-              borderRadius: '8px',
-              border: 'none',
+              padding: '0.6rem',
+              borderRadius: '6px',
+              border: mode === 'signup' ? '2px solid var(--ink)' : '2px solid transparent',
               fontWeight: 700,
-              fontSize: '0.875rem',
+              fontSize: '0.9rem',
               cursor: 'pointer',
-              backgroundColor: mode === 'signup' ? 'var(--coral-primary)' : 'transparent',
-              color: mode === 'signup' ? '#FFFFFF' : '#64748B',
-              boxShadow: mode === 'signup' ? '0 2px 8px rgba(255, 82, 82, 0.25)' : 'none',
-              transition: 'all 0.2s'
+              backgroundColor: mode === 'signup' ? 'var(--gold)' : 'transparent',
+              color: 'var(--ink)',
+              boxShadow: mode === 'signup' ? '2px 2px 0px var(--ink)' : 'none',
+              transition: 'all 0.15s ease'
             }}
           >
             Sign Up

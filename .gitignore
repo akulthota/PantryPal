@@ -34,3 +34,5 @@ component_*.js
 js_bundle.js
 css_bundle.css
 extracted_*.txt
+
+.vercel

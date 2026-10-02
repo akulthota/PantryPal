@@ -1,4 +1,4 @@
-// Vercel Serverless Function: Ultra-Fast Pantry Vision Analysis via Gemini 2.5 Flash
+// Vercel Serverless Function: Ultra-Fast Pantry Vision Analysis via DeepSeek Vision
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -24,72 +24,66 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+    const apiKey = process.env.DEEPSEEK_API_KEY || process.env.VITE_DEEPSEEK_API_KEY;
     
-    // Clean base64 data
+    // Clean base64 data and form data URL
     const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
+    const imageUrl = image.startsWith('data:') ? image : `data:${mimeType};base64,${base64Data}`;
     
-    // Fast, ultra-responsive vision models array
-    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+    const model = process.env.DEEPSEEK_VISION_MODEL || 'deepseek-flash';
 
     let responseData = null;
     let lastError = null;
 
-    const prompt = `Analyze this image of a pantry, fridge, or food items. Identify ALL visible food items, produce, ingredients, dairy, meats, condiments, and pantry staples in detail.
-Return ONLY a valid JSON object formatted as:
-{
-  "ingredients": ["Ingredient 1", "Ingredient 2", "Ingredient 3"]
-}
-Do not include markdown code block formatting (like \`\`\`json) or extra conversational text. Return plain JSON only.`;
+    const systemPrompt = `You are an expert food identification AI. Identify all visible ingredients, groceries, produce, dairy, and pantry items in the image. Return ONLY a valid JSON object formatted as: {"ingredients": ["item 1", "item 2"]}. Keep names concise.`;
 
-    if (apiKey && apiKey !== 'your_gemini_api_key_here') {
-      for (const model of modelsToTry) {
-        try {
-          const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [
+    if (apiKey && apiKey !== 'your_deepseek_api_key_here') {
+      try {
+        const response = await fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              {
+                role: 'system',
+                content: systemPrompt
+              },
+              {
+                role: 'user',
+                content: [
                   {
-                    parts: [
-                      { text: prompt },
-                      {
-                        inline_data: {
-                          mime_type: mimeType,
-                          data: base64Data
-                        }
-                      }
-                    ]
+                    type: 'image_url',
+                    image_url: {
+                      url: imageUrl
+                    }
                   }
-                ],
-                generationConfig: {
-                  temperature: 0.2,
-                  response_mime_type: 'application/json'
-                }
-              })
-            }
-          );
+                ]
+              }
+            ],
+            response_format: { type: 'json_object' },
+            thinking: { type: 'disabled' },
+            max_tokens: 300,
+            temperature: 0.1
+          })
+        });
 
-          if (response.ok) {
-            responseData = await response.json();
-            break;
-          } else {
-            const errText = await response.text();
-            lastError = `Model ${model} returned ${response.status}: ${errText}`;
-            if (response.status === 429) {
-              await new Promise(r => setTimeout(r, 200));
-            }
-          }
-        } catch (err) {
-          lastError = err.message;
+        if (response.ok) {
+          responseData = await response.json();
+        } else {
+          const errText = await response.text();
+          lastError = `DeepSeek API returned ${response.status}: ${errText}`;
         }
+      } catch (err) {
+        lastError = err.message;
       }
     }
 
     if (responseData) {
-      const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const rawText = responseData.choices?.[0]?.message?.content || '';
       const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
       try {
@@ -111,7 +105,7 @@ Do not include markdown code block formatting (like \`\`\`json) or extra convers
       }
     }
 
-    // Fallback: If Gemini API is unconfigured or rate-limited, return high-accuracy default ingredients instantly
+    // Fallback: If DeepSeek API is unconfigured or rate-limited, return high-accuracy default ingredients instantly
     console.warn('Using Vision API fallback analysis due to:', lastError || 'Missing API Key');
     return res.status(200).json({
       ingredients: ['Fresh Milk', 'Eggs', 'Cheddar Cheese', 'Fresh Strawberries', 'Butter', 'Tomatoes', 'Mustard'],

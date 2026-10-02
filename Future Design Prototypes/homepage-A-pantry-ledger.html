@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PantryPal — Cook from what you already have</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;0,9..144,700;1,9..144,450;1,9..144,600&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E9E2CC;
+    --paper-deep:#DFD6B8;
+    --card:#FBF8EF;
+    --ink:#232A20;
+    --ink-soft:#5C6350;
+    --ink-faint:#8B8F7C;
+    --pine:#24352A;
+    --pine-light:#33472F;
+    --pine-lighter:#3F5439;
+    --gold:#C99A2E;
+    --gold-dark:#A87E22;
+    --rust:#A8432B;
+    --sage:#6B7F5E;
+    --line:#D3C9A6;
+    --line-strong:#B7AD8C;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:'Fraunces', serif; font-weight:600; margin:0; color:var(--ink); }
+  p{ margin:0; }
+  a{ color:inherit; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  img,svg{ display:block; }
+  :focus-visible{ outline:2px solid var(--pine); outline-offset:3px; }
+  .wrap{ max-width:1220px; margin:0 auto; padding:0 48px; }
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:20;
+    background:rgba(233,226,204,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 0;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Fraunces', serif; font-weight:600; font-size:18px; text-decoration:none; }
+  .nav-links{ display:flex; align-items:center; gap:34px; }
+  .nav-links a{ font-size:14.5px; color:var(--ink-soft); text-decoration:none; }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-cta{ display:flex; align-items:center; gap:20px; }
+  .link-quiet{ font-size:14.5px; color:var(--ink-soft); text-decoration:none; }
+  .btn-gold{
+    background:var(--gold); color:var(--pine); border:none;
+    font-family:'Work Sans', sans-serif; font-weight:600; font-size:14px;
+    border-radius:6px; padding:11px 19px; cursor:pointer; text-decoration:none;
+    display:inline-block;
+  }
+  .btn-gold:hover{ background:#DDAE3E; }
+  .btn-outline{
+    background:transparent; color:var(--pine); border:1px solid var(--line-strong);
+    font-family:'Work Sans', sans-serif; font-weight:600; font-size:14px;
+    border-radius:6px; padding:10px 18px; cursor:pointer; text-decoration:none; display:inline-block;
+  }
+  .nav-toggle{ display:none; }
+
+  /* ---------- Hero ---------- */
+  .hero{ padding:76px 0 90px; }
+  .hero-grid{ display:grid; grid-template-columns:1fr 460px; gap:60px; align-items:center; }
+  .hero-eyebrow{ display:flex; align-items:center; gap:8px; color:var(--sage); font-size:13.5px; font-weight:600; margin-bottom:18px; }
+  .hero-eyebrow svg{ width:15px; height:15px; }
+  .hero h1{ font-size:clamp(34px, 4.2vw, 52px); line-height:1.08; letter-spacing:-0.01em; margin-bottom:22px; max-width:15ch; }
+  .hero .sub{ font-size:17px; color:var(--ink-soft); line-height:1.6; max-width:46ch; margin-bottom:30px; }
+  .hero-ctas{ display:flex; align-items:center; gap:18px; margin-bottom:38px; }
+  .hero-ctas .btn-gold{ padding:14px 24px; font-size:15px; }
+  .hero-note{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ink-faint); }
+  .hero-note svg{ width:14px; height:14px; }
+
+  .hero-art{
+    position:relative;
+    background:linear-gradient(180deg, var(--pine-light), var(--pine));
+    border-radius:14px;
+    padding:26px;
+    min-height:420px;
+  }
+  .shelf-row{ position:relative; margin-bottom:34px; }
+  .shelf-row:last-child{ margin-bottom:0; }
+  .shelf-row .rule{ height:4px; border-radius:2px; background:linear-gradient(180deg, #4D6244, #2C3E27); margin-bottom:14px; }
+  .shelf-row .tags{ display:flex; gap:10px; }
+  .art-tag{
+    background:var(--card); border-radius:0 0 6px 6px; padding:9px 11px 8px;
+    font-size:11.5px; min-width:70px; position:relative;
+  }
+  .art-tag::before{ content:""; position:absolute; top:-6px; left:10px; width:7px; height:7px; border-radius:50%; background:var(--gold); border:2px solid var(--pine); }
+  .art-tag .n{ font-family:'Fraunces', serif; font-weight:500; font-size:12.5px; margin-bottom:3px; }
+  .art-tag .q{ font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--ink-soft); }
+  .hero-art-badge{
+    position:absolute; top:22px; right:22px;
+    background:rgba(0,0,0,0.25); color:#F0E9D4;
+    font-family:'JetBrains Mono', monospace; font-size:10.5px;
+    padding:5px 10px; border-radius:20px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .hero-art-badge .dot{ width:6px; height:6px; border-radius:50%; background:#7FB069; }
+
+  /* ---------- Logos / stats strip ---------- */
+  .stats-band{ background:var(--pine); padding:34px 0; }
+  .stats-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; text-align:center; }
+  .stat .num{ font-family:'JetBrains Mono', monospace; font-size:30px; color:var(--gold); font-weight:500; }
+  .stat .label{ font-size:13px; color:#B9C0AC; margin-top:6px; }
+
+  /* ---------- Features ---------- */
+  .features{ padding:100px 0; }
+  .section-lead{ max-width:640px; margin-bottom:56px; }
+  .section-lead .eyebrow{ color:var(--sage); font-size:13.5px; font-weight:600; margin-bottom:12px; }
+  .section-lead h2{ font-size:clamp(26px,3vw,36px); line-height:1.2; margin-bottom:14px; }
+  .section-lead p{ color:var(--ink-soft); font-size:16px; line-height:1.6; }
+
+  .feature-shelf{ display:flex; flex-direction:column; gap:0; }
+  .feature-row{
+    display:grid; grid-template-columns:260px 1fr; gap:40px;
+    padding:38px 0; border-top:1px solid var(--line);
+    align-items:center;
+  }
+  .feature-row:last-child{ border-bottom:1px solid var(--line); }
+  .feature-num{ font-family:'JetBrains Mono', monospace; color:var(--ink-faint); font-size:13px; }
+  .feature-icon{
+    width:46px; height:46px; border-radius:9px; background:var(--card); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; margin-bottom:16px;
+  }
+  .feature-icon svg{ width:22px; height:22px; color:var(--pine); }
+  .feature-title{ display:flex; flex-direction:column; gap:6px; }
+  .feature-title h3{ font-size:20px; }
+  .feature-body{ display:grid; grid-template-columns:1fr 1fr; gap:30px; align-items:center; }
+  .feature-body p{ color:var(--ink-soft); font-size:15px; line-height:1.65; max-width:44ch; }
+  .feature-visual{
+    background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px;
+    min-height:120px; display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ---------- How it works ---------- */
+  .how{ background:var(--paper-deep); padding:100px 0; }
+  .how-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:30px; margin-top:50px; }
+  .how-step{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:28px 26px; }
+  .how-step .step-mark{ font-family:'JetBrains Mono', monospace; color:var(--gold-dark); font-size:13px; margin-bottom:16px; }
+  .how-step h3{ font-size:18px; margin-bottom:10px; }
+  .how-step p{ color:var(--ink-soft); font-size:14.5px; line-height:1.6; }
+
+  /* ---------- CTA band ---------- */
+  .cta-band{ padding:110px 0; text-align:center; }
+  .cta-band h2{ font-size:clamp(28px,3.6vw,42px); max-width:16ch; margin:0 auto 18px; line-height:1.15; }
+  .cta-band p{ color:var(--ink-soft); font-size:16px; margin-bottom:32px; }
+  .cta-band .btn-gold{ padding:15px 28px; font-size:15.5px; }
+
+  /* ---------- Footer ---------- */
+  footer{ background:var(--pine); color:#C7CDB8; padding:60px 0 30px; }
+  .foot-grid{ display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:40px; margin-bottom:50px; }
+  .foot-brand .brand{ color:#F0E9D4; margin-bottom:12px; }
+  .foot-brand p{ font-size:13.5px; line-height:1.6; max-width:32ch; color:#9BA48C; }
+  .foot-col h4{ font-family:'Work Sans',sans-serif; font-size:13px; color:#EFE9D4; font-weight:600; margin-bottom:14px; }
+  .foot-col a{ display:block; font-size:13.5px; color:#9BA48C; text-decoration:none; margin-bottom:10px; }
+  .foot-col a:hover{ color:#EFE9D4; }
+  .foot-bottom{ border-top:1px solid rgba(255,255,255,0.1); padding-top:22px; display:flex; justify-content:space-between; font-size:12.5px; color:#7C8570; }
+
+  /* ================= TABLET ================= */
+  @media (max-width:1024px){
+    .wrap{ padding:0 32px; }
+    .nav-links{ display:none; }
+    .nav-toggle{ display:flex; width:36px; height:36px; align-items:center; justify-content:center; border-radius:7px; border:1px solid var(--line-strong); background:var(--card); }
+    .hero{ padding:52px 0 64px; }
+    .hero-grid{ grid-template-columns:1fr; gap:40px; }
+    .hero h1{ max-width:none; }
+    .hero .sub{ max-width:none; }
+    .hero-art{ min-height:300px; order:-1; }
+    .stats-grid{ gap:16px; }
+    .stat .num{ font-size:24px; }
+    .features{ padding:70px 0; }
+    .feature-row{ grid-template-columns:1fr; gap:18px; }
+    .feature-body{ grid-template-columns:1fr; gap:20px; }
+    .how{ padding:70px 0; }
+    .how-grid{ grid-template-columns:1fr 1fr; }
+    .cta-band{ padding:76px 0; }
+    .foot-grid{ grid-template-columns:1fr 1fr; gap:32px; }
+  }
+
+  /* ================= small mobile safety net ================= */
+  @media (max-width:620px){
+    .wrap{ padding:0 20px; }
+    .hero-ctas{ flex-direction:column; align-items:flex-start; }
+    .stats-grid{ grid-template-columns:1fr; text-align:left; }
+    .how-grid{ grid-template-columns:1fr; }
+    .foot-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#" class="brand">
+      <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path d="M7 2h10l1 4H6l1-4Z" stroke="#C99A2E" stroke-width="1.6" stroke-linejoin="round"/><rect x="5" y="6.5" width="14" height="15" rx="2" stroke="#24352A" stroke-width="1.6"/><path d="M5 11h14" stroke="#24352A" stroke-width="1.2" opacity=".5"/></svg>
+      PantryPal
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#">Pricing</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#" class="link-quiet">Log in</a>
+      <a href="#" class="btn-gold">Get started free</a>
+    </div>
+    <button class="nav-toggle" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M4 7h16M4 12h16M4 17h16" stroke="#24352A" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-eyebrow">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 8v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="currentColor"/><path d="M10.9 3.3 2.7 18a1.5 1.5 0 0 0 1.3 2.2h16a1.5 1.5 0 0 0 1.3-2.2L13.1 3.3a1.3 1.3 0 0 0-2.2 0Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        For kitchens that hate waste
+      </div>
+      <h1>Know what's in your kitchen before you open the fridge</h1>
+      <p class="sub">Scan your shelves, track what's about to turn, and get recipes built from what you already own — no more forgotten spinach at the back of the drawer.</p>
+      <div class="hero-ctas">
+        <a href="#" class="btn-gold">Start your pantry</a>
+        <a href="#" class="btn-outline">See how scanning works</a>
+      </div>
+      <div class="hero-note">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Free for your first 40 pantry items — no card required
+      </div>
+    </div>
+
+    <div class="hero-art">
+      <div class="hero-art-badge"><span class="dot"></span>scanning shelf 2 of 3</div>
+      <div class="shelf-row">
+        <div class="rule"></div>
+        <div class="tags">
+          <div class="art-tag"><div class="n">Basmati Rice</div><div class="q">1 kg</div></div>
+          <div class="art-tag"><div class="n">Oats</div><div class="q">900 g</div></div>
+          <div class="art-tag"><div class="n">Quinoa</div><div class="q">400 g</div></div>
+        </div>
+      </div>
+      <div class="shelf-row">
+        <div class="rule"></div>
+        <div class="tags">
+          <div class="art-tag"><div class="n">Spinach</div><div class="q">2d left</div></div>
+          <div class="art-tag"><div class="n">Onions</div><div class="q">×4</div></div>
+          <div class="art-tag"><div class="n">Garlic</div><div class="q">×2</div></div>
+        </div>
+      </div>
+      <div class="shelf-row">
+        <div class="rule"></div>
+        <div class="tags">
+          <div class="art-tag"><div class="n">Paneer</div><div class="q">250 g</div></div>
+          <div class="art-tag"><div class="n">Yogurt</div><div class="q">400 g</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-band">
+  <div class="wrap stats-grid">
+    <div class="stat"><div class="num">38%</div><div class="label">less food thrown out, on average</div></div>
+    <div class="stat"><div class="num">4.2s</div><div class="label">to scan and log a full shelf</div></div>
+    <div class="stat"><div class="num">12,400</div><div class="label">home kitchens tracked daily</div></div>
+  </div>
+</div>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="section-lead">
+      <div class="eyebrow">What PantryPal does</div>
+      <h2>Three tools, one running list of what's actually in your kitchen</h2>
+      <p>Everything updates the same pantry — scan once, and your recipes and calorie log both know exactly what you have.</p>
+    </div>
+
+    <div class="feature-shelf">
+      <div class="feature-row">
+        <div class="feature-title">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="7" width="17" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 7l1.4-2.2A1 1 0 0 1 10.2 4h3.6a1 1 0 0 1 .8.4L16 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.3" stroke="currentColor" stroke-width="1.7"/></svg>
+          </div>
+          <h3>Pantry Vision Scanner</h3>
+        </div>
+        <div class="feature-body">
+          <p>Point your camera at a shelf, bag or fridge door. PantryPal reads labels and quantities and adds them to your inventory — check the list, then confirm in one tap.</p>
+          <div class="feature-visual mono" style="font-size:13px; color:var(--ink-soft);">7 items detected &nbsp;·&nbsp; sorted into 3 shelves</div>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-title">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 4.5h9.5a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3V4.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 9h6M8 12.3h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Recipe Generator</h3>
+        </div>
+        <div class="feature-body">
+          <p>Get recipes built from what's actually in your kitchen, ranked by how well they match and how soon your ingredients need using up.</p>
+          <div class="feature-visual mono" style="font-size:13px; color:var(--ink-soft);">Spinach Paneer Curry &nbsp;·&nbsp; 8/9 ingredients on hand</div>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-title">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 8v4.3l2.6 1.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Calorie Tracker</h3>
+        </div>
+        <div class="feature-body">
+          <p>Every meal you cook from PantryPal logs itself, with calories and macros tracked against your daily goal — no manual entry after the fact.</p>
+          <div class="feature-visual mono" style="font-size:13px; color:var(--ink-soft);">1,540 / 2,100 kcal today &nbsp;·&nbsp; 73% of goal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="section-lead" style="margin-bottom:0;">
+      <div class="eyebrow">How it works</div>
+      <h2>From shelf to dinner in three steps</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="step-mark mono">01</div>
+        <h3>Scan your shelves</h3>
+        <p>Open the camera, sweep it across a shelf, fridge or grocery bag. Items are identified and quantities are read automatically.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-mark mono">02</div>
+        <h3>Review what's found</h3>
+        <p>Confirm the list, adjust a quantity if needed, and it's filed into the right shelf of your pantry — no typing required.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-mark mono">03</div>
+        <h3>Cook what it suggests</h3>
+        <p>Open Recipes to see what you can make right now, prioritized by what's closest to turning.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <h2>Stop guessing what's in the fridge</h2>
+    <p>Scan your first shelf in under a minute. No credit card, no setup.</p>
+    <a href="#" class="btn-gold">Start your pantry</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="brand">
+          <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M7 2h10l1 4H6l1-4Z" stroke="#C99A2E" stroke-width="1.6" stroke-linejoin="round"/><rect x="5" y="6.5" width="14" height="15" rx="2" stroke="#EDE7D2" stroke-width="1.6"/><path d="M5 11h14" stroke="#EDE7D2" stroke-width="1.2" opacity=".6"/></svg>
+          PantryPal
+        </a>
+        <p>An intelligent kitchen assistant that scans, tracks and cooks from what you already have.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <a href="#">Vision Scanner</a>
+        <a href="#">Recipe Generator</a>
+        <a href="#">Calorie Tracker</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+      </div>
+      <div class="foot-col">
+        <h4>Support</h4>
+        <a href="#">Help center</a>
+        <a href="#">Contact</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 PantryPal</span>
+      <span>Made for real kitchens</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

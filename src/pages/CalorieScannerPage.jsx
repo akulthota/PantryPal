@@ -41,20 +41,54 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
     setNutritionResult(null);
 
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(selectedFile);
-      reader.onloadend = async () => {
-        const base64Data = reader.result;
+      const compressImage = (file) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = URL.createObjectURL(file);
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_SIZE = 640;
+            let width = img.width;
+            let height = img.height;
 
-        try {
-          const res = await fetch('/api/analyze-calories', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              image: base64Data,
-              mimeType: selectedFile.type || 'image/jpeg'
-            })
-          });
+            if (width > height) {
+              if (width > MAX_SIZE) {
+                height *= MAX_SIZE / width;
+                width = MAX_SIZE;
+              }
+            } else {
+              if (height > MAX_SIZE) {
+                width *= MAX_SIZE / height;
+                height = MAX_SIZE;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
+            resolve(dataUrl);
+          };
+          img.onerror = () => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+          };
+        });
+      };
+
+      const base64Data = await compressImage(selectedFile);
+
+      try {
+        const res = await fetch('/api/analyze-calories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image: base64Data,
+            mimeType: 'image/jpeg'
+          })
+        });
 
           if (!res.ok) {
             const errJson = await res.json().catch(() => ({}));
@@ -86,8 +120,7 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
         } finally {
           setIsScanning(false);
         }
-      };
-    } catch (err) {
+      } catch (err) {
       setErrorMessage(err.message || 'Failed to analyze meal photo.');
       setIsScanning(false);
     }
@@ -122,14 +155,22 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
   return (
     <div style={{ maxWidth: '1100px', margin: '2rem auto', padding: '0 1.5rem 3rem 1.5rem' }}>
       
-      {/* Page Heading — Matching Pantry Scanner Style */}
-      <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem', background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)', border: '1px solid var(--coral-border)' }}>
+      {/* Page Heading — Vibrant Ledger Card with Neubrutalist Title */}
+      <div className="ledger-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--coral-primary)' }}>
-              Meal & Calorie <span style={{ color: 'var(--text-heading)' }}>Scanner</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
+              <span className="tag-badge" style={{ backgroundColor: 'var(--rust)', color: '#FFF' }}>
+                <Flame size={14} /> NUTRITION AUDIT
+              </span>
+              <span className="mono" style={{ fontSize: '0.8rem', color: 'var(--ink-faint)' }}>
+                SCAN.ESTIMATE.TRACK
+              </span>
+            </div>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', fontWeight: 800, color: 'var(--ink)', lineHeight: 1.15 }}>
+              Meal & Calorie <span className="highlight-gold">Scanner</span>
             </h1>
-            <p style={{ color: 'var(--text-body)', fontSize: '1rem', marginTop: '0.25rem' }}>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '1rem', marginTop: '0.4rem', maxWidth: '650px' }}>
               Snap a photo of your plate or meal to instantly estimate calories, macros, and nutrients.
             </p>
           </div>
@@ -137,25 +178,25 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
       </div>
 
       {errorMessage && (
-        <div style={{ backgroundColor: 'var(--coral-soft)', border: '1px solid var(--coral-border)', color: 'var(--coral-primary)', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <AlertCircle size={20} style={{ color: 'var(--coral-primary)' }} />
-          <span style={{ fontWeight: 600 }}>{errorMessage}</span>
+        <div style={{ backgroundColor: 'var(--rust-soft)', border: 'var(--border-thick)', color: 'var(--rust-dark)', padding: '1rem 1.25rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: 'var(--shadow-hard-sm)' }}>
+          <AlertCircle size={20} style={{ color: 'var(--rust)' }} />
+          <span style={{ fontWeight: 700 }}>{errorMessage}</span>
         </div>
       )}
 
-      {/* 1. Image Upload Dropzone Island — Matching Pantry Scanner */}
-      <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', textAlign: 'center' }}>
+      {/* 1. Image Upload Dropzone Island */}
+      <div className="ledger-card" style={{ padding: '2rem', marginBottom: '2rem', textAlign: 'center' }}>
         {!previewUrl ? (
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
             style={{
-              border: '2px dashed var(--coral-border)',
-              borderRadius: 'var(--radius-lg)',
+              border: '2.5px dashed var(--ink)',
+              borderRadius: 'var(--radius-md)',
               padding: '3.5rem 2rem',
-              backgroundColor: '#FFF9F9',
+              backgroundColor: 'var(--paper)',
               cursor: 'pointer',
-              transition: 'all 0.25s var(--ease-spring)'
+              transition: 'all 0.2s ease'
             }}
             onClick={() => document.getElementById('meal-photo-input').click()}
           >
@@ -166,16 +207,16 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
               style={{ display: 'none' }}
               onChange={(e) => e.target.files?.[0] && handleFileChange(e.target.files[0])}
             />
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#FFFFFF', color: 'var(--coral-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', border: '1px solid var(--coral-border)', boxShadow: '0 4px 14px rgba(255, 82, 82, 0.15)' }}>
-              <Camera size={32} />
+            <div style={{ width: '68px', height: '68px', borderRadius: '50%', backgroundColor: 'var(--gold)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', border: 'var(--border-thick)', boxShadow: 'var(--shadow-hard)' }}>
+              <Camera size={34} />
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-heading)' }}>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--ink)' }}>
               Drag & Drop your meal photo here
             </h3>
-            <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.25rem' }}>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
               Works with home-cooked meals, restaurant plates, snacks, and drinks
             </p>
-            <button type="button" className="btn btn-primary">
+            <button type="button" className="btn btn-primary btn-pill">
               <Upload size={18} /> Select Photo
             </button>
           </div>
@@ -185,7 +226,7 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
               <img
                 src={previewUrl}
                 alt="Meal preview"
-                style={{ maxHeight: '350px', borderRadius: 'var(--radius-md)', objectFit: 'contain', boxShadow: 'var(--shadow-card)', border: '1px solid var(--border-subtle)' }}
+                style={{ maxHeight: '350px', borderRadius: 'var(--radius-md)', objectFit: 'contain', boxShadow: 'var(--shadow-hard)', border: 'var(--border-thick)' }}
               />
 
               {/* Scan Line Animation */}
@@ -200,15 +241,15 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
                     borderRadius: 'var(--radius-md)',
                     overflow: 'hidden',
                     pointerEvents: 'none',
-                    background: 'rgba(255, 82, 82, 0.08)'
+                    background: 'rgba(245, 158, 11, 0.12)'
                   }}
                 >
                   <div
                     style={{
                       width: '100%',
-                      height: '4px',
-                      backgroundColor: 'var(--coral-primary)',
-                      boxShadow: '0 0 15px var(--coral-primary)',
+                      height: '5px',
+                      backgroundColor: 'var(--gold)',
+                      boxShadow: '0 0 15px var(--gold)',
                       animation: 'scanBeam 1.8s ease-in-out infinite alternate'
                     }}
                   />
@@ -221,17 +262,17 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
                   position: 'absolute',
                   top: '10px',
                   right: '10px',
-                  backgroundColor: '#FFFFFF',
-                  color: 'var(--text-heading)',
-                  border: '1px solid var(--border-subtle)',
+                  backgroundColor: 'var(--card)',
+                  color: 'var(--ink)',
+                  border: 'var(--border-thick)',
                   borderRadius: '50%',
-                  width: '36px',
-                  height: '36px',
+                  width: '38px',
+                  height: '38px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  boxShadow: 'var(--shadow-sm)'
+                  boxShadow: 'var(--shadow-hard-sm)'
                 }}
               >
                 <X size={18} />
@@ -242,12 +283,11 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
               <button
                 onClick={analyzeMealPhoto}
                 disabled={isScanning}
-                className="btn btn-primary"
-                style={{ padding: '0.85rem 2rem', fontSize: '1.05rem' }}
+                className="btn btn-gold btn-lg"
               >
                 {isScanning ? (
                   <>
-                    <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid white', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
+                    <div className="animate-spin" style={{ width: '20px', height: '20px', border: '3px solid var(--ink)', borderTopColor: 'transparent', borderRadius: '50%' }}></div>
                     <span>Scanning Meal Calories...</span>
                   </>
                 ) : (
@@ -257,7 +297,7 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
                 )}
               </button>
 
-              <button onClick={clearImage} className="btn btn-outline">
+              <button onClick={clearImage} className="btn btn-outline btn-lg">
                 Clear Photo
               </button>
             </div>
@@ -265,17 +305,17 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
         )}
       </div>
 
-      {/* 2. Results Dashboard Card — Matching Pantry Scanner Light Style */}
+      {/* 2. Results Dashboard Card — Editorial Ledger Card (NOT a sticky note for the recipe/dish card) */}
       {nutritionResult && (
-        <div className="glass-card animate-scale-in" style={{ padding: '2.5rem', border: '1px solid var(--coral-border)', backgroundColor: '#FFFFFF' }}>
+        <div className="ledger-card animate-scale-in" style={{ padding: '2.5rem' }}>
           
           {/* Header & Actions */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem', borderBottom: 'var(--border-thick)', paddingBottom: '1.25rem' }}>
             <div>
-              <span style={{ backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid var(--coral-border)', padding: '0.3rem 0.85rem', borderRadius: '12px', fontSize: '0.875rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '0.5rem' }}>
-                <Sparkles size={14} /> Identified Dish
+              <span className="tag-badge" style={{ backgroundColor: 'var(--gold)', color: 'var(--ink)', marginBottom: '0.5rem' }}>
+                <Sparkles size={14} /> IDENTIFIED DISH
               </span>
-              <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-heading)', marginTop: '0.5rem' }}>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: 800, color: 'var(--ink)', marginTop: '0.4rem' }}>
                 {nutritionResult.dish_name}
               </h2>
             </div>
@@ -283,70 +323,76 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
             <button
               onClick={logMealToTracker}
               disabled={isLogging}
-              className="btn btn-secondary"
-              style={{ padding: '0.75rem 1.5rem' }}
+              className="btn btn-primary"
             >
               <Plus size={18} /> {isLogging ? 'Logging...' : 'Log to Daily Tracker'}
             </button>
           </div>
 
-          {/* Nutrition Info Bar — Matching Pantry Scanner Style */}
-          <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1.25rem 1.5rem', borderRadius: '14px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem', textAlign: 'center', marginBottom: '2rem' }}>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--text-heading)' }}>{nutritionResult.total_calories}</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Calories</div>
+          {/* Nutrition Info Bar — Neubrutalist Ledger Metric Tiles */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+            <div style={{ padding: '1rem', textAlign: 'center', backgroundColor: 'var(--card-warm)', border: 'var(--border-thick)', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-hard-sm)' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '1.4rem', color: 'var(--ink)' }}>{nutritionResult.total_calories}</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--ink-faint)', fontWeight: 700, textTransform: 'uppercase' }}>Calories</div>
             </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--coral-primary)' }}>{nutritionResult.protein_g}g</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Protein</div>
+            <div style={{ padding: '1rem', textAlign: 'center', backgroundColor: 'var(--sage-soft)', border: 'var(--border-thick)', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-hard-sm)' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '1.4rem', color: 'var(--pine)' }}>{nutritionResult.protein_g}g</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--pine)', fontWeight: 700, textTransform: 'uppercase' }}>Protein</div>
             </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--honey-amber)' }}>{nutritionResult.carbs_g}g</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Carbs</div>
+            <div style={{ padding: '1rem', textAlign: 'center', backgroundColor: 'var(--gold-soft)', border: 'var(--border-thick)', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-hard-sm)' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '1.4rem', color: 'var(--gold-dark)' }}>{nutritionResult.carbs_g}g</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--gold-dark)', fontWeight: 700, textTransform: 'uppercase' }}>Carbs</div>
             </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--sage-green)' }}>{nutritionResult.fat_g}g</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Fat</div>
+            <div style={{ padding: '1rem', textAlign: 'center', backgroundColor: 'var(--rust-soft)', border: 'var(--border-thick)', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-hard-sm)' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '1.4rem', color: 'var(--rust-dark)' }}>{nutritionResult.fat_g}g</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--rust-dark)', fontWeight: 700, textTransform: 'uppercase' }}>Fat</div>
             </div>
             {nutritionResult.fiber_g != null && (
-              <div>
-                <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--text-heading)' }}>{nutritionResult.fiber_g}g</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Fiber</div>
+              <div style={{ padding: '1rem', textAlign: 'center', backgroundColor: 'var(--pine-soft)', border: 'var(--border-thick)', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-hard-sm)' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '1.4rem', color: 'var(--pine)' }}>{nutritionResult.fiber_g}g</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--pine)', fontWeight: 700, textTransform: 'uppercase' }}>Fiber</div>
               </div>
             )}
           </div>
 
-          {/* Health Summary */}
+          {/* Health Summary Note */}
           {nutritionResult.summary && (
-            <div style={{ backgroundColor: 'var(--sage-soft)', padding: '1.25rem 1.5rem', borderRadius: '14px', marginBottom: '1.75rem', border: '1px solid var(--sage-border)' }}>
-              <div style={{ fontWeight: 700, color: 'var(--text-heading)', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <HeartPulse size={18} style={{ color: 'var(--sage-green)' }} /> Health Summary (Score: {nutritionResult.health_score || 9}/10)
+            <div style={{ backgroundColor: 'var(--sage-soft)', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-sm)', marginBottom: '2rem', border: 'var(--border-thick)', boxShadow: 'var(--shadow-hard-sm)' }}>
+              <div style={{ fontWeight: 800, color: 'var(--pine)', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <HeartPulse size={18} style={{ color: 'var(--pine)' }} /> Health Summary (Score: {nutritionResult.health_score || 9}/10)
               </div>
-              <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', margin: 0 }}>
+              <p style={{ color: 'var(--ink)', fontSize: '0.95rem', margin: 0, fontWeight: 500 }}>
                 {nutritionResult.summary}
               </p>
             </div>
           )}
 
-          {/* Components List */}
+          {/* Components List — STRICT PINNED STICKY NOTE STYLE for item detection & listing */}
           {nutritionResult.components && nutritionResult.components.length > 0 && (
-            <div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--honey-amber)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <PieChart size={18} /> Meal Components Breakdown
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {nutritionResult.components.map((comp, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1.1rem', backgroundColor: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
-                    <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-heading)' }}>
-                      {comp.item}
-                    </div>
-                    <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', color: 'var(--text-body)' }}>
-                      <span style={{ fontWeight: 700, color: 'var(--coral-primary)' }}>{comp.calories} kcal</span>
-                      {comp.protein_g > 0 && <span>{comp.protein_g}g protein</span>}
-                    </div>
-                  </div>
-                ))}
+            <div className="sticky-note sticky-note-parchment" style={{ marginTop: '2rem' }}>
+              <div className="sticky-pin sticky-pin-gold"></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '2px solid var(--ink)', paddingBottom: '0.5rem' }}>
+                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <PieChart size={18} style={{ color: 'var(--rust)' }} /> Detected Meal Components
+                </h3>
+                <span className="mono" style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--ink-faint)' }}>
+                  {nutritionResult.components.length} ITEMS DETECTED
+                </span>
               </div>
+              <ul className="sticky-list">
+                {nutritionResult.components.map((comp, idx) => (
+                  <li key={idx} className="sticky-list-item">
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 700, color: 'var(--ink)' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--rust)', border: '1.5px solid var(--ink)', display: 'inline-block' }}></span>
+                      {comp.item}
+                    </span>
+                    <span style={{ display: 'flex', gap: '1rem', fontFamily: 'var(--font-mono)', fontSize: '0.875rem' }}>
+                      <span style={{ fontWeight: 800, color: 'var(--rust)' }}>{comp.calories} kcal</span>
+                      {comp.protein_g > 0 && <span style={{ fontWeight: 700, color: 'var(--pine)' }}>{comp.protein_g}g protein</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 

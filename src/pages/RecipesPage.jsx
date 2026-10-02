@@ -4,8 +4,8 @@ import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
 import { searchRecipes, getRecipeDetails, getRandomRecipes } from '../lib/spoonacular';
 
-export default function RecipesPage({ showToast }) {
-  const [activeTab, setActiveTab] = useState('browse'); // 'browse' | 'saved'
+export default function RecipesPage({ showToast, initialTab = 'saved' }) {
+  const [activeTab, setActiveTab] = useState(initialTab); // 'saved' | 'browse'
 
   // Tab 1: Browse Recipes State
   const [browseRecipesList, setBrowseRecipesList] = useState([]);
@@ -254,62 +254,39 @@ export default function RecipesPage({ showToast }) {
   });
 
   return (
-    <div style={{ maxWidth: '1250px', margin: '2rem auto', padding: '0 1.5rem 4rem 1.5rem' }}>
+    <div style={{ maxWidth: '1280px', margin: '2rem auto', padding: '0 1.5rem 4rem 1.5rem' }}>
       
       {/* Top Banner Navigation & Tab Switcher */}
-      <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="ledger-card animate-fade-in" style={{ padding: '2.25rem 2rem', marginBottom: '2.5rem', backgroundColor: 'var(--card)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
           <div>
-            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '0.25rem' }}>
-              Culinary <span className="text-coral">Recipe Explorer</span>
+            <div className="mono" style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--pine)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.35rem' }}>
+              Kitchen Cookery Ledger
+            </div>
+            <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 800, color: 'var(--ink)' }}>
+              Culinary <span className="highlight-gold">Recipe Collection</span>
             </h1>
-            <p style={{ color: 'var(--text-body)', fontSize: '0.975rem' }}>
-              Browse 5,000+ real cookbook recipes or view your personal saved recipes collection.
+            <p style={{ color: 'var(--ink-soft)', fontSize: '1rem', marginTop: '0.35rem' }}>
+              Browse 5,000+ real cookbook recipes or view your personal saved pantry dishes.
             </p>
           </div>
 
           {/* Tab Switcher Pills */}
-          <div style={{ display: 'flex', backgroundColor: '#F1F5F9', padding: '4px', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'flex', backgroundColor: 'var(--paper-deep)', padding: '4px', borderRadius: 'var(--radius-sm)', border: '2px solid var(--ink)' }}>
             <button
-              onClick={() => setActiveTab('browse')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '0.65rem 1.35rem',
-                borderRadius: '10px',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '0.925rem',
-                cursor: 'pointer',
-                backgroundColor: activeTab === 'browse' ? 'var(--coral-primary)' : 'transparent',
-                color: activeTab === 'browse' ? '#FFFFFF' : '#475569',
-                boxShadow: activeTab === 'browse' ? 'var(--shadow-button)' : 'none',
-                transition: 'all 0.2s var(--ease-spring)'
-              }}
+              onClick={() => setActiveTab('saved')}
+              className={`btn btn-sm ${activeTab === 'saved' ? 'btn-gold' : 'btn-outline'}`}
+              style={{ border: activeTab === 'saved' ? '2px solid var(--ink)' : '2px solid transparent', boxShadow: activeTab === 'saved' ? '2px 2px 0px var(--ink)' : 'none' }}
             >
-              <Compass size={18} /> Browse Recipes
+              <Bookmark size={17} /> My Saved Recipes ({savedRecipes.length})
             </button>
 
             <button
-              onClick={() => setActiveTab('saved')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '0.65rem 1.35rem',
-                borderRadius: '10px',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '0.925rem',
-                cursor: 'pointer',
-                backgroundColor: activeTab === 'saved' ? 'var(--coral-primary)' : 'transparent',
-                color: activeTab === 'saved' ? '#FFFFFF' : '#475569',
-                boxShadow: activeTab === 'saved' ? 'var(--shadow-button)' : 'none',
-                transition: 'all 0.2s var(--ease-spring)'
-              }}
+              onClick={() => setActiveTab('browse')}
+              className={`btn btn-sm ${activeTab === 'browse' ? 'btn-gold' : 'btn-outline'}`}
+              style={{ border: activeTab === 'browse' ? '2px solid var(--ink)' : '2px solid transparent', boxShadow: activeTab === 'browse' ? '2px 2px 0px var(--ink)' : 'none' }}
             >
-              <Bookmark size={18} /> My Saved Recipes ({savedRecipes.length})
+              <Compass size={17} /> Explore Online Recipes
             </button>
           </div>
         </div>
@@ -318,28 +295,32 @@ export default function RecipesPage({ showToast }) {
       {/* TAB 1: BROWSE REAL SPOONACULAR RECIPES */}
       {activeTab === 'browse' && (
         <div>
-          {/* Search Bar & Cuisine Pills */}
-          <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '2rem', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
+          {/* Pinned Search & Filter Memo (Sticky Note Style for Listing/Search) */}
+          <div className="sticky-note sticky-note-parchment" style={{ marginBottom: '2.5rem' }}>
+            <div className="sticky-pin sticky-pin-gold"></div>
+
             <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
               <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
-                <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-faint)' }} />
                 <input
                   type="text"
                   className="input-control"
-                  style={{ paddingLeft: '2.5rem' }}
+                  style={{ paddingLeft: '2.6rem', backgroundColor: '#FFFFFF' }}
                   placeholder="Search 5,000+ recipes by dish name, ingredient, or keyword (e.g. Pasta, Salmon, Curry)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <button type="submit" className="btn btn-primary" style={{ padding: '0.65rem 1.75rem' }}>
-                <Search size={18} /> Search
+              <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 1.75rem' }}>
+                <Search size={18} /> Search Recipes
               </button>
             </form>
 
-            {/* Cuisine Filter Pills */}
+            {/* Cuisine Filter Tags */}
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-heading)', marginRight: '0.25rem' }}>Cuisines:</span>
+              <span className="mono" style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--ink)', marginRight: '0.5rem', textTransform: 'uppercase' }}>
+                Filter Cuisines:
+              </span>
               {CUISINES.map(c => {
                 const selected = selectedCuisine === c;
                 return (
@@ -348,15 +329,16 @@ export default function RecipesPage({ showToast }) {
                     type="button"
                     onClick={() => handleCuisineSelect(c)}
                     style={{
-                      padding: '0.45rem 1rem',
-                      borderRadius: '20px',
-                      border: selected ? '2px solid var(--coral-primary)' : '1px solid #CBD5E1',
-                      fontSize: '0.85rem',
-                      fontWeight: selected ? 700 : 500,
+                      padding: '0.35rem 0.85rem',
+                      borderRadius: '6px',
+                      border: '1.5px solid var(--ink)',
+                      fontSize: '0.825rem',
+                      fontWeight: selected ? 800 : 600,
                       cursor: 'pointer',
-                      backgroundColor: selected ? 'var(--coral-soft)' : '#F8FAFC',
-                      color: selected ? 'var(--coral-primary)' : '#334155',
-                      transition: 'all 0.2s var(--ease-spring)'
+                      backgroundColor: selected ? 'var(--gold)' : 'var(--card)',
+                      color: 'var(--ink)',
+                      boxShadow: selected ? '2px 2px 0px var(--ink)' : 'none',
+                      transition: 'all 0.1s ease'
                     }}
                   >
                     {c}
@@ -366,50 +348,68 @@ export default function RecipesPage({ showToast }) {
             </div>
           </div>
 
-          {/* Recipes Grid */}
+          {/* Recipes Grid (Editorial Ledger Cards — NOT Sticky Notes) */}
           {isBrowseLoading && browseRecipesList.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-              <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid #E2E8F0', borderTopColor: 'var(--coral-primary)', borderRadius: '50%', margin: '0 auto 1rem' }}></div>
-              <p style={{ color: 'var(--text-body)', fontWeight: 600 }}>Fetching real recipes from culinary database...</p>
+              <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid var(--pine)', borderTopColor: 'transparent', borderRadius: '50%', margin: '0 auto 1rem' }}></div>
+              <p style={{ color: 'var(--ink)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>Fetching recipes from cookbook archive...</p>
             </div>
           ) : browseRecipesList.length > 0 ? (
             <div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.75rem', marginBottom: '2.5rem' }}>
                 {browseRecipesList.map((recipe) => {
                   const readyIn = recipe.readyInMinutes || 30;
                   const difficulty = readyIn <= 20 ? 'Easy' : readyIn <= 45 ? 'Intermediate' : 'Advanced';
                   return (
                     <div
                       key={recipe.id}
-                      className="glass-card feature-card-hover"
-                      style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}
+                      className="ledger-card"
+                      style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', backgroundColor: 'var(--card)' }}
                     >
-                      {/* Image Thumbnail */}
-                      <div style={{ position: 'relative', height: '190px', width: '100%', overflow: 'hidden', backgroundColor: '#F1F5F9' }}>
+                      {/* Image Thumbnail with thick border */}
+                      <div style={{ position: 'relative', height: '200px', width: '100%', overflow: 'hidden', backgroundColor: 'var(--paper-deep)', borderBottom: '2px solid var(--ink)' }}>
                         <img
-                          src={recipe.image || 'https://spoonacular.com/recipeImages/716429-556x370.jpg'}
+                          src={recipe.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'}
                           alt={recipe.title}
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&q=80'; }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&q=80';
+                          }}
                         />
-                        <div style={{ position: 'absolute', top: '12px', right: '12px', backgroundColor: 'rgba(17, 24, 39, 0.75)', backdropFilter: 'blur(4px)', color: '#FFFFFF', padding: '0.2rem 0.65rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
+                        <div
+                          className="mono"
+                          style={{
+                            position: 'absolute',
+                            top: '12px',
+                            right: '12px',
+                            backgroundColor: 'var(--card)',
+                            color: 'var(--ink)',
+                            border: '1.5px solid var(--ink)',
+                            boxShadow: '2px 2px 0px var(--ink)',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            fontSize: '0.75rem',
+                            fontWeight: 800
+                          }}
+                        >
                           {difficulty}
                         </div>
                       </div>
 
                       {/* Content */}
-                      <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                         <div>
-                          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '0.5rem', lineHeight: 1.35 }}>
+                          <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--ink)', marginBottom: '0.75rem', lineHeight: 1.3, fontFamily: 'var(--font-serif)' }}>
                             {recipe.title}
                           </h3>
 
-                          <div style={{ display: 'flex', gap: '0.85rem', color: 'var(--text-body)', fontSize: '0.85rem', marginBottom: '0.85rem', fontWeight: 600 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <Clock size={14} style={{ color: 'var(--coral-primary)' }} /> {readyIn} mins
+                          <div style={{ display: 'flex', gap: '0.85rem', color: 'var(--ink-soft)', fontSize: '0.85rem', marginBottom: '1.25rem', fontWeight: 600 }}>
+                            <div className="tag-badge">
+                              <Clock size={14} color="var(--rust)" /> {readyIn} mins
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <Users size={14} style={{ color: 'var(--coral-primary)' }} /> {recipe.servings || 2} servings
+                            <div className="tag-badge">
+                              <Users size={14} color="var(--sage)" /> {recipe.servings || 2} servings
                             </div>
                           </div>
                         </div>
@@ -417,7 +417,7 @@ export default function RecipesPage({ showToast }) {
                         <button
                           onClick={() => openRecipeDetailModal(recipe)}
                           className="btn btn-outline"
-                          style={{ width: '100%', justifyContent: 'center', marginTop: '0.75rem' }}
+                          style={{ width: '100%', justifyContent: 'center' }}
                         >
                           <BookOpen size={16} /> View Recipe Details
                         </button>
@@ -429,25 +429,24 @@ export default function RecipesPage({ showToast }) {
 
               {/* Load More Button */}
               {hasMore && (
-                <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                   <button
                     onClick={handleLoadMore}
                     disabled={isBrowseLoading}
-                    className="btn btn-outline"
-                    style={{ padding: '0.85rem 2.5rem', fontSize: '1rem', fontWeight: 700 }}
+                    className="btn btn-gold btn-lg"
                   >
-                    {isBrowseLoading ? 'Loading more recipes...' : 'Load More Recipes'}
+                    {isBrowseLoading ? 'Loading more recipes...' : 'Load More Recipes ↓'}
                   </button>
                 </div>
               )}
             </div>
           ) : (
-            <div className="glass-card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: '#FFFFFF' }}>
-              <ChefHat size={48} style={{ color: '#94A3B8', margin: '0 auto 1rem' }} />
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: '0.5rem' }}>
+            <div className="ledger-card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: 'var(--card)' }}>
+              <ChefHat size={48} style={{ color: 'var(--ink-faint)', margin: '0 auto 1rem' }} />
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ink)', marginBottom: '0.5rem' }}>
                 No recipes found
               </h3>
-              <p style={{ color: 'var(--text-body)', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
+              <p style={{ color: 'var(--ink-soft)', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
                 Try searching for a different keyword or select another cuisine filter.
               </p>
               <button onClick={fetchInitialBrowseRecipes} className="btn btn-primary">
@@ -461,36 +460,45 @@ export default function RecipesPage({ showToast }) {
       {/* TAB 2: MY SAVED RECIPES */}
       {activeTab === 'saved' && (
         <div>
-          <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '2rem', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}>
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
-                <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          {/* Search Saved Recipes Bar (Pinned Search Memo) */}
+          <div className="sticky-note sticky-note-parchment" style={{ marginBottom: '2.5rem' }}>
+            <div className="sticky-pin sticky-pin-gold"></div>
+
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ position: 'relative', flex: 1, minWidth: '260px' }}>
+                <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-faint)' }} />
                 <input
                   type="text"
                   className="input-control"
-                  style={{ paddingLeft: '2.5rem' }}
-                  placeholder="Search saved recipes by name, cuisine, or ingredient..."
+                  style={{ paddingLeft: '2.6rem', backgroundColor: '#FFFFFF' }}
+                  placeholder="Filter saved recipes by dish name, cuisine, or ingredient..."
                   value={savedSearchTerm}
                   onChange={(e) => setSavedSearchTerm(e.target.value)}
                 />
               </div>
 
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                <span className="mono" style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--ink)', textTransform: 'uppercase' }}>
+                  Cuisine:
+                </span>
                 {savedCuisinesList.map(c => {
                   const selected = savedSelectedCuisine === c;
                   return (
                     <button
                       key={c}
+                      type="button"
                       onClick={() => setSavedSelectedCuisine(c)}
                       style={{
-                        padding: '0.45rem 1rem',
-                        borderRadius: '20px',
-                        border: selected ? '2px solid var(--coral-primary)' : '1px solid #CBD5E1',
-                        fontSize: '0.85rem',
-                        fontWeight: selected ? 700 : 500,
+                        padding: '0.35rem 0.85rem',
+                        borderRadius: '6px',
+                        border: '1.5px solid var(--ink)',
+                        fontSize: '0.825rem',
+                        fontWeight: selected ? 800 : 600,
                         cursor: 'pointer',
-                        backgroundColor: selected ? 'var(--coral-soft)' : '#F8FAFC',
-                        color: selected ? 'var(--coral-primary)' : '#334155'
+                        backgroundColor: selected ? 'var(--gold)' : 'var(--card)',
+                        color: 'var(--ink)',
+                        boxShadow: selected ? '2px 2px 0px var(--ink)' : 'none',
+                        transition: 'all 0.1s ease'
                       }}
                     >
                       {c}
@@ -503,83 +511,120 @@ export default function RecipesPage({ showToast }) {
 
           {isSavedLoading ? (
             <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-              <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid #E2E8F0', borderTopColor: 'var(--coral-primary)', borderRadius: '50%', margin: '0 auto 1rem' }}></div>
-              <p style={{ color: 'var(--text-body)' }}>Loading saved recipes...</p>
+              <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid var(--pine)', borderTopColor: 'transparent', borderRadius: '50%', margin: '0 auto 1rem' }}></div>
+              <p style={{ color: 'var(--ink)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>Loading your saved recipes...</p>
             </div>
           ) : filteredSavedRecipes.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.75rem' }}>
               {filteredSavedRecipes.map((recipe) => (
                 <div
                   key={recipe.id}
-                  className="glass-card feature-card-hover"
-                  style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}
+                  className="ledger-card"
+                  style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', backgroundColor: 'var(--card)' }}
                 >
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                      <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)', lineHeight: 1.3 }}>
-                        {recipe.title}
-                      </h3>
-                      <button
-                        onClick={() => setDeletingRecipeId(recipe.id)}
-                        style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '4px' }}
-                        title="Delete recipe"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-
-                    {recipe.cuisine_type && (
-                      <span style={{ display: 'inline-block', backgroundColor: 'var(--coral-soft)', color: 'var(--coral-primary)', border: '1px solid var(--coral-border)', padding: '0.2rem 0.65rem', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 700, marginBottom: '1rem' }}>
-                        {recipe.cuisine_type}
-                      </span>
-                    )}
-
-                    <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-body)', fontSize: '0.875rem', marginBottom: '1rem', fontWeight: 600 }}>
-                      {recipe.prep_time && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Clock size={14} style={{ color: 'var(--coral-primary)' }} /> {recipe.prep_time}
+                  {/* Optional Image Thumbnail Header */}
+                  {recipe.image && (
+                    <div style={{ position: 'relative', height: '180px', width: '100%', overflow: 'hidden', backgroundColor: 'var(--paper-deep)', borderBottom: '2px solid var(--ink)' }}>
+                      <img
+                        src={recipe.image}
+                        alt={recipe.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+                        }}
+                      />
+                      {recipe.cuisine_type && (
+                        <div
+                          className="mono"
+                          style={{
+                            position: 'absolute',
+                            top: '12px',
+                            right: '12px',
+                            backgroundColor: 'var(--card)',
+                            color: 'var(--ink)',
+                            border: '1.5px solid var(--ink)',
+                            boxShadow: '2px 2px 0px var(--ink)',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            fontSize: '0.75rem',
+                            fontWeight: 800
+                          }}
+                        >
+                          {recipe.cuisine_type}
                         </div>
                       )}
-                      {recipe.servings && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Users size={14} style={{ color: 'var(--coral-primary)' }} /> {recipe.servings} servings
-                        </div>
+                    </div>
+                  )}
+
+                  <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                        <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--ink)', lineHeight: 1.3, fontFamily: 'var(--font-serif)' }}>
+                          {recipe.title}
+                        </h3>
+                        <button
+                          onClick={() => setDeletingRecipeId(recipe.id)}
+                          style={{ background: 'none', border: 'none', color: 'var(--rust)', cursor: 'pointer', padding: '4px' }}
+                          title="Delete recipe"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+
+                      {!recipe.image && recipe.cuisine_type && (
+                        <span className="tag-badge" style={{ backgroundColor: 'var(--gold-soft)', color: 'var(--ink)', marginBottom: '1rem', display: 'inline-block' }}>
+                          {recipe.cuisine_type} Style
+                        </span>
                       )}
+
+                      <div style={{ display: 'flex', gap: '0.85rem', color: 'var(--ink-soft)', fontSize: '0.85rem', marginBottom: '1rem', fontWeight: 600 }}>
+                        {recipe.prep_time && (
+                          <div className="tag-badge">
+                            <Clock size={14} color="var(--rust)" /> {recipe.prep_time}
+                          </div>
+                        )}
+                        {recipe.servings && (
+                          <div className="tag-badge">
+                            <Users size={14} color="var(--sage)" /> {recipe.servings} Servings
+                          </div>
+                        )}
+                      </div>
+
+                      <p style={{ color: 'var(--ink-soft)', fontSize: '0.9rem', marginBottom: '1.25rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        <strong style={{ color: 'var(--ink)' }}>Ingredients:</strong> {Array.isArray(recipe.ingredients) ? recipe.ingredients.join(', ') : ''}
+                      </p>
                     </div>
 
-                    <p style={{ color: 'var(--text-body)', fontSize: '0.9rem', marginBottom: '1.25rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      <strong style={{ color: 'var(--text-heading)' }}>Ingredients:</strong> {Array.isArray(recipe.ingredients) ? recipe.ingredients.join(', ') : ''}
-                    </p>
+                    <button
+                      onClick={() => {
+                        setActiveDetailRecipe(recipe);
+                        setCookedModalLogged(false);
+                      }}
+                      className="btn btn-outline"
+                      style={{ width: '100%', justifyContent: 'center' }}
+                    >
+                      <BookOpen size={16} /> View Recipe Details
+                    </button>
                   </div>
-
-                  <button
-                    onClick={() => {
-                      setActiveDetailRecipe(recipe);
-                      setCookedModalLogged(false);
-                    }}
-                    className="btn btn-outline"
-                    style={{ width: '100%', justifyContent: 'center' }}
-                  >
-                    <BookOpen size={16} /> View Recipe Details
-                  </button>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="glass-card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: '#FFFFFF' }}>
-              <Utensils size={48} style={{ color: '#94A3B8', margin: '0 auto 1rem' }} />
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-heading)' }}>
+            <div className="ledger-card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: 'var(--card)' }}>
+              <Utensils size={48} style={{ color: 'var(--ink-faint)', margin: '0 auto 1rem' }} />
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--ink)' }}>
                 No saved recipes found
               </h3>
-              <p style={{ color: 'var(--text-body)', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
-                Browse real recipes or scan your pantry to save recipes to your personal collection!
+              <p style={{ color: 'var(--ink-soft)', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
+                Browse recipes or scan your pantry to save dishes to your personal kitchen collection!
               </p>
             </div>
           )}
         </div>
       )}
 
-      {/* RECIPE DETAIL MODAL VIEW */}
+      {/* RECIPE DETAIL MODAL VIEW (EDITORIAL LEDGER STYLE — NOT A STICKY NOTE) */}
       {activeDetailRecipe && (
         <div
           style={{
@@ -588,8 +633,8 @@ export default function RecipesPage({ showToast }) {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(17, 24, 39, 0.65)',
-            backdropFilter: 'blur(12px)',
+            backgroundColor: 'rgba(20, 32, 21, 0.7)',
+            backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -599,17 +644,18 @@ export default function RecipesPage({ showToast }) {
           onClick={() => setActiveDetailRecipe(null)}
         >
           <div
-            className="glass-card animate-scale-in"
+            className="animate-scale-in"
             style={{
-              maxWidth: '750px',
+              maxWidth: '780px',
               width: '100%',
               maxHeight: '90vh',
               overflowY: 'auto',
               padding: '2.5rem',
               position: 'relative',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)'
+              backgroundColor: 'var(--card)',
+              border: 'var(--border-thicker)',
+              boxShadow: 'var(--shadow-hard-xl)',
+              borderRadius: 'var(--radius-md)'
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -620,16 +666,17 @@ export default function RecipesPage({ showToast }) {
                 position: 'absolute',
                 top: '20px',
                 right: '20px',
-                backgroundColor: '#F1F5F9',
-                border: '1px solid #E2E8F0',
+                backgroundColor: 'var(--paper)',
+                border: '2px solid var(--ink)',
+                boxShadow: '2px 2px 0px var(--ink)',
                 borderRadius: '50%',
-                width: '32px',
-                height: '32px',
+                width: '34px',
+                height: '34px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#64748B'
+                color: 'var(--ink)'
               }}
               title="Close"
             >
@@ -637,7 +684,7 @@ export default function RecipesPage({ showToast }) {
             </button>
 
             {/* Title & Image */}
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--text-heading)', paddingRight: '2rem' }}>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)', fontWeight: 800, marginBottom: '1rem', color: 'var(--ink)', paddingRight: '2rem', fontFamily: 'var(--font-serif)' }}>
               {activeDetailRecipe.title}
             </h2>
 
@@ -645,37 +692,53 @@ export default function RecipesPage({ showToast }) {
               <img
                 src={activeDetailRecipe.image}
                 alt={activeDetailRecipe.title}
-                style={{ width: '100%', maxHeight: '280px', objectFit: 'cover', borderRadius: '14px', marginBottom: '1.5rem', border: '1px solid #E2E8F0' }}
+                style={{ width: '100%', maxHeight: '300px', objectFit: 'cover', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', border: '2px solid var(--ink)', boxShadow: 'var(--shadow-hard)' }}
               />
             )}
 
             {/* Badges Bar */}
-            <div style={{ display: 'flex', gap: '1.25rem', color: 'var(--text-body)', marginBottom: '1.5rem', fontSize: '0.95rem', fontWeight: 600, flexWrap: 'wrap' }}>
-              <div><strong style={{ color: 'var(--text-heading)' }}>Prep Time:</strong> {activeDetailRecipe.readyInMinutes ? `${activeDetailRecipe.readyInMinutes} mins` : activeDetailRecipe.prep_time || '30 mins'}</div>
-              <div><strong style={{ color: 'var(--text-heading)' }}>Servings:</strong> {activeDetailRecipe.servings || 2}</div>
-              <div>
-                <strong style={{ color: 'var(--text-heading)' }}>Difficulty:</strong>{' '}
+            <div style={{ display: 'flex', gap: '1rem', color: 'var(--ink)', marginBottom: '1.75rem', fontSize: '0.95rem', fontWeight: 700, flexWrap: 'wrap' }}>
+              <div className="tag-badge">
+                <Clock size={16} color="var(--rust)" />
+                Prep Time: {activeDetailRecipe.readyInMinutes ? `${activeDetailRecipe.readyInMinutes} mins` : activeDetailRecipe.prep_time || '30 mins'}
+              </div>
+              <div className="tag-badge">
+                <Users size={16} color="var(--sage)" />
+                Servings: {activeDetailRecipe.servings || 2}
+              </div>
+              <div className="tag-badge" style={{ backgroundColor: 'var(--paper-deep)' }}>
+                Difficulty:{' '}
                 {activeDetailRecipe.readyInMinutes
                   ? (activeDetailRecipe.readyInMinutes <= 20 ? 'Easy' : activeDetailRecipe.readyInMinutes <= 45 ? 'Intermediate' : 'Advanced')
                   : (activeDetailRecipe.difficulty || 'Easy')}
               </div>
             </div>
 
-            {/* Ingredients Section with Metric Measurements */}
-            <div style={{ backgroundColor: 'var(--sage-soft)', padding: '1.25rem 1.5rem', borderRadius: '14px', marginBottom: '1.5rem', border: '1px solid var(--sage-border)' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--sage-green)', marginBottom: '0.75rem' }}>
-                Ingredients Required
+            {/* Ingredients Section (Structured Checklist Ledger) */}
+            <div style={{ backgroundColor: 'var(--paper)', padding: '1.5rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.75rem', border: '2px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: 'var(--sage)' }}>✓</span> Ingredients Required
               </h3>
-              <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-heading)', fontWeight: 600 }}>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--ink)', fontWeight: 600 }}>
                 {Array.isArray(activeDetailRecipe.extendedIngredients) ? (
                   activeDetailRecipe.extendedIngredients.map((ing, i) => {
                     const amount = ing.measures?.metric?.amount ? Math.round(ing.measures.metric.amount * 100) / 100 : ing.amount || '';
                     const unit = ing.measures?.metric?.unitShort || ing.unit || '';
                     const name = ing.name || ing.originalName || '';
-                    return <li key={i}>{`${amount} ${unit} ${name}`.trim()}</li>;
+                    return (
+                      <li key={i} style={{ borderBottom: '1px dashed rgba(20, 32, 21, 0.15)', paddingBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ color: 'var(--gold-dark)' }}>•</span>
+                        <span>{`${amount} ${unit} ${name}`.trim()}</span>
+                      </li>
+                    );
                   })
                 ) : Array.isArray(activeDetailRecipe.ingredients) ? (
-                  activeDetailRecipe.ingredients.map((ing, i) => <li key={i}>{ing}</li>)
+                  activeDetailRecipe.ingredients.map((ing, i) => (
+                    <li key={i} style={{ borderBottom: '1px dashed rgba(20, 32, 21, 0.15)', paddingBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ color: 'var(--gold-dark)' }}>•</span>
+                      <span>{ing}</span>
+                    </li>
+                  ))
                 ) : (
                   <li>Standard recipe ingredients</li>
                 )}
@@ -683,11 +746,11 @@ export default function RecipesPage({ showToast }) {
             </div>
 
             {/* Instructions */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--honey-amber)', marginBottom: '0.75rem' }}>
+            <div style={{ marginBottom: '1.75rem', backgroundColor: 'var(--card)', padding: '1.5rem', borderRadius: 'var(--radius-sm)', border: '2px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)', marginBottom: '1rem' }}>
                 Preparation Instructions
               </h3>
-              <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', color: 'var(--text-body)', fontWeight: 500 }}>
+              <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', color: 'var(--ink-soft)', fontWeight: 500 }}>
                 {Array.isArray(activeDetailRecipe.analyzedInstructions?.[0]?.steps) ? (
                   activeDetailRecipe.analyzedInstructions[0].steps.map((s, i) => {
                     const cleanText = typeof s.step === 'string' ? s.step.replace(/^(Step\s*\d+:?\s*|\d+[\.\)]\s*)/i, '').trim() : s.step;
@@ -705,15 +768,15 @@ export default function RecipesPage({ showToast }) {
             </div>
 
             {/* Nutrition Information */}
-            <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1rem 1.25rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-around', textAlign: 'center', marginBottom: '1.75rem' }}>
-              <div><strong style={{ color: 'var(--text-heading)', fontSize: '1.2rem' }}>{activeDetailRecipe.nutrition?.calories || getNutrientByName(activeDetailRecipe, 'calories') || 400}</strong><br /><span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Calories</span></div>
-              <div><strong style={{ color: 'var(--coral-primary)', fontSize: '1.2rem' }}>{activeDetailRecipe.nutrition?.protein || getNutrientByName(activeDetailRecipe, 'protein') || 25}g</strong><br /><span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Protein</span></div>
-              <div><strong style={{ color: 'var(--honey-amber)', fontSize: '1.2rem' }}>{activeDetailRecipe.nutrition?.carbs || getNutrientByName(activeDetailRecipe, 'carbohydrates') || 45}g</strong><br /><span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Carbs</span></div>
-              <div><strong style={{ color: 'var(--sage-green)', fontSize: '1.2rem' }}>{activeDetailRecipe.nutrition?.fat || getNutrientByName(activeDetailRecipe, 'fat') || 14}g</strong><br /><span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Fat</span></div>
+            <div style={{ backgroundColor: 'var(--paper-deep)', border: '2px solid var(--ink)', boxShadow: '3px 3px 0px var(--ink)', padding: '1.25rem', borderRadius: 'var(--radius-sm)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '1rem', textAlign: 'center', marginBottom: '2rem' }}>
+              <div><strong className="mono" style={{ color: 'var(--ink)', fontSize: '1.4rem' }}>{activeDetailRecipe.nutrition?.calories || getNutrientByName(activeDetailRecipe, 'calories') || 400}</strong><br /><span className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', fontWeight: 700, textTransform: 'uppercase' }}>Calories</span></div>
+              <div><strong className="mono" style={{ color: 'var(--rust)', fontSize: '1.4rem' }}>{activeDetailRecipe.nutrition?.protein || getNutrientByName(activeDetailRecipe, 'protein') || 25}g</strong><br /><span className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', fontWeight: 700, textTransform: 'uppercase' }}>Protein</span></div>
+              <div><strong className="mono" style={{ color: 'var(--gold-dark)', fontSize: '1.4rem' }}>{activeDetailRecipe.nutrition?.carbs || getNutrientByName(activeDetailRecipe, 'carbohydrates') || 45}g</strong><br /><span className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', fontWeight: 700, textTransform: 'uppercase' }}>Carbs</span></div>
+              <div><strong className="mono" style={{ color: 'var(--sage)', fontSize: '1.4rem' }}>{activeDetailRecipe.nutrition?.fat || getNutrientByName(activeDetailRecipe, 'fat') || 14}g</strong><br /><span className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', fontWeight: 700, textTransform: 'uppercase' }}>Fat</span></div>
             </div>
 
             {/* Bottom Actions Bar */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', paddingTop: '1.25rem', borderTop: '1px solid #E2E8F0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingTop: '1.5rem', borderTop: '2px solid var(--ink)' }}>
               {/* Save Recipe Button for Spoonacular recipes */}
               {activeDetailRecipe.extendedIngredients && (
                 <button
@@ -729,16 +792,11 @@ export default function RecipesPage({ showToast }) {
               <button
                 onClick={() => handleLogModalCookedDish(activeDetailRecipe)}
                 disabled={cookedModalLogged}
-                className="btn btn-primary"
-                style={{
-                  backgroundColor: cookedModalLogged ? 'var(--sage-soft)' : 'var(--coral-primary)',
-                  border: cookedModalLogged ? '1px solid var(--sage-border)' : 'none',
-                  color: cookedModalLogged ? 'var(--sage-green)' : '#FFFFFF'
-                }}
+                className={`btn ${cookedModalLogged ? 'btn-outline' : 'btn-primary'}`}
               >
                 {cookedModalLogged ? (
                   <>
-                    <CheckSquare size={18} style={{ color: 'var(--sage-green)' }} /> Meal Logged!
+                    <CheckSquare size={18} color="var(--sage)" /> Meal Logged to Nutrition Tracker!
                   </>
                 ) : (
                   <>
@@ -753,9 +811,8 @@ export default function RecipesPage({ showToast }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline"
-                style={{ borderColor: '#FF0000', color: '#CC0000', backgroundColor: '#FFF5F5', textDecoration: 'none' }}
               >
-                <Youtube size={18} style={{ color: '#FF0000' }} /> Watch on YouTube 🎬
+                <Youtube size={18} color="#FF0000" /> Watch on YouTube 🎬
               </a>
             </div>
 
@@ -765,14 +822,14 @@ export default function RecipesPage({ showToast }) {
 
       {/* Delete Confirmation Modal for Saved Recipes */}
       {deletingRecipeId && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(17, 24, 39, 0.65)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}>
-          <div className="glass-card animate-scale-in" style={{ padding: '2rem', maxWidth: '420px', width: '100%', textAlign: 'center', backgroundColor: '#FFFFFF', border: '1px solid var(--coral-border)' }}>
-            <AlertTriangle size={40} style={{ color: 'var(--coral-primary)', margin: '0 auto 1rem' }} />
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-heading)' }}>Delete Recipe?</h3>
-            <p style={{ color: 'var(--text-body)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>Are you sure you want to remove this recipe from your collection?</p>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(20, 32, 21, 0.7)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, padding: '1rem' }}>
+          <div className="animate-scale-in" style={{ padding: '2.5rem 2rem', maxWidth: '440px', width: '100%', textAlign: 'center', backgroundColor: 'var(--card)', border: 'var(--border-thicker)', boxShadow: 'var(--shadow-hard-xl)', borderRadius: 'var(--radius-md)' }}>
+            <AlertTriangle size={42} style={{ color: 'var(--rust)', margin: '0 auto 1rem' }} />
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--ink)', fontFamily: 'var(--font-serif)' }}>Delete Recipe?</h3>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.95rem', marginBottom: '1.75rem' }}>Are you sure you want to remove this recipe from your collection?</p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button onClick={() => setDeletingRecipeId(null)} className="btn btn-outline">Cancel</button>
-              <button onClick={() => handleDeleteSavedRecipe(deletingRecipeId)} className="btn btn-primary">Delete</button>
+              <button onClick={() => handleDeleteSavedRecipe(deletingRecipeId)} className="btn btn-rust">Delete</button>
             </div>
           </div>
         </div>
