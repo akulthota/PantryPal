@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare, Search, RotateCcw, AlertTriangle } from 'lucide-react';
+import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare, Search, AlertTriangle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
 import { autocompleteIngredient } from '../lib/spoonacular';
@@ -88,12 +88,6 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     setWeeklyScanCount(weeklyScans.length);
   };
 
-  const handleResetScans = async () => {
-    await db.scanLogs.clear();
-    setWeeklyScanCount(0);
-    setErrorMessage(null);
-    if (showToast) showToast('Usage Reset', 'Your guest scan count has been reset to 0/3.', 'info');
-  };
 
   useEffect(() => {
     return () => {
@@ -218,7 +212,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
         if (data.ingredients && data.ingredients.length > 0) {
           setIngredients(data.ingredients);
           if (data.isFallback) {
-            showToast('Sample Ingredients Loaded 📷', 'Set GEMINI_API_KEY in environment for live AI vision photo scanning!', 'info');
+            showToast('Sample Ingredients Loaded 📷', 'Set DEEPSEEK_API_KEY in environment for live AI vision photo scanning!', 'info');
           } else {
             showToast('Ingredients Extracted! 🍓', `Identified ${data.ingredients.length} items from your photo.`, 'success');
           }
@@ -540,15 +534,6 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
                 <Lock size={16} />
                 <span>Guest Scans: {weeklyScanCount} / {GUEST_WEEKLY_LIMIT} This Week</span>
               </div>
-              {weeklyScanCount > 0 && (
-                <button
-                  onClick={handleResetScans}
-                  title="Reset weekly usage"
-                  className="btn btn-sm btn-outline"
-                >
-                  <RotateCcw size={14} /> Reset
-                </button>
-              )}
             </div>
           )}
         </div>
@@ -562,9 +547,6 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
           </div>
           {!user && (
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <button onClick={handleResetScans} className="btn btn-sm btn-outline">
-                <RotateCcw size={14} /> Reset Usage
-              </button>
               <button onClick={onOpenAuthModal} className="btn btn-sm btn-gold">
                 Log In for Unlimited Scans
               </button>

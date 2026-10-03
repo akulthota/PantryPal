@@ -125,7 +125,7 @@ Return ONLY a valid JSON object matching:
         }
         return res.status(200).json(recipe);
       } catch (jsonErr) {
-        console.warn('Failed to parse Gemini JSON output, falling back to authentic recipe:', jsonErr);
+        console.warn('Failed to parse DeepSeek JSON output, falling back to authentic recipe:', jsonErr);
       }
     }
 
