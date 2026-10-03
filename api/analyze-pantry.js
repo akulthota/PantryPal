@@ -80,7 +80,8 @@ Do NOT output markdown. Output raw JSON only.`;
               }
             ],
             response_format: { type: 'json_object' },
-            effort: 'low',
+            thinking: { type: 'disabled' },
+            effort: 'medium',
             max_tokens: 4000,
             temperature: 0.1
           })
