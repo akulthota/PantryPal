@@ -230,7 +230,8 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
           });
           loadScanHistory();
         } else {
-          setErrorMessage('No clear food items detected. Try adding ingredients manually or uploading a clearer photo.');
+          setIngredients([]);
+          setErrorMessage('No clear food items detected in this photo. Try uploading a closer photo with good lighting, or type them in below.');
         }
       } catch (apiErr) {
         console.warn('Vision API call error:', apiErr);

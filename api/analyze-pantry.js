@@ -40,7 +40,17 @@ export default async function handler(req, res) {
     let responseData = null;
     let lastError = null;
 
-    const systemPrompt = `You are an expert food identification AI. Identify all visible ingredients, groceries, produce, dairy, and pantry items in the image. Return ONLY a valid JSON object formatted as: {"ingredients": ["item 1", "item 2"]}. Keep names concise.`;
+    const systemPrompt = `You are an expert grocery, pantry, and food detection AI.
+Analyze the user's photo and list EVERY single edible food item, grocery, ingredient, produce, meat, dairy, beverage, condiment, snack, canned good, spice, or pantry item you can detect or infer from labels, packages, containers, or loose food.
+Return ONLY a valid JSON object matching:
+{
+  "ingredients": ["Item 1", "Item 2", "Item 3"]
+}
+Guidelines:
+1. Extract simplified common grocery/ingredient names (e.g. "Cheddar Cheese", "Eggs", "Milk", "Chicken", "Spinach", "Tomatoes", "Onions", "Bread", "Garlic", "Butter", "Pasta", "Rice").
+2. Identify packaged foods, cans, jars, and bottles by what food is inside.
+3. If the image truly contains zero food or grocery items, return: {"ingredients": []}.
+Do NOT output markdown. Output raw JSON only.`;
 
     if (apiKey && apiKey !== 'your_deepseek_api_key_here') {
       try {
@@ -71,7 +81,7 @@ export default async function handler(req, res) {
             ],
             response_format: { type: 'json_object' },
             effort: 'low',
-            max_tokens: 800,
+            max_tokens: 4000,
             temperature: 0.1
           })
         });
@@ -93,9 +103,10 @@ export default async function handler(req, res) {
 
       try {
         const parsed = JSON.parse(cleanJson);
-        if (Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0) {
+        if (Array.isArray(parsed.ingredients)) {
           return res.status(200).json({
             ingredients: parsed.ingredients,
+            isFallback: false,
             raw: rawText
           });
         }
@@ -107,13 +118,14 @@ export default async function handler(req, res) {
         if (matches.length > 0) {
           return res.status(200).json({
             ingredients: matches,
+            isFallback: false,
             raw: rawText
           });
         }
       }
     }
 
-    const fallbackReason = !apiKey ? 'missing_key' : (lastError ? 'api_error' : 'no_items');
+    const fallbackReason = !apiKey ? 'missing_key' : 'api_error';
     console.warn('Using Vision API fallback analysis due to:', lastError || fallbackReason);
     return res.status(200).json({
       ingredients: ['Fresh Milk', 'Eggs', 'Cheddar Cheese', 'Fresh Strawberries', 'Butter', 'Tomatoes', 'Mustard'],
