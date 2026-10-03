@@ -11,8 +11,19 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isLogging, setIsLogging] = useState(false);
 
+  React.useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+      }
+    };
+  }, [previewUrl]);
+
   const handleFileChange = (file) => {
     if (!file) return;
+    if (previewUrl) {
+      try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+    }
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
     setNutritionResult(null);
@@ -27,6 +38,9 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
   };
 
   const clearImage = () => {
+    if (previewUrl) {
+      try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+    }
     setSelectedFile(null);
     setPreviewUrl(null);
     setNutritionResult(null);
@@ -44,8 +58,10 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
       const compressImage = (file) => {
         return new Promise((resolve) => {
           const img = new Image();
-          img.src = URL.createObjectURL(file);
+          const objUrl = URL.createObjectURL(file);
+          img.src = objUrl;
           img.onload = () => {
+            try { URL.revokeObjectURL(objUrl); } catch (e) {}
             const canvas = document.createElement('canvas');
             const MAX_SIZE = 640;
             let width = img.width;
@@ -130,7 +146,8 @@ export default function CalorieScannerPage({ showToast, onNavigate }) {
     if (!nutritionResult) return;
     setIsLogging(true);
     try {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       await db.proteinLogs.create({
         item: nutritionResult.dish_name || 'Scanned Meal',
         total_protein: nutritionResult.protein_g || 0,

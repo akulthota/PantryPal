@@ -1,13 +1,20 @@
 // src/lib/spoonacular.js
 const cache = new Map();
+const MAX_CACHE_SIZE = 50;
 
 function getCached(key) {
-  if (cache.has(key)) return cache.get(key);
+  if (cache.has(key)) {
+    const val = cache.get(key);
+    // Refresh position for LRU eviction
+    cache.delete(key);
+    cache.set(key, val);
+    return val;
+  }
   try {
     const item = sessionStorage.getItem(`spoon_cache_${key}`);
     if (item) {
       const parsed = JSON.parse(item);
-      cache.set(key, parsed);
+      setCache(key, parsed);
       return parsed;
     }
   } catch (e) {}
@@ -15,11 +22,23 @@ function getCached(key) {
 }
 
 function setCache(key, data) {
+  if (cache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey) cache.delete(oldestKey);
+  }
   cache.set(key, data);
   try {
     sessionStorage.setItem(`spoon_cache_${key}`, JSON.stringify(data));
-  } catch (e) {}
+  } catch (e) {
+    // If sessionStorage quota is exceeded, clear old spoon keys
+    try {
+      Object.keys(sessionStorage)
+        .filter(k => k.startsWith('spoon_cache_'))
+        .forEach(k => sessionStorage.removeItem(k));
+    } catch (clearErr) {}
+  }
 }
+
 
 export async function searchRecipes({ query = '', cuisine = '', number = 12, offset = 0 } = {}) {
   const cacheKey = `search_${query}_${cuisine}_${number}_${offset}`;

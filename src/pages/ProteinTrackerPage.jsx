@@ -34,8 +34,20 @@ export default function ProteinTrackerPage({ userPreferences, showToast }) {
     }
   };
 
-  const todayStr = new Date().toISOString().split('T')[0];
-  const todayLogs = logs.filter(l => l.logged_date === todayStr || (l.created_at && l.created_at.startsWith(todayStr)));
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const todayLogs = logs.filter(l => {
+    if (l.logged_date === todayStr) return true;
+    if (l.local_date === todayStr) return true;
+    if (l.created_at) {
+      try {
+        const cDate = new Date(l.created_at);
+        const cStr = `${cDate.getFullYear()}-${String(cDate.getMonth() + 1).padStart(2, '0')}-${String(cDate.getDate()).padStart(2, '0')}`;
+        return cStr === todayStr;
+      } catch (e) {}
+    }
+    return false;
+  });
   
   const todayProteinTotal = todayLogs.reduce((sum, l) => sum + (Number(l.total_protein) || 0), 0);
   const todayCaloriesTotal = todayLogs.reduce((sum, l) => sum + (Number(l.total_calories) || 0), 0);

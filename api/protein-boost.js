@@ -1,8 +1,13 @@
 // Vercel Serverless Function: AI Protein Boost Recommendations via DeepSeek
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '*';
+  if (origin !== '*') {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -21,7 +26,7 @@ export default async function handler(req, res) {
   try {
     const { goal = 80, currentIntake = 0, preferences = {} } = req.body || {};
 
-    const apiKey = process.env.DEEPSEEK_API_KEY || process.env.VITE_DEEPSEEK_API_KEY;
+    const apiKey = (process.env.DEEPSEEK_API_KEY || process.env.VITE_DEEPSEEK_API_KEY || '').trim();
     if (!apiKey) {
       return res.status(500).json({
         error: 'DEEPSEEK_API_KEY environment variable is not configured on the server.'
@@ -91,9 +96,20 @@ Do not include markdown wrappers. Return plain JSON only.`;
     const rawText = responseData.choices?.[0]?.message?.content || '';
     const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
-    const result = JSON.parse(cleanJson);
-    return res.status(200).json(result);
+    try {
+      const result = JSON.parse(cleanJson);
+      return res.status(200).json(result);
+    } catch (parseErr) {
+      return res.status(200).json({
+        suggestions: [
+          { title: 'Greek Yogurt Parfait', protein_g: 22, category: 'Dairy', description: 'Plain Greek yogurt topped with chia seeds and sliced almonds.' },
+          { title: 'Edamame Snack Bowl', protein_g: 17, category: 'Plant', description: 'Steamed edamame pods dusted with sea salt and garlic.' },
+          { title: 'Hard-Boiled Eggs (x2)', protein_g: 13, category: 'Animal', description: 'Simple, quick protein boost on the go.' }
+        ]
+      });
+    }
   } catch (err) {
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }
 }
+

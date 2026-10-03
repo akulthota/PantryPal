@@ -1,8 +1,13 @@
 // Vercel Serverless Function: Ultra-Fast Pantry Vision Analysis via DeepSeek Vision
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '*';
+  if (origin !== '*') {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -24,7 +29,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
-    const apiKey = process.env.DEEPSEEK_API_KEY || process.env.VITE_DEEPSEEK_API_KEY;
+    const apiKey = (process.env.DEEPSEEK_API_KEY || process.env.VITE_DEEPSEEK_API_KEY || '').trim();
     
     // Clean base64 data and form data URL
     const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image;
@@ -95,7 +100,10 @@ export default async function handler(req, res) {
           });
         }
       } catch (parseErr) {
-        const matches = [...rawText.matchAll(/"([^"]+)"/g)].map(m => m[1]).filter(s => s.length > 2 && s !== 'ingredients');
+        const EXCLUDED_KEYS = ['ingredients', 'raw', 'status', 'error', 'item', 'food', 'type'];
+        const matches = [...rawText.matchAll(/"([^"]+)"/g)]
+          .map(m => m[1])
+          .filter(s => s.length > 2 && !EXCLUDED_KEYS.includes(s.toLowerCase()));
         if (matches.length > 0) {
           return res.status(200).json({
             ingredients: matches,
@@ -120,3 +128,4 @@ export default async function handler(req, res) {
     });
   }
 }
+

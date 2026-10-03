@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare, Search, RotateCcw } from 'lucide-react';
+import { Camera, Upload, Plus, X, Sparkles, Clock, Users, Flame, Save, RefreshCw, AlertCircle, CheckCircle2, ChefHat, UserCheck, Lock, Youtube, CheckSquare, Search, RotateCcw, AlertTriangle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { db } from '../lib/supabase';
 import { autocompleteIngredient } from '../lib/spoonacular';
@@ -74,7 +74,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     return () => clearTimeout(timer);
   }, [inputValue]);
 
-  // Issue 2: Calculate Monday of current week for weekly limits
+  // Issue 2: Calculate Monday of current week for weekly limits in local timezone
   const loadScanHistory = async () => {
     const logs = await db.scanLogs.list();
     const now = new Date();
@@ -82,7 +82,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     const monday = new Date(now);
     monday.setDate(now.getDate() + mondayOffset);
-    const mondayStr = monday.toISOString().split('T')[0];
+    const mondayStr = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`;
 
     const weeklyScans = logs.filter(l => l.local_date >= mondayStr && l.log_type === 'scan');
     setWeeklyScanCount(weeklyScans.length);
@@ -95,8 +95,19 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
     if (showToast) showToast('Usage Reset', 'Your guest scan count has been reset to 0/3.', 'info');
   };
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+      }
+    };
+  }, [previewUrl]);
+
   const handleFileChange = (file) => {
     if (!file) return;
+    if (previewUrl) {
+      try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+    }
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
     setIngredients([]);
@@ -115,6 +126,9 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
   };
 
   const clearImage = () => {
+    if (previewUrl) {
+      try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+    }
     setSelectedFile(null);
     setPreviewUrl(null);
     setIngredients([]);
@@ -144,8 +158,10 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
       const compressImage = (file) => {
         return new Promise((resolve) => {
           const img = new Image();
-          img.src = URL.createObjectURL(file);
+          const objUrl = URL.createObjectURL(file);
+          img.src = objUrl;
           img.onload = () => {
+            try { URL.revokeObjectURL(objUrl); } catch (e) {}
             const canvas = document.createElement('canvas');
             const MAX_SIZE = 640;
             let width = img.width;
@@ -171,6 +187,7 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
             resolve(dataUrl);
           };
           img.onerror = () => {
+            try { URL.revokeObjectURL(objUrl); } catch (e) {}
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
             reader.readAsDataURL(file);
@@ -200,7 +217,11 @@ export default function AnalyzePantryPage({ user, userPreferences, onSaveRecipeS
 
         if (data.ingredients && data.ingredients.length > 0) {
           setIngredients(data.ingredients);
-          showToast('Ingredients Extracted! 🍓', `Identified ${data.ingredients.length} items from your photo.`, 'success');
+          if (data.isFallback) {
+            showToast('Sample Ingredients Loaded 📷', 'Set GEMINI_API_KEY in environment for live AI vision photo scanning!', 'info');
+          } else {
+            showToast('Ingredients Extracted! 🍓', `Identified ${data.ingredients.length} items from your photo.`, 'success');
+          }
           
           await db.scanLogs.create({
             ingredients: data.ingredients,
