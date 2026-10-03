@@ -90,8 +90,8 @@ Return ONLY a valid JSON object matching this structure:
             }
           ],
           response_format: { type: 'json_object' },
-          thinking: { type: 'disabled' },
-          max_tokens: 450,
+          effort: 'low',
+          max_tokens: 800,
           temperature: 0.1
         })
       });

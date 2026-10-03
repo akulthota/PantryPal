@@ -70,8 +70,8 @@ export default async function handler(req, res) {
               }
             ],
             response_format: { type: 'json_object' },
-            thinking: { type: 'disabled' },
-            max_tokens: 300,
+            effort: 'low',
+            max_tokens: 800,
             temperature: 0.1
           })
         });
@@ -113,18 +113,22 @@ export default async function handler(req, res) {
       }
     }
 
-    // Fallback: If DeepSeek API is unconfigured or rate-limited, return high-accuracy default ingredients instantly
-    console.warn('Using Vision API fallback analysis due to:', lastError || 'Missing API Key');
+    const fallbackReason = !apiKey ? 'missing_key' : (lastError ? 'api_error' : 'no_items');
+    console.warn('Using Vision API fallback analysis due to:', lastError || fallbackReason);
     return res.status(200).json({
       ingredients: ['Fresh Milk', 'Eggs', 'Cheddar Cheese', 'Fresh Strawberries', 'Butter', 'Tomatoes', 'Mustard'],
-      isFallback: true
+      isFallback: true,
+      reason: fallbackReason,
+      errorDetails: lastError || null
     });
 
   } catch (err) {
     console.error('Vision API handler error:', err);
     return res.status(200).json({
       ingredients: ['Fresh Milk', 'Eggs', 'Cheddar Cheese', 'Fresh Strawberries', 'Butter', 'Tomatoes', 'Mustard'],
-      isFallback: true
+      isFallback: true,
+      reason: 'handler_error',
+      errorDetails: err.message
     });
   }
 }

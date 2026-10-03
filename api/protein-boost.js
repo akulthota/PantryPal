@@ -73,8 +73,8 @@ Do not include markdown wrappers. Return plain JSON only.`;
             }
           ],
           response_format: { type: 'json_object' },
-          thinking: { type: 'disabled' },
-          max_tokens: 500,
+          effort: 'low',
+          max_tokens: 800,
           temperature: 0.25
         })
       });
