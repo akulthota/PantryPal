@@ -1,5 +1,5 @@
 @echo off
-set PATH=C:\Users\akulthota\.local\mingit\cmd;C:\Users\akulthota\.local\mingit\mingw64\bin;%PATH%
+set PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Users\akulthota\.local\mingit\cmd;%PATH%
 echo ========================================================
 echo   PantryPal - Pushing latest changes to GitHub (main)
 echo ========================================================
